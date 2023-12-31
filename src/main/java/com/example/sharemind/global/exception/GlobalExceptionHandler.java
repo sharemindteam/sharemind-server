@@ -1,5 +1,6 @@
 package com.example.sharemind.global.exception;
 
+import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.customer.exception.CustomerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<GlobalExceptionResponse> catchAuthException(AuthException e) {
+        log.error(e.getErrorCode().getErrorMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getErrorHttpStatus())
+                .body(GlobalExceptionResponse.of(e.getErrorCode().getErrorHttpStatus(), e.getErrorCode().getErrorMessage()));
+    }
 
     @ExceptionHandler(CustomerException.class)
     public ResponseEntity<GlobalExceptionResponse> catchCustomerException(CustomerException e) {
