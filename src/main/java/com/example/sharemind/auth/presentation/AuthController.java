@@ -1,7 +1,9 @@
 package com.example.sharemind.auth.presentation;
 
 import com.example.sharemind.auth.application.AuthService;
+import com.example.sharemind.auth.dto.request.AuthSignInRequest;
 import com.example.sharemind.auth.dto.request.AuthSignUpRequest;
+import com.example.sharemind.auth.dto.response.TokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +23,10 @@ public class AuthController {
     public ResponseEntity<Void> signUp(@RequestBody AuthSignUpRequest authSignUpRequest) {
         authService.signUp(authSignUpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/signIn")
+    public ResponseEntity<TokenDto> signIn(@RequestBody AuthSignInRequest authSignInRequest) {
+        return ResponseEntity.ok(authService.signIn(authSignInRequest));
     }
 }
