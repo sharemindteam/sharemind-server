@@ -13,6 +13,10 @@ public class CustomUserDetails implements UserDetails {
 
     private final Customer customer;
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return customer.getRoles()

@@ -90,7 +90,7 @@ public class TokenProvider implements InitializingBean {
         Duration duration = Duration.between(Instant.now(), expirationTime.toInstant());
         refreshTokenRepository.save(email, refreshToken, duration);
 
-        return "Bearer " + refreshToken;
+        return refreshToken;
     }
 
     public Authentication getAuthentication(String token) {

@@ -1,8 +1,11 @@
 package com.example.sharemind.auth.application;
 
+import com.example.sharemind.auth.dto.request.AuthReissueRequest;
 import com.example.sharemind.auth.dto.request.AuthSignInRequest;
 import com.example.sharemind.auth.dto.request.AuthSignUpRequest;
 import com.example.sharemind.auth.dto.response.TokenDto;
+import com.example.sharemind.auth.exception.AuthErrorCode;
+import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
 import com.example.sharemind.customer.exception.CustomerException;
@@ -10,7 +13,6 @@ import com.example.sharemind.customer.repository.CustomerRepository;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +38,6 @@ public class AuthServiceImpl implements AuthService {
         customerRepository.save(customer);
     }
 
-    @Transactional
     @Override
     public TokenDto signIn(AuthSignInRequest authSignInRequest) {
 
@@ -45,7 +46,20 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, authSignInRequest.getEmail()));
 
         if (!passwordEncoder.matches(authSignInRequest.getPassword(), customer.getPassword())) {
-            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+            throw new AuthException(AuthErrorCode.ILLEGAL_PASSWORD);
+        }
+
+        String accessToken = tokenProvider.createAccessToken(customer.getEmail(), customer.getRoles());
+        String refreshToken = tokenProvider.createRefreshToken(customer.getEmail());
+
+        return TokenDto.of(accessToken, refreshToken);
+    }
+
+    @Override
+    public TokenDto reissueToken(AuthReissueRequest authReissueRequest, Customer customer) {
+
+        if(!tokenProvider.validateToken(authReissueRequest.getRefreshToken())) {
+            throw new AuthException(AuthErrorCode.ILLEGAL_REFRESH_TOKEN);
         }
 
         String accessToken = tokenProvider.createAccessToken(customer.getEmail(), customer.getRoles());
