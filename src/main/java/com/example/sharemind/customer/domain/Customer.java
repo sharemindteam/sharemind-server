@@ -32,7 +32,7 @@ public class Customer extends BaseEntity {
     private String phoneNumber;
 
     @Email(message = "이메일 형식이 올바르지 않습니다.")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
