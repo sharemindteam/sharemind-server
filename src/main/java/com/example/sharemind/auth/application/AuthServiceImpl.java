@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void signUp(AuthSignUpRequest authSignUpRequest) {
 
-        if (customerRepository.existsByEmail(authSignUpRequest.getEmail())) {
+        if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail())) {
             throw new CustomerException(CustomerErrorCode.EMAIL_ALREADY_EXIST, authSignUpRequest.getEmail());
         }
 
