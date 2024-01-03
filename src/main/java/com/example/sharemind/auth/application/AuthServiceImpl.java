@@ -56,11 +56,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenDto reissueToken(AuthReissueRequest authReissueRequest, Customer customer) {
+    public TokenDto reissueToken(AuthReissueRequest authReissueRequest) {
 
-        if(!tokenProvider.validateToken(authReissueRequest.getRefreshToken())) {
+        if(!tokenProvider.validateRefreshToken(authReissueRequest.getRefreshToken())) {
             throw new AuthException(AuthErrorCode.ILLEGAL_REFRESH_TOKEN);
         }
+
+        String email = tokenProvider.getEmail(authReissueRequest.getRefreshToken());
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, email));
 
         String accessToken = tokenProvider.createAccessToken(customer.getEmail(), customer.getRoles());
         String refreshToken = tokenProvider.createRefreshToken(customer.getEmail());
