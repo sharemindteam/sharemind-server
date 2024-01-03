@@ -125,6 +125,10 @@ public class TokenProvider implements InitializingBean {
         }
     }
 
+    public String getEmail(String token) {
+        return parseClaims(token).getSubject();
+    }
+
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
