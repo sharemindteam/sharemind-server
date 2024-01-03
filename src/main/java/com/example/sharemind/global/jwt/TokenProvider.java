@@ -101,10 +101,24 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String accessToken) {
         try {
-            Claims claims = parseClaims(token);
+            Claims claims = parseClaims(accessToken);
             return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String refreshToken) {
+        try {
+            Claims claims = parseClaims(refreshToken);
+
+            String email = claims.getSubject();
+            String savedRefreshToken = refreshTokenRepository.findByKey(email);
+
+            return refreshToken.equals(savedRefreshToken);
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
             return false;
