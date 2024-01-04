@@ -2,6 +2,7 @@ package com.example.sharemind.global.exception;
 
 import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.customer.exception.CustomerException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,13 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(GlobalExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<GlobalExceptionResponse> catchConstraintViolationException(ConstraintViolationException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(GlobalExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getConstraintViolations().stream().findFirst().get().getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
