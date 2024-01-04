@@ -10,14 +10,10 @@ public enum AuthErrorCode {
     ILLEGAL_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "refresh token이 이미 만료되었거나 올바르지 않습니다.");
 
     private final HttpStatus errorHttpStatus;
-    private String errorMessage;
+    private final String errorMessage;
 
     AuthErrorCode(HttpStatus errorHttpStatus, String errorMessage) {
         this.errorHttpStatus = errorHttpStatus;
         this.errorMessage = errorMessage;
-    }
-
-    public void updateErrorMessage(String wrongInput) {
-        this.errorMessage = this.errorMessage + " : " + wrongInput;
     }
 }

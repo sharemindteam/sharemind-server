@@ -16,16 +16,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<GlobalExceptionResponse> catchAuthException(AuthException e) {
-        log.error(e.getErrorCode().getErrorMessage(), e);
-        return ResponseEntity.status(e.getErrorCode().getErrorHttpStatus())
-                .body(GlobalExceptionResponse.of(e.getErrorCode().getErrorHttpStatus(), e.getErrorCode().getErrorMessage()));
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode())
+                .body(GlobalExceptionResponse.of(e.getErrorCode(), e.getMessage()));
     }
 
     @ExceptionHandler(CustomerException.class)
     public ResponseEntity<GlobalExceptionResponse> catchCustomerException(CustomerException e) {
-        log.error(e.getErrorCode().getErrorMessage(), e);
-        return ResponseEntity.status(e.getErrorCode().getErrorHttpStatus())
-                .body(GlobalExceptionResponse.of(e.getErrorCode().getErrorHttpStatus(), e.getErrorCode().getErrorMessage()));
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode())
+                .body(GlobalExceptionResponse.of(e.getErrorCode(), e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
