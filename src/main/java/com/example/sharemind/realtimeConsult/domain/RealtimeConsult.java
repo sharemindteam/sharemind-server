@@ -1,6 +1,7 @@
 package com.example.sharemind.realtimeConsult.domain;
 
 import com.example.sharemind.global.common.BaseEntity;
+import com.example.sharemind.realtimeConsult.content.RealtimeConsultStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -18,8 +19,8 @@ public class RealtimeConsult extends BaseEntity {
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 
-    @Column(name = "is_finished")
-    private Boolean isFinished;
+    @Column(name = "consult_status")
+    private RealtimeConsultStatus consultStatus;
 
     @Column(name = "read_id")
     private Long readId;
