@@ -2,6 +2,7 @@ package com.example.sharemind.nonRealtimeConsult.domain;
 
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
+import com.example.sharemind.nonRealtimeConsult.content.NonRealtimeConsultStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,4 +21,7 @@ public class NonRealtimeConsult extends BaseEntity {
 
     @Column(name = "read_id")
     private Long readId;
+
+    @Column(name = "consult_status")
+    private NonRealtimeConsultStatus consultStatus;
 }
