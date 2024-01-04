@@ -10,7 +10,6 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
 import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.customer.repository.CustomerRepository;
-import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,8 +40,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenDto signIn(AuthSignInRequest authSignInRequest) {
 
-        Customer customer = customerRepository.findByEmail(authSignInRequest.getEmail())
-                .filter(BaseEntity::isActivated)
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(authSignInRequest.getEmail())
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, authSignInRequest.getEmail()));
 
         if (!passwordEncoder.matches(authSignInRequest.getPassword(), customer.getPassword())) {
@@ -63,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String email = tokenProvider.getEmail(authReissueRequest.getRefreshToken());
-        Customer customer = customerRepository.findByEmail(email)
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(email)
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, email));
 
         String accessToken = tokenProvider.createAccessToken(customer.getEmail(), customer.getRoles());

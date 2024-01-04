@@ -4,7 +4,6 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
 import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.customer.repository.CustomerRepository;
-import com.example.sharemind.global.common.BaseEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,8 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Customer customer = customerRepository.findByEmail(username)
-                .filter(BaseEntity::isActivated)
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(username)
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, username));
 
         return new CustomUserDetails(customer);
