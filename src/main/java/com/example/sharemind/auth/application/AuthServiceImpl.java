@@ -10,7 +10,6 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
 import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.customer.repository.CustomerRepository;
-import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void signUp(AuthSignUpRequest authSignUpRequest) {
 
-        if (customerRepository.existsByEmail(authSignUpRequest.getEmail())) {
+        if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail())) {
             throw new CustomerException(CustomerErrorCode.EMAIL_ALREADY_EXIST, authSignUpRequest.getEmail());
         }
 
@@ -41,8 +40,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenDto signIn(AuthSignInRequest authSignInRequest) {
 
-        Customer customer = customerRepository.findByEmail(authSignInRequest.getEmail())
-                .filter(BaseEntity::isActivated)
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(authSignInRequest.getEmail())
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, authSignInRequest.getEmail()));
 
         if (!passwordEncoder.matches(authSignInRequest.getPassword(), customer.getPassword())) {
@@ -56,11 +54,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenDto reissueToken(AuthReissueRequest authReissueRequest, Customer customer) {
+    public TokenDto reissueToken(AuthReissueRequest authReissueRequest) {
 
-        if(!tokenProvider.validateToken(authReissueRequest.getRefreshToken())) {
+        if(!tokenProvider.validateRefreshToken(authReissueRequest.getRefreshToken())) {
             throw new AuthException(AuthErrorCode.ILLEGAL_REFRESH_TOKEN);
         }
+
+        String email = tokenProvider.getEmail(authReissueRequest.getRefreshToken());
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(email)
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, email));
 
         String accessToken = tokenProvider.createAccessToken(customer.getEmail(), customer.getRoles());
         String refreshToken = tokenProvider.createRefreshToken(customer.getEmail());

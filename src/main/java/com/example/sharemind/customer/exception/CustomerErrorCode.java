@@ -10,14 +10,10 @@ public enum CustomerErrorCode {
     CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원 정보가 존재하지 않습니다.");
 
     private final HttpStatus errorHttpStatus;
-    private String errorMessage;
+    private final String errorMessage;
 
     CustomerErrorCode(HttpStatus errorHttpStatus, String errorMessage) {
         this.errorHttpStatus = errorHttpStatus;
         this.errorMessage = errorMessage;
-    }
-
-    public void updateErrorMessage(String wrongInput) {
-        this.errorMessage = this.errorMessage + " : " + wrongInput;
     }
 }

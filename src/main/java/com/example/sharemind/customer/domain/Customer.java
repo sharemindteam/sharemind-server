@@ -27,12 +27,12 @@ public class Customer extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호는 하이픈(-)을 포함한 10~11자리입니다.")
+    @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호는 하이픈(-)을 포함한 10~11자리이어야 합니다.")
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     @Email(message = "이메일 형식이 올바르지 않습니다.")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
