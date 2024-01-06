@@ -4,9 +4,7 @@ import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,5 +18,11 @@ public class AdminController {
     @GetMapping
     public ResponseEntity<List<ConsultsGetUnpaidResponse>> getUnpaidConsults() {
         return ResponseEntity.ok(adminService.getUnpaidConsults());
+    }
+
+    @PatchMapping("/{consultId}")
+    public ResponseEntity<Void> updateIsPaid(@PathVariable Long consultId) {
+        adminService.updateIsPaid(consultId);
+        return ResponseEntity.ok().build();
     }
 }
