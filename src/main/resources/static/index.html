@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Chat</title>
+</head>
+<body>
+<h2>Welcome to Chat</h2>
+<input type="text" id="chattingRoomId" placeholder="Enter Chat Room ID"/>
+<button onclick="enterChatRoom()">Enter Chat Room</button>
+
+<script>
+    function enterChatRoom() {
+        var roomId = document.getElementById('chattingRoomId').value;
+        if(roomId) {
+            window.location.href = 'chat.html?room=' + roomId; // 채팅방 페이지로 이동
+        } else {
+            alert("Please enter a chat room ID.");
+        }
+    }
+</script>
+</body>
+</html>
