@@ -29,7 +29,7 @@ public class ChatController {
     }
 
     @GetMapping("/channels") //todo: 채팅 데모용을 위한 api 삭제해야함
-    public ResponseEntity<List<Long>> getChannelList(@RequestParam Long customerId) {
-        return ResponseEntity.ok(realtimeConsultService.getRealtimeConsult(customerId));
+    public ResponseEntity<List<Long>> getChannelList(@RequestParam Long userId, @RequestParam Boolean isCustomer) {
+        return ResponseEntity.ok(realtimeConsultService.getRealtimeConsult(userId, isCustomer));
     }
 }

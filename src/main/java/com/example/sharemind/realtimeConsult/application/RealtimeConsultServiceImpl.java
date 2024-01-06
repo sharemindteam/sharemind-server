@@ -14,7 +14,11 @@ public class RealtimeConsultServiceImpl implements RealtimeConsultService {
     private final ConsultRepository consultRepository;
 
     @Override
-    public List<Long> getRealtimeConsult(Long customerId) {
-        return consultRepository.findRealtimeConsultIdsByCustomerId(customerId);
+    public List<Long> getRealtimeConsult(Long userId, Boolean isCustomer) {
+        if (isCustomer) {
+            return consultRepository.findRealtimeConsultIdsByCustomerId(userId);
+        } else {
+            return consultRepository.findRealtimeConsultIdsByCounselorId(userId);
+        }
     }
 }
