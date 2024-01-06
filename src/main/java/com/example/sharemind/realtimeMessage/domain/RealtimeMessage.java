@@ -19,9 +19,6 @@ public class RealtimeMessage extends BaseEntity {
     @JoinColumn(name = "realtime_id")
     private RealtimeConsult realtimeConsult;
 
-    @Column(name = "sender_id")
-    private Long senderId;
-
     @Column(name = "is_customer")
     private Boolean isCustomer;
 
