@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, authSignInRequest.getEmail()));
 
         if (!passwordEncoder.matches(authSignInRequest.getPassword(), customer.getPassword())) {
-            throw new AuthException(AuthErrorCode.ILLEGAL_PASSWORD);
+            throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
         }
 
         String accessToken = tokenProvider.createAccessToken(customer.getEmail(), customer.getRoles());
@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
     public TokenDto reissueToken(AuthReissueRequest authReissueRequest) {
 
         if(!tokenProvider.validateRefreshToken(authReissueRequest.getRefreshToken())) {
-            throw new AuthException(AuthErrorCode.ILLEGAL_REFRESH_TOKEN);
+            throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         String email = tokenProvider.getEmail(authReissueRequest.getRefreshToken());

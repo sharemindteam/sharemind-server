@@ -65,7 +65,7 @@ public class Customer extends BaseEntity {
         this.recoveryEmail = recoveryEmail;
 
         this.roles = new ArrayList<>() {{
-            add(Role.CUSTOMER);
+            add(Role.ROLE_CUSTOMER);
         }};
     }
 }

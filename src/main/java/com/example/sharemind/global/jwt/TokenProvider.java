@@ -2,9 +2,7 @@ package com.example.sharemind.global.jwt;
 
 import com.example.sharemind.auth.repository.RefreshTokenRepository;
 import com.example.sharemind.customer.domain.Role;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -105,10 +103,17 @@ public class TokenProvider implements InitializingBean {
         try {
             Claims claims = parseClaims(accessToken);
             return !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
-            log.warn(e.getMessage(), e);
-            return false;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.warn("잘못된 JWT 서명입니다.", e);
+        } catch (ExpiredJwtException e) {
+            log.warn("만료된 JWT입니다.", e);
+        } catch (UnsupportedJwtException e) {
+            log.warn("지원되지 않는 JWT입니다.", e);
+        } catch (IllegalArgumentException e) {
+            log.warn("잘못된 JWT입니다.", e);
         }
+
+        return false;
     }
 
     public boolean validateRefreshToken(String refreshToken) {
@@ -119,10 +124,17 @@ public class TokenProvider implements InitializingBean {
             String savedRefreshToken = refreshTokenRepository.findByKey(email);
 
             return refreshToken.equals(savedRefreshToken);
-        } catch (Exception e) {
-            log.warn(e.getMessage(), e);
-            return false;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.warn("잘못된 JWT 서명입니다.", e);
+        } catch (ExpiredJwtException e) {
+            log.warn("만료된 JWT입니다.", e);
+        } catch (UnsupportedJwtException e) {
+            log.warn("지원되지 않는 JWT입니다.", e);
+        } catch (IllegalArgumentException e) {
+            log.warn("잘못된 JWT입니다.", e);
         }
+
+        return false;
     }
 
     public String getEmail(String token) {
