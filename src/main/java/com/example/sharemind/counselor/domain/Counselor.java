@@ -1,5 +1,7 @@
 package com.example.sharemind.counselor.domain;
 
+import com.example.sharemind.counselor.exception.CounselorErrorCode;
+import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.Bank;
 import com.example.sharemind.global.content.ConsultCategory;
@@ -43,6 +45,7 @@ public class Counselor extends BaseEntity {
     private Set<ConsultCategory> consultCategories;
 
     @Column(name = "consult_style")
+    @Enumerated(EnumType.STRING)
     private ConsultStyle consultStyle;
 
     @Column(columnDefinition = "TEXT")
@@ -55,6 +58,7 @@ public class Counselor extends BaseEntity {
 
     private String account;
 
+    @Enumerated(EnumType.STRING)
     private Bank bank;
 
     @Column(name = "account_holder")
@@ -64,5 +68,12 @@ public class Counselor extends BaseEntity {
     private Long totalReview;
 
     @Column(name = "rating_average")
-    private Float ratingAverage;
+    private Double ratingAverage;
+
+    public Long getConsultCost(ConsultType consultType) {
+        return this.consultCosts.stream()
+                .filter(consultCost -> consultCost.getConsultType().equals(consultType))
+                .findAny().orElseThrow(() -> new CounselorException(CounselorErrorCode.COST_NOT_FOUND))
+                .getCost();
+    }
 }
