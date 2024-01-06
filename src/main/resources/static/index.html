@@ -5,16 +5,16 @@
 </head>
 <body>
 <h2>Welcome to Chat</h2>
-<input type="text" id="chattingRoomId" placeholder="Enter Chat Room ID"/>
-<button onclick="enterChatRoom()">Enter Chat Room</button>
+<input type="text" id="userId" placeholder="Enter User ID"/>
+<button onclick="redirectToRoomSelection()">Next</button>
 
 <script>
-    function enterChatRoom() {
-        var roomId = document.getElementById('chattingRoomId').value;
-        if(roomId) {
-            window.location.href = 'chat.html?room=' + roomId; // 채팅방 페이지로 이동
+    function redirectToRoomSelection() {
+        var userId = document.getElementById('userId').value;
+        if(userId) {
+            window.location.href = 'roomSelection.html?userId=' + userId;
         } else {
-            alert("Please enter a chat room ID.");
+            alert("Please enter a User ID.");
         }
     }
 </script>

@@ -1,16 +1,27 @@
 var stompClient = null;
 var urlParams = new URLSearchParams(window.location.search);
+var userId = urlParams.get('userId');
 var roomId = urlParams.get('room');
 
 function connect() {
     var socket = new SockJS('/chat');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({userId: userId}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/queue/chattings/' + roomId, function (chatMessage) {
-            var messageData = JSON.parse(chatMessage.body);
-            showMessage(messageData.senderName, messageData.content);
-        });
+        fetch('/channels?customerId=' + userId)
+            .then(response => response.json())
+            .then(channelIds => {
+                // 가져온 채널 ID 목록으로 구독
+                channelIds.forEach(function (channelId) {
+                    stompClient.subscribe('/queue/chattings/' + channelId, function (chatMessage) {
+                        var messageData = JSON.parse(chatMessage.body);
+                        if (roomId == null || roomId === channelId.toString()) {
+                            showMessage(messageData.senderName, messageData.content);
+                        }
+                    });
+                });
+            })
+            .catch(error => console.error('Error fetching channel IDs:', error));
     });
 }
 
