@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Select Chat Room</title>
+    <title>Select Chat Room</title>
 </head>
 <body>
 <h2>Select a Chat Room</h2>
 <input type="text" id="chattingRoomId" placeholder="Enter Chat Room ID"/>
 <button onclick="enterChatRoom()">Enter Chat Room</button>
 <script>
-  var urlParams = new URLSearchParams(window.location.search);
-  var userId = urlParams.get('userId');
-  function enterChatRoom() {
-    var roomId = document.getElementById('chattingRoomId').value;
-    if(roomId) {
-      window.location.href = 'chat.html?userId=' + userId + '&room=' + roomId;
-    } else {
-      alert("Please enter a Chat Room ID.");
+    var urlParams = new URLSearchParams(window.location.search);
+    var userId = urlParams.get('userId');
+    var isCustomer = urlParams.get('customer');
+
+    function enterChatRoom() {
+        var roomId = document.getElementById('chattingRoomId').value;
+        if (roomId) {
+            var url = 'chat.html?userId=' + userId + '&room=' + roomId + '&customer=' + isCustomer;
+            window.location.href = url;
+        } else {
+            alert("Please enter a Chat Room ID.");
+        }
     }
-  }
 </script>
 </body>
 </html>

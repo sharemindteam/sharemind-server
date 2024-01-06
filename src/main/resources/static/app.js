@@ -2,13 +2,18 @@ var stompClient = null;
 var urlParams = new URLSearchParams(window.location.search);
 var userId = urlParams.get('userId');
 var roomId = urlParams.get('room');
+var isCustomer = urlParams.get('customer') === 'true';
 
 function connect() {
+    // if (!isCustomer) {
+    //     console.log('Not a customer, skipping WebSocket connection.');
+    //     return;
+    // }
     var socket = new SockJS('/chat');
     stompClient = Stomp.over(socket);
     stompClient.connect({userId: userId}, function (frame) {
         console.log('Connected: ' + frame);
-        fetch('/channels?customerId=' + userId)
+        fetch('/channels?customerId=' + userId + '&isCustomer=' + isCustomer)
             .then(response => response.json())
             .then(channelIds => {
                 // 가져온 채널 ID 목록으로 구독
