@@ -9,11 +9,11 @@ public enum AuthErrorCode {
     ILLEGAL_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     ILLEGAL_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "refresh token이 이미 만료되었거나 올바르지 않습니다.");
 
-    private final HttpStatus errorHttpStatus;
-    private final String errorMessage;
+    private final HttpStatus httpStatus;
+    private final String message;
 
-    AuthErrorCode(HttpStatus errorHttpStatus, String errorMessage) {
-        this.errorHttpStatus = errorHttpStatus;
-        this.errorMessage = errorMessage;
+    AuthErrorCode(HttpStatus httpStatus, String message) {
+        this.httpStatus = httpStatus;
+        this.message = message;
     }
 }

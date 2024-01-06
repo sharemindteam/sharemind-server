@@ -17,35 +17,35 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<GlobalExceptionResponse> catchAuthException(AuthException e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.status(e.getErrorCode())
-                .body(GlobalExceptionResponse.of(e.getErrorCode(), e.getMessage()));
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(GlobalExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
     }
 
     @ExceptionHandler(CustomerException.class)
     public ResponseEntity<GlobalExceptionResponse> catchCustomerException(CustomerException e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.status(e.getErrorCode())
-                .body(GlobalExceptionResponse.of(e.getErrorCode(), e.getMessage()));
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(GlobalExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GlobalExceptionResponse> catchMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(GlobalExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+                .body(GlobalExceptionResponse.of(HttpStatus.BAD_REQUEST.name(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<GlobalExceptionResponse> catchConstraintViolationException(ConstraintViolationException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(GlobalExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getConstraintViolations().stream().findFirst().get().getMessage()));
+                .body(GlobalExceptionResponse.of(HttpStatus.BAD_REQUEST.name(), e.getConstraintViolations().stream().findFirst().get().getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GlobalExceptionResponse> catchException(Exception e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(GlobalExceptionResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+                .body(GlobalExceptionResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.name(), e.getMessage()));
     }
 }
