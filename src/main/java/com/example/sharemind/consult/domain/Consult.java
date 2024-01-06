@@ -29,15 +29,18 @@ public class Consult extends BaseEntity {
     @JoinColumn(name = "counselor_id")
     private Counselor counselor;
 
+    @Column(nullable = false)
     private Long cost;
 
-    @Column(name = "is_paid")
+    @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
-    @Column(name = "refund_status")
+    @Column(name = "refund_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private RefundStatus refundStatus;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private ConsultType consultType;
 
     @OneToOne
@@ -51,4 +54,15 @@ public class Consult extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "realtime_id", unique = true)
     private RealtimeConsult realtimeConsult;
+
+    @Builder
+    public Consult(Customer customer, Counselor counselor, Long cost, ConsultType consultType) {
+        this.customer = customer;
+        this.counselor = counselor;
+        this.cost = cost;
+        this.consultType = consultType;
+
+        this.isPaid = false;
+        this.refundStatus = RefundStatus.NO_REFUND;
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.sharemind.global.config;
 
-import com.example.sharemind.customer.domain.Role;
 import com.example.sharemind.global.jwt.JwtAccessDeniedHandler;
 import com.example.sharemind.global.jwt.JwtAuthenticationEntryPoint;
 import com.example.sharemind.global.jwt.JwtAuthenticationFilter;
@@ -26,6 +25,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String ROLE_CUSTOMER = "CUSTOMER";
+
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -46,7 +47,7 @@ public class SecurityConfig {
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         requests -> requests.requestMatchers("/error", "/api/v1/auth/**").permitAll()
-                                .requestMatchers("/api/v1/customers/**").hasRole(Role.CUSTOMER.name())
+                                .requestMatchers("/api/v1/consults/**").hasRole(ROLE_CUSTOMER)
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer
