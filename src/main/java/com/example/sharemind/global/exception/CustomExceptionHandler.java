@@ -1,6 +1,7 @@
 package com.example.sharemind.global.exception;
 
 import com.example.sharemind.auth.exception.AuthException;
+import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.exception.CustomerException;
 import jakarta.validation.ConstraintViolationException;
@@ -31,6 +32,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(CounselorException.class)
     public ResponseEntity<CustomExceptionResponse> catchCounselorException(CounselorException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(ConsultException.class)
+    public ResponseEntity<CustomExceptionResponse> catchConsultException(ConsultException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
