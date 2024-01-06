@@ -12,40 +12,40 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class CustomExceptionHandler {
 
     @ExceptionHandler(AuthException.class)
-    public ResponseEntity<GlobalExceptionResponse> catchAuthException(AuthException e) {
+    public ResponseEntity<CustomExceptionResponse> catchAuthException(AuthException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(GlobalExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
     }
 
     @ExceptionHandler(CustomerException.class)
-    public ResponseEntity<GlobalExceptionResponse> catchCustomerException(CustomerException e) {
+    public ResponseEntity<CustomExceptionResponse> catchCustomerException(CustomerException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(GlobalExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<GlobalExceptionResponse> catchMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<CustomExceptionResponse> catchMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(GlobalExceptionResponse.of(HttpStatus.BAD_REQUEST.name(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+                .body(CustomExceptionResponse.of(HttpStatus.BAD_REQUEST.name(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<GlobalExceptionResponse> catchConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<CustomExceptionResponse> catchConstraintViolationException(ConstraintViolationException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(GlobalExceptionResponse.of(HttpStatus.BAD_REQUEST.name(), e.getConstraintViolations().stream().findFirst().get().getMessage()));
+                .body(CustomExceptionResponse.of(HttpStatus.BAD_REQUEST.name(), e.getConstraintViolations().stream().findFirst().get().getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<GlobalExceptionResponse> catchException(Exception e) {
+    public ResponseEntity<CustomExceptionResponse> catchException(Exception e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(GlobalExceptionResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.name(), e.getMessage()));
+                .body(CustomExceptionResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.name(), e.getMessage()));
     }
 }

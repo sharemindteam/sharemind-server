@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class GlobalExceptionResponse {
+public class CustomExceptionResponse {
 
     private final String errorName;
     private final String message;
     private final LocalDateTime timeStamp;
 
-    public static GlobalExceptionResponse of(String errorName, String message) {
-        return new GlobalExceptionResponse(errorName, message, LocalDateTime.now());
+    public static CustomExceptionResponse of(String errorName, String message) {
+        return new CustomExceptionResponse(errorName, message, LocalDateTime.now());
     }
 }
