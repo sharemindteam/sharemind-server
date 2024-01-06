@@ -28,6 +28,13 @@ public class CustomExceptionHandler {
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
     }
 
+    @ExceptionHandler(GlobalException.class)
+    public ResponseEntity<CustomExceptionResponse> catchGlobalException(GlobalException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomExceptionResponse> catchMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
