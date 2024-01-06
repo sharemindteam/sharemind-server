@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface AdminService {
     List<ConsultsGetUnpaidResponse> getUnpaidConsults();
+    void updateIsPaid(Long consultId);
 }
