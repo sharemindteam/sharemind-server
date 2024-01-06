@@ -4,6 +4,7 @@ import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.Bank;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultStyle;
+import com.example.sharemind.global.content.ConsultType;
 import jakarta.persistence.*;
 import java.util.Set;
 import lombok.*;
@@ -22,6 +23,18 @@ public class Counselor extends BaseEntity {
 
     @Column(name = "is_educated")
     private Boolean isEducated;
+
+    @ElementCollection(targetClass = ConsultCost.class, fetch = FetchType.LAZY)
+    @JoinTable(name = "costs", joinColumns = @JoinColumn(name = "counselor_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "consult_costs")
+    private Set<ConsultCost> consultCosts;
+
+    @ElementCollection(targetClass = ConsultType.class, fetch = FetchType.LAZY)
+    @JoinTable(name = "types", joinColumns = @JoinColumn(name = "counselor_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "consult_types")
+    private Set<ConsultType> consultTypes;
 
     @ElementCollection(targetClass = ConsultCategory.class, fetch = FetchType.LAZY)
     @JoinTable(name = "categories", joinColumns = @JoinColumn(name = "counselor_id"))
@@ -46,4 +59,10 @@ public class Counselor extends BaseEntity {
 
     @Column(name = "account_holder")
     private String accountHolder;
+
+    @Column(name = "total_review")
+    private Long totalReview;
+
+    @Column(name = "rating_average")
+    private Float ratingAverage;
 }
