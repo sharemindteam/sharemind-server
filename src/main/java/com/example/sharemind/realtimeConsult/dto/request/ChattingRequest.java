@@ -7,6 +7,5 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChattingRequest {
-    private String senderName;
     private String content;
 }
