@@ -5,6 +5,8 @@
 </head>
 <body>
 <h2>Select a Chat Room</h2>
+<div id="roomList">
+</div>
 <input type="text" id="chattingRoomId" placeholder="Enter Chat Room ID"/>
 <button onclick="enterChatRoom()">Enter Chat Room</button>
 <script>
@@ -21,6 +23,23 @@
             alert("Please enter a Chat Room ID.");
         }
     }
+
+    function loadRoomList() {
+        fetch('/channels?userId=' + userId + '&isCustomer=' + isCustomer)
+            .then(response => response.json())
+            .then(data => {
+                var roomList = document.getElementById('roomList');
+                var listHtml = '<ul>';
+                data.forEach(function (roomId) {
+                    listHtml += '<li>Room ' + roomId + '</li>';
+                });
+                listHtml += '</ul>';
+                roomList.innerHTML = listHtml;
+            })
+            .catch(error => console.error('Error loading room list:', error));
+    }
+
+    window.onload = loadRoomList;
 </script>
 </body>
 </html>
