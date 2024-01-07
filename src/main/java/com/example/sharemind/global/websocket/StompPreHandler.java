@@ -1,5 +1,8 @@
 package com.example.sharemind.global.websocket;
 
+import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.customer.application.CustomerService;
+import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,18 +18,31 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 @RequiredArgsConstructor
 @Configuration
 public class StompPreHandler implements ChannelInterceptor {
+
+    private final CustomerService customerService;
+    private final CounselorService counselorService;
+
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        if (accessor != null) {
+        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             String destination = accessor.getDestination();
-            if ("/chat".equals(destination) && StompCommand.CONNECT.equals(accessor.getCommand())) {
+            if ("/customerChat".equals(destination)) {
                 String userId = accessor.getFirstNativeHeader("userId");
-                if (userId != null)
-                // 세션 속성에 userId를 저장
-                {
-                    Objects.requireNonNull(accessor.getSessionAttributes()).put("userId", userId);
+                if (userId != null) {
+                    String customerNickname = customerService.getCustomerNickname(Long.parseLong(userId));
+                    Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
+                    sessionAttributes.put("customerId", userId);
+                    sessionAttributes.put("customerNickname", customerNickname);
+                }
+            } else if ("/counselorChat".equals(destination)) {
+                String userId = accessor.getFirstNativeHeader("userId");
+                if (userId != null) {
+                    String counselorNickName = counselorService.getCounselorNickname(Long.parseLong(userId));
+                    Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
+                    sessionAttributes.put("counselorId", userId);
+                    sessionAttributes.put("counselorNickname", counselorNickName);
                 }
             }
             return message;
