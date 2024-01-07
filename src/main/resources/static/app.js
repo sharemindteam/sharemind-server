@@ -5,23 +5,24 @@ var roomId = urlParams.get('room');
 var isCustomer = urlParams.get('customer') === 'true';
 
 function connect() {
-    // if (!isCustomer) {
-    //     console.log('Not a customer, skipping WebSocket connection.');
-    //     return;
-    // }
-    var socket = new SockJS('/chat');
+    var socket = isCustomer ? new SockJS('/customerChat') : new SockJS('/counselorChat');
     stompClient = Stomp.over(socket);
-    stompClient.connect({userId: userId}, function (frame) {
+    stompClient.connect({userId: userId, isCustomer: isCustomer}, function (frame) {
         console.log('Connected: ' + frame);
-        fetch('/channels?customerId=' + userId + '&isCustomer=' + isCustomer)
+        fetch('/channels?userId=' + userId + '&isCustomer=' + isCustomer)
             .then(response => response.json())
             .then(channelIds => {
-                // 가져온 채널 ID 목록으로 구독
                 channelIds.forEach(function (channelId) {
-                    stompClient.subscribe('/queue/chattings/' + channelId, function (chatMessage) {
+                   stompClient.subscribe('/queue/chattings/customers/' + channelId, function (chatMessage) {
                         var messageData = JSON.parse(chatMessage.body);
                         if (roomId == null || roomId === channelId.toString()) {
-                            showMessage(messageData.senderName, messageData.content);
+                            showMessage(messageData.senderName, messageData.content, messageData.sendTime);
+                        }
+                    });
+                    stompClient.subscribe('/queue/chattings/counselors/' + channelId, function (chatMessage) {
+                        var messageData = JSON.parse(chatMessage.body);
+                        if (roomId == null || roomId === channelId.toString()) {
+                            showMessage(messageData.senderName, messageData.content, messageData.sendTime);
                         }
                     });
                 });
@@ -37,20 +38,19 @@ function disconnect() {
 }
 
 function sendMessage() {
-    var name = document.getElementById('name').value;
     var messageContent = document.getElementById('message').value;
-    if (name && messageContent) {
+    if (messageContent) {
         var chatMessage = {
-            senderName: name,
             content: messageContent
         };
-        stompClient.send("/app/chattings/" + roomId + "/messages", {}, JSON.stringify(chatMessage));
+        var destination = isCustomer ? "/app/chattings/customers/" + roomId : "/app/chattings/counselors/" + roomId;
+        stompClient.send(destination, {}, JSON.stringify(chatMessage));
     }
 }
 
-function showMessage(senderName, message) {
+function showMessage(senderName, message, sendTime) {
     var chat = document.getElementById('chat');
-    var text = document.createTextNode(senderName + ": " + message);
+    var text = document.createTextNode(senderName + ": " + message + " (" + sendTime + ")");
     var p = document.createElement('p');
     p.appendChild(text);
     chat.appendChild(p);
