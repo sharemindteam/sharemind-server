@@ -18,35 +18,30 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 @RequiredArgsConstructor
 @Configuration
 public class StompPreHandler implements ChannelInterceptor {
-
     private final CustomerService customerService;
     private final CounselorService counselorService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String destination = accessor.getDestination();
-            if ("/customerChat".equals(destination)) {
-                String userId = accessor.getFirstNativeHeader("userId");
-                if (userId != null) {
-                    String customerNickname = customerService.getCustomerNickname(Long.parseLong(userId));
-                    Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
-                    sessionAttributes.put("customerId", userId);
-                    sessionAttributes.put("customerNickname", customerNickname);
-                }
-            } else if ("/counselorChat".equals(destination)) {
-                String userId = accessor.getFirstNativeHeader("userId");
-                if (userId != null) {
-                    String counselorNickName = counselorService.getCounselorNickname(Long.parseLong(userId));
-                    Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
-                    sessionAttributes.put("counselorId", userId);
-                    sessionAttributes.put("counselorNickname", counselorNickName);
-                }
+            String userId = accessor.getFirstNativeHeader("userId");
+            boolean isCustomer = Boolean.parseBoolean(accessor.getFirstNativeHeader("isCustomer"));
+            System.out.println("userId : " + userId + "boolean : " + isCustomer);
+            if (userId != null) {
+                String nickname = isCustomer ? customerService.getCustomerNickname(Long.parseLong(userId)) :
+                        counselorService.getCounselorNickname(Long.parseLong(userId));
+                System.out.println("nickName : " + nickname);
+                Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
+                sessionAttributes.put("userId", userId);
+                sessionAttributes.put("userNickname", nickname);
+                accessor.setSessionAttributes(sessionAttributes);
+
+                log.info("Session attributes after setting: " + sessionAttributes.toString());
             }
             return message;
         }
-        return null;
+        return message;
     }
 }
