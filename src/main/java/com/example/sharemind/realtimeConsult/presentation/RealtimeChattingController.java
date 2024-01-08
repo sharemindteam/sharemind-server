@@ -29,7 +29,7 @@ public class RealtimeChattingController {
                              SimpMessageHeaderAccessor headerAccessor) {
         String customerNickname = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes())
                 .get("userNickname");
-        ChattingResponse chattingResponse = ChattingResponse.from(chattingRequest.getContent(), customerNickname);
+        ChattingResponse chattingResponse = ChattingResponse.of(chattingRequest.getContent(), customerNickname);
         simpMessagingTemplate.convertAndSend("/queue/chattings/customers/" + chattingRoomId, chattingResponse);
         log.info("Message [{}] send by member: {} to chatting room: {}", chattingRequest.getContent(),
                 customerNickname, chattingRoomId);
@@ -40,7 +40,7 @@ public class RealtimeChattingController {
                               SimpMessageHeaderAccessor headerAccessor) {
         String counselorNickname = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes())
                 .get("userNickname");
-        ChattingResponse chattingResponse = ChattingResponse.from(chattingRequest.getContent(), counselorNickname);
+        ChattingResponse chattingResponse = ChattingResponse.of(chattingRequest.getContent(), counselorNickname);
         simpMessagingTemplate.convertAndSend("/queue/chattings/counselors/" + chattingRoomId, chattingResponse);
         log.info("Message [{}] send by member: {} to chatting room: {}", chattingRequest.getContent(),
                 counselorNickname, chattingRoomId);

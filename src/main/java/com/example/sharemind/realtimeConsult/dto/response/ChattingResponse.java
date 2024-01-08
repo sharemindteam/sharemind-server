@@ -19,7 +19,7 @@ public class ChattingResponse {
         this.sendTime = sendTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    public static ChattingResponse from(String content, String senderName) {
+    public static ChattingResponse of(String content, String senderName) {
         return new ChattingResponse(senderName, content, LocalDateTime.now());
     }
 }
