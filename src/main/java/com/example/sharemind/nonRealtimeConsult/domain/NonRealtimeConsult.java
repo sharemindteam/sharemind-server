@@ -6,7 +6,6 @@ import com.example.sharemind.nonRealtimeConsult.content.NonRealtimeConsultStatus
 import jakarta.persistence.*;
 import lombok.*;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 public class NonRealtimeConsult extends BaseEntity {
@@ -17,11 +16,15 @@ public class NonRealtimeConsult extends BaseEntity {
     private Long nonRealtimeId;
 
     @Column(name = "consult_category")
+    @Enumerated(EnumType.STRING)
     private ConsultCategory consultCategory;
 
-    @Column(name = "read_id")
-    private Long readId;
-
-    @Column(name = "consult_status")
+    @Column(name = "consult_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private NonRealtimeConsultStatus consultStatus;
+
+    @Builder
+    public NonRealtimeConsult() {
+        this.consultStatus = NonRealtimeConsultStatus.WAITING;
+    }
 }
