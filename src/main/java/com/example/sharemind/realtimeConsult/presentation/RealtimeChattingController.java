@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-public class ChatController {
+public class RealtimeChattingController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final RealtimeConsultService realtimeConsultService;
