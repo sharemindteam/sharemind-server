@@ -27,8 +27,10 @@ public class ConsultServiceImpl implements ConsultService {
     public ConsultCreateResponse createConsult(ConsultCreateRequest consultCreateRequest, Customer customer) {
 
         // TODO 프로필 수정 심사 중인지도 확인해야할 것 같음
-        Counselor counselor = counselorRepository.findByCounselorIdAndIsActivatedIsTrue(consultCreateRequest.getCounselorId())
-                .orElseThrow(() -> new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND, consultCreateRequest.getCounselorId().toString()));
+        Counselor counselor = counselorRepository.findByCounselorIdAndIsActivatedIsTrue(
+                        consultCreateRequest.getCounselorId())
+                .orElseThrow(() -> new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND,
+                        consultCreateRequest.getCounselorId().toString()));
 
         ConsultType consultType = ConsultType.getConsultTypeByName(consultCreateRequest.getConsultTypeName());
         Long cost = counselor.getConsultCost(consultType);

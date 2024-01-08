@@ -19,9 +19,6 @@ public class NonRealtimeMessage extends BaseEntity {
     @JoinColumn(name = "non_realtime_id")
     private NonRealtimeConsult nonRealtimeConsult;
 
-    @Column(name = "sender_id")
-    private Long senderId;
-
     @Column(name = "is_customer")
     private Boolean isCustomer;
 
