@@ -6,5 +6,6 @@ import lombok.Getter;
 public enum Role {
 
     ROLE_CUSTOMER,
-    ROLE_COUNSELOR
+    ROLE_COUNSELOR,
+    ROLE_ADMIN
 }

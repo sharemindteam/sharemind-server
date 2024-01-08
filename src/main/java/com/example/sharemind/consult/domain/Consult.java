@@ -65,4 +65,8 @@ public class Consult extends BaseEntity {
         this.isPaid = false;
         this.refundStatus = RefundStatus.NO_REFUND;
     }
+
+    public void updateIsPaid() {
+        this.isPaid = true;
+    }
 }
