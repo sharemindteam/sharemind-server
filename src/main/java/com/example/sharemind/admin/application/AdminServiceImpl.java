@@ -1,6 +1,7 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
+import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.nonRealtimeConsult.application.NonRealtimeConsultService;
 import com.example.sharemind.nonRealtimeConsult.domain.NonRealtimeConsult;
@@ -20,7 +21,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<ConsultsGetUnpaidResponse> getUnpaidConsults() {
-        return consultRepository.findAllByIsPaidIsFalseAndIsActivatedIsTrue().stream()
+        return consultService.getUnpaidConsults().stream()
                 .map(ConsultsGetUnpaidResponse::of)
                 .toList();
     }
@@ -28,9 +29,7 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public void updateIsPaid(Long consultId) {
 
-        Consult consult = consultRepository.findByConsultIdAndIsActivatedIsTrue(consultId)
-                .orElseThrow(() -> new ConsultException(ConsultErrorCode.CONSULT_NOT_FOUND, consultId.toString()));
-        consult.updateIsPaid();
+        Consult consult = consultService.getConsultByConsultId(consultId);
 
         // TODO 상담 유형에 따라 비실시간/실시간 상담 생성
         switch (consult.getConsultType()) {
