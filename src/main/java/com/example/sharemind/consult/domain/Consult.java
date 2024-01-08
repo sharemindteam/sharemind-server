@@ -1,5 +1,7 @@
 package com.example.sharemind.consult.domain;
 
+import com.example.sharemind.consult.exception.ConsultErrorCode;
+import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultType;
@@ -66,7 +68,16 @@ public class Consult extends BaseEntity {
         this.refundStatus = RefundStatus.NO_REFUND;
     }
 
-    public void updateIsPaid() {
+    public void updateIsPaidAndNonRealtimeConsult(NonRealtimeConsult nonRealtimeConsult) {
+        validateNonRealtimeConsult();
+
         this.isPaid = true;
+        this.nonRealtimeConsult = nonRealtimeConsult;
+    }
+
+    private void validateNonRealtimeConsult() {
+        if (!this.consultType.equals(ConsultType.NON_REALTIME)) {
+            throw new ConsultException(ConsultErrorCode.CONSULT_TYPE_MISMATCH);
+        }
     }
 }
