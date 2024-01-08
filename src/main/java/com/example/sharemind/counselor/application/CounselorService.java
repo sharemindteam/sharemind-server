@@ -1,5 +1,7 @@
 package com.example.sharemind.counselor.application;
 
+import com.example.sharemind.counselor.domain.Counselor;
+
 public interface CounselorService {
-    String getCounselorNickname(Long counselorId);
+    Counselor getCounselorByCounselorId(Long counselorId);
 }

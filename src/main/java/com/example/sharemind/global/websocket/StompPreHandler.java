@@ -29,8 +29,9 @@ public class StompPreHandler implements ChannelInterceptor {
             String userId = accessor.getFirstNativeHeader("userId");
             boolean isCustomer = Boolean.parseBoolean(accessor.getFirstNativeHeader("isCustomer"));
             if (userId != null) {
-                String nickname = isCustomer ? customerService.getCustomerNickname(Long.parseLong(userId)) :
-                        counselorService.getCounselorNickname(Long.parseLong(userId));
+                String nickname =
+                        isCustomer ? customerService.getCustomerByCustomerId(Long.parseLong(userId)).getNickname() :
+                                counselorService.getCounselorByCounselorId(Long.parseLong(userId)).getNickname();
                 Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
                 sessionAttributes.put("userId", userId);
                 sessionAttributes.put("userNickname", nickname);

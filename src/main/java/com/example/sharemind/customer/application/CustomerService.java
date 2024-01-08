@@ -1,5 +1,7 @@
 package com.example.sharemind.customer.application;
 
+import com.example.sharemind.customer.domain.Customer;
+
 public interface CustomerService {
-    String getCustomerNickname(Long customerId);
+    Customer getCustomerByCustomerId(Long customerId);
 }

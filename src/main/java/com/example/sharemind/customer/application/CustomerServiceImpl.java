@@ -16,10 +16,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
 
     @Override
-    public String getCustomerNickname(Long customerId) {
-        Customer customer = customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
+    public Customer getCustomerByCustomerId(Long customerId) {
+        return customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
                 .orElseThrow(() -> new CustomerException(
                         CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
-        return customer.getNickname();
     }
 }

@@ -16,10 +16,9 @@ public class CounselorServiceImpl implements CounselorService {
     private final CounselorRepository counselorRepository;
 
     @Override
-    public String getCounselorNickname(Long counselorId) {
-        Counselor counselor = counselorRepository.findByCounselorIdAndIsActivatedIsTrue(counselorId)
+    public Counselor getCounselorByCounselorId(Long counselorId) {
+        return counselorRepository.findByCounselorIdAndIsActivatedIsTrue(counselorId)
                 .orElseThrow(() -> new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND,
                         counselorId.toString()));
-        return counselor.getNickname();
     }
 }
