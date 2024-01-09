@@ -1,6 +1,8 @@
 package com.example.sharemind.nonRealtimeConsult.application;
 
 import com.example.sharemind.nonRealtimeConsult.domain.NonRealtimeConsult;
+import com.example.sharemind.nonRealtimeConsult.exception.NonRealtimeConsultErrorCode;
+import com.example.sharemind.nonRealtimeConsult.exception.NonRealtimeConsultException;
 import com.example.sharemind.nonRealtimeConsult.repository.NonRealtimeConsultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,5 +22,12 @@ public class NonRealtimeConsultServiceImpl implements NonRealtimeConsultService 
         nonRealtimeConsultRepository.save(nonRealtimeConsult);
 
         return nonRealtimeConsult;
+    }
+
+    @Override
+    public NonRealtimeConsult getNonRealtimeConsultByNonReatimeConsultId(Long nonRealtimeConsultId) {
+        return nonRealtimeConsultRepository.findByNonRealtimeIdAndIsActivatedIsTrue(nonRealtimeConsultId)
+                .orElseThrow(() -> new NonRealtimeConsultException(NonRealtimeConsultErrorCode.NON_REALTIME_CONSULT_NOT_FOUND,
+                        nonRealtimeConsultId.toString()));
     }
 }
