@@ -1,8 +1,8 @@
-package com.example.sharemind.nonRealtimeMessage.dto.request;
+package com.example.sharemind.letterMessage.dto.request;
 
 import com.example.sharemind.letter.domain.Letter;
-import com.example.sharemind.nonRealtimeMessage.domain.LetterMessage;
-import com.example.sharemind.nonRealtimeMessage.content.LetterMessageType;
+import com.example.sharemind.letterMessage.domain.LetterMessage;
+import com.example.sharemind.letterMessage.content.LetterMessageType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

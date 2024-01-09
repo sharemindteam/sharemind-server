@@ -1,8 +1,8 @@
-package com.example.sharemind.nonRealtimeMessage.domain;
+package com.example.sharemind.letterMessage.domain;
 
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.letter.domain.Letter;
-import com.example.sharemind.nonRealtimeMessage.content.LetterMessageType;
+import com.example.sharemind.letterMessage.content.LetterMessageType;
 import jakarta.persistence.*;
 import lombok.*;
 

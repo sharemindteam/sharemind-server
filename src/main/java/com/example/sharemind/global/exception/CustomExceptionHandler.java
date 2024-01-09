@@ -5,7 +5,7 @@ import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.letter.exception.LetterException;
-import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageException;
+import com.example.sharemind.letterMessage.exception.LetterMessageException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
