@@ -48,7 +48,7 @@ public class NonRealtimeConsult extends BaseEntity {
                 }
             }
             case FIRST_REPLY, SECOND_REPLY -> {
-                if (!this.consult.getCounselor().getCounselorId().equals(customer.getCounselor().getCounselorId())) {
+                if ((customer.getCounselor() == null) || (!this.consult.getCounselor().getCounselorId().equals(customer.getCounselor().getCounselorId()))) {
                     throw new NonRealtimeMessageException(NonRealtimeMessageErrorCode.MESSAGE_MODIFY_DENIED);
                 }
             }
