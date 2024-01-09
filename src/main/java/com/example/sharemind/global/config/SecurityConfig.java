@@ -1,6 +1,5 @@
 package com.example.sharemind.global.config;
 
-import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.global.jwt.JwtAccessDeniedHandler;
 import com.example.sharemind.global.jwt.JwtAuthenticationEntryPoint;
 import com.example.sharemind.global.jwt.JwtAuthenticationFilter;
@@ -26,8 +25,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String ROLE_CUSTOMER = Role.ROLE_CUSTOMER.name();
-    private static final String ROLE_ADMIN = Role.ROLE_ADMIN.name();
+    private static final String ROLE_CUSTOMER = "CUSTOMER";
+    private static final String ROLE_ADMIN = "ADMIN";
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
