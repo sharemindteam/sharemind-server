@@ -72,12 +72,17 @@ public class Consult extends BaseEntity {
         validateNonRealtimeConsult();
 
         this.isPaid = true;
-        this.nonRealtimeConsult = nonRealtimeConsult;
+        setNonRealtimeConsult(nonRealtimeConsult);
     }
 
     private void validateNonRealtimeConsult() {
         if (!this.consultType.equals(ConsultType.NON_REALTIME)) {
             throw new ConsultException(ConsultErrorCode.CONSULT_TYPE_MISMATCH);
         }
+    }
+
+    private void setNonRealtimeConsult(NonRealtimeConsult nonRealtimeConsult) {
+        this.nonRealtimeConsult = nonRealtimeConsult;
+        nonRealtimeConsult.setConsult(this);
     }
 }

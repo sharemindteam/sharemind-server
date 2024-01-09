@@ -1,8 +1,13 @@
 package com.example.sharemind.nonRealtimeConsult.domain;
 
+import com.example.sharemind.consult.domain.Consult;
+import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.nonRealtimeConsult.content.NonRealtimeConsultStatus;
+import com.example.sharemind.nonRealtimeMessage.domain.NonRealtimeMessageType;
+import com.example.sharemind.nonRealtimeMessage.exception.NonRealtimeMessageErrorCode;
+import com.example.sharemind.nonRealtimeMessage.exception.NonRealtimeMessageException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,8 +28,15 @@ public class NonRealtimeConsult extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NonRealtimeConsultStatus consultStatus;
 
+    @OneToOne(mappedBy = "nonRealtimeConsult")
+    private Consult consult;
+
     @Builder
     public NonRealtimeConsult() {
         this.consultStatus = NonRealtimeConsultStatus.WAITING;
+    }
+
+    public void setConsult(Consult consult) {
+        this.consult = consult;
     }
 }
