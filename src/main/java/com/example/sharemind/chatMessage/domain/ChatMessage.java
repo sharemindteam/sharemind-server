@@ -1,14 +1,14 @@
-package com.example.sharemind.realtimeMessage.domain;
+package com.example.sharemind.chatMessage.domain;
 
 import com.example.sharemind.global.common.BaseEntity;
-import com.example.sharemind.realtimeConsult.domain.RealtimeConsult;
+import com.example.sharemind.chat.domain.Chat;
 import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class RealtimeMessage extends BaseEntity {
+public class ChatMessage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +17,7 @@ public class RealtimeMessage extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "realtime_id")
-    private RealtimeConsult realtimeConsult;
+    private Chat chat;
 
     @Column(name = "is_customer")
     private Boolean isCustomer;

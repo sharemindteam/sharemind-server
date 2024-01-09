@@ -1,4 +1,4 @@
-package com.example.sharemind.realtimeConsult.application;
+package com.example.sharemind.chat.application;
 
 import com.example.sharemind.consult.repository.ConsultRepository;
 import java.util.List;
@@ -9,16 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class RealtimeConsultServiceImpl implements RealtimeConsultService {
+public class ChatServiceImpl implements ChatService {
 
     private final ConsultRepository consultRepository;
 
     @Override
-    public List<Long> getRealtimeConsult(Long userId, Boolean isCustomer) {
+    public List<Long> getChat(Long userId, Boolean isCustomer) {
         if (isCustomer) {
-            return consultRepository.findRealtimeConsultIdsByCustomerId(userId);
+            return consultRepository.findChatIdsByCustomerId(userId);
         } else {
-            return consultRepository.findRealtimeConsultIdsByCounselorId(userId);
+            return consultRepository.findChatIdsByCounselorId(userId);
         }
     }
 }

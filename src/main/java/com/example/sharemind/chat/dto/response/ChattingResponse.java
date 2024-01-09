@@ -1,4 +1,4 @@
-package com.example.sharemind.realtimeConsult.dto.response;
+package com.example.sharemind.chat.dto.response;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

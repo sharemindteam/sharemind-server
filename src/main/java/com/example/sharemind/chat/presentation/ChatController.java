@@ -1,8 +1,8 @@
-package com.example.sharemind.realtimeConsult.presentation;
+package com.example.sharemind.chat.presentation;
 
-import com.example.sharemind.realtimeConsult.application.RealtimeConsultService;
-import com.example.sharemind.realtimeConsult.dto.request.ChattingRequest;
-import com.example.sharemind.realtimeConsult.dto.response.ChattingResponse;
+import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.chat.dto.request.ChattingRequest;
+import com.example.sharemind.chat.dto.response.ChattingResponse;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-public class RealtimeChattingController {
+public class ChatController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final RealtimeConsultService realtimeConsultService;
+    private final ChatService chatService;
 
     @MessageMapping("/chattings/customers/{chattingRoomId}")
     public void chatCustomer(@DestinationVariable Long chattingRoomId, ChattingRequest chattingRequest,
@@ -48,6 +48,6 @@ public class RealtimeChattingController {
 
     @GetMapping("/channels") //todo: 채팅 데모용을 위한 api 삭제해야함
     public ResponseEntity<List<Long>> getChannelList(@RequestParam Long userId, @RequestParam Boolean isCustomer) {
-        return ResponseEntity.ok(realtimeConsultService.getRealtimeConsult(userId, isCustomer));
+        return ResponseEntity.ok(chatService.getChat(userId, isCustomer));
     }
 }

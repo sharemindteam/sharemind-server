@@ -14,9 +14,9 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
 
     List<Consult> findAllByIsPaidIsFalseAndIsActivatedIsTrue();
 
-    @Query("SELECT realtime.realtimeId FROM Consult c JOIN c.realtimeConsult realtime WHERE c.customer.customerId = :customerId")
-    List<Long> findRealtimeConsultIdsByCustomerId(Long customerId); //todo: 쿼리 최적화 필요
+    @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat WHERE c.customer.customerId = :customerId")
+    List<Long> findChatIdsByCustomerId(Long customerId); //todo: 쿼리 최적화 필요
 
-    @Query("SELECT realtime.realtimeId FROM Consult c JOIN c.realtimeConsult realtime WHERE c.counselor.counselorId = :counselorId")
-    List<Long> findRealtimeConsultIdsByCounselorId(Long counselorId);
+    @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat WHERE c.counselor.counselorId = :counselorId")
+    List<Long> findChatIdsByCounselorId(Long counselorId);
 }

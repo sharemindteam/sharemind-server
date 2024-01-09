@@ -7,7 +7,7 @@ import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.consult.content.RefundStatus;
 import com.example.sharemind.letter.domain.Letter;
-import com.example.sharemind.realtimeConsult.domain.RealtimeConsult;
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.review.domain.Review;
 import com.example.sharemind.customer.domain.Customer;
 import jakarta.persistence.*;
@@ -54,8 +54,8 @@ public class Consult extends BaseEntity {
     private Letter letter;
 
     @OneToOne
-    @JoinColumn(name = "realtime_id", unique = true)
-    private RealtimeConsult realtimeConsult;
+    @JoinColumn(name = "chat_id", unique = true)
+    private Chat chat;
 
     @Builder
     public Consult(Customer customer, Counselor counselor, Long cost, ConsultType consultType) {

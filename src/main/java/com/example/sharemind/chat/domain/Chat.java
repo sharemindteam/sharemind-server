@@ -1,7 +1,7 @@
-package com.example.sharemind.realtimeConsult.domain;
+package com.example.sharemind.chat.domain;
 
 import com.example.sharemind.global.common.BaseEntity;
-import com.example.sharemind.realtimeConsult.content.RealtimeConsultStatus;
+import com.example.sharemind.chat.content.ChatStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -9,18 +9,18 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class RealtimeConsult extends BaseEntity {
+public class Chat extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "realtime_id")
-    private Long realtimeId;
+    @Column(name = "chat_id")
+    private Long chatId;
 
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 
     @Column(name = "consult_status")
-    private RealtimeConsultStatus consultStatus;
+    private ChatStatus consultStatus;
 
     @Column(name = "read_id")
     private Long readId;

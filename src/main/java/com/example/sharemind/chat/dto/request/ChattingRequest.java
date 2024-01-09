@@ -1,4 +1,4 @@
-package com.example.sharemind.realtimeConsult.dto.request;
+package com.example.sharemind.chat.dto.request;
 
 import lombok.*;
 
