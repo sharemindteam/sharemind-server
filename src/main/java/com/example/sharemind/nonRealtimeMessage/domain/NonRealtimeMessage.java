@@ -19,8 +19,9 @@ public class NonRealtimeMessage extends BaseEntity {
     @JoinColumn(name = "non_realtime_id")
     private NonRealtimeConsult nonRealtimeConsult;
 
-    @Column(name = "is_customer")
-    private Boolean isCustomer;
+    @Column(name = "message_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private NonRealtimeMessageType messageType;
 
     @Column(columnDefinition = "TEXT")
     private String content;
