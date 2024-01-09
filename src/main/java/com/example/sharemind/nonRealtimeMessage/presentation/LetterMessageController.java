@@ -1,8 +1,8 @@
 package com.example.sharemind.nonRealtimeMessage.presentation;
 
 import com.example.sharemind.global.jwt.CustomUserDetails;
-import com.example.sharemind.nonRealtimeMessage.application.NonRealtimeMessageService;
-import com.example.sharemind.nonRealtimeMessage.dto.request.NonRealtimeMessageCreateRequest;
+import com.example.sharemind.nonRealtimeMessage.application.LetterMessageService;
+import com.example.sharemind.nonRealtimeMessage.dto.request.LetterMessageCreateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/nonRealtimeMessages")
 @RequiredArgsConstructor
-public class NonRealtimeMessageController {
+public class LetterMessageController {
 
-    private final NonRealtimeMessageService nonRealtimeMessageService;
+    private final LetterMessageService letterMessageService;
 
     @PostMapping
-    public ResponseEntity<Void> createNonRealtimeMessage(@Valid @RequestBody NonRealtimeMessageCreateRequest nonRealtimeMessageCreateRequest,
+    public ResponseEntity<Void> createLetterMessage(@Valid @RequestBody LetterMessageCreateRequest letterMessageCreateRequest,
                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        nonRealtimeMessageService.createNonRealtimeMessage(nonRealtimeMessageCreateRequest, customUserDetails.getCustomer());
+        letterMessageService.createLetterMessage(letterMessageCreateRequest, customUserDetails.getCustomer());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

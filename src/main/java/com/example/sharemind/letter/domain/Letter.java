@@ -1,24 +1,24 @@
-package com.example.sharemind.nonRealtimeConsult.domain;
+package com.example.sharemind.letter.domain;
 
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
-import com.example.sharemind.nonRealtimeConsult.content.NonRealtimeConsultStatus;
-import com.example.sharemind.nonRealtimeMessage.content.NonRealtimeMessageType;
-import com.example.sharemind.nonRealtimeMessage.exception.NonRealtimeMessageErrorCode;
-import com.example.sharemind.nonRealtimeMessage.exception.NonRealtimeMessageException;
+import com.example.sharemind.letter.content.LetterStatus;
+import com.example.sharemind.nonRealtimeMessage.content.LetterMessageType;
+import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageErrorCode;
+import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageException;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
 @Entity
-public class NonRealtimeConsult extends BaseEntity {
+public class Letter extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "non_realtime_id")
-    private Long nonRealtimeId;
+    @Column(name = "letter_id")
+    private Long letterId;
 
     @Column(name = "consult_category")
     @Enumerated(EnumType.STRING)
@@ -26,30 +26,30 @@ public class NonRealtimeConsult extends BaseEntity {
 
     @Column(name = "consult_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private NonRealtimeConsultStatus consultStatus;
+    private LetterStatus consultStatus;
 
-    @OneToOne(mappedBy = "nonRealtimeConsult")
+    @OneToOne(mappedBy = "letter")
     private Consult consult;
 
     @Builder
-    public NonRealtimeConsult() {
-        this.consultStatus = NonRealtimeConsultStatus.WAITING;
+    public Letter() {
+        this.consultStatus = LetterStatus.WAITING;
     }
 
     public void setConsult(Consult consult) {
         this.consult = consult;
     }
 
-    public void checkAuthority(NonRealtimeMessageType messageType, Customer customer) {
+    public void checkAuthority(LetterMessageType messageType, Customer customer) {
         switch (messageType) {
             case FIRST_QUESTION, SECOND_QUESTION -> {
                 if (!this.consult.getCustomer().getCustomerId().equals(customer.getCustomerId())) {
-                    throw new NonRealtimeMessageException(NonRealtimeMessageErrorCode.MESSAGE_MODIFY_DENIED);
+                    throw new LetterMessageException(LetterMessageErrorCode.MESSAGE_MODIFY_DENIED);
                 }
             }
             case FIRST_REPLY, SECOND_REPLY -> {
                 if ((customer.getCounselor() == null) || (!this.consult.getCounselor().getCounselorId().equals(customer.getCounselor().getCounselorId()))) {
-                    throw new NonRealtimeMessageException(NonRealtimeMessageErrorCode.MESSAGE_MODIFY_DENIED);
+                    throw new LetterMessageException(LetterMessageErrorCode.MESSAGE_MODIFY_DENIED);
                 }
             }
         }

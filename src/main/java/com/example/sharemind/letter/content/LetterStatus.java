@@ -1,9 +1,9 @@
-package com.example.sharemind.nonRealtimeConsult.content;
+package com.example.sharemind.letter.content;
 
 import lombok.Getter;
 
 @Getter
-public enum NonRealtimeConsultStatus {
+public enum LetterStatus {
     WAITING("상담 대기", "질문 대기"),
     FIRST_ASKING("답변 대기", "질문 도착"),
     FIRST_ANSWER("답변 도착", "질문 대기"),
@@ -14,7 +14,7 @@ public enum NonRealtimeConsultStatus {
     private final String customerDisplayName;
     private final String counselorDisplayName;
 
-    NonRealtimeConsultStatus(String customerDisplayName, String counselorDisplayName) {
+    LetterStatus(String customerDisplayName, String counselorDisplayName) {
         this.customerDisplayName = customerDisplayName;
         this.counselorDisplayName = counselorDisplayName;
     }

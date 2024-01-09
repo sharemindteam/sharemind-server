@@ -5,8 +5,8 @@ import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.exception.ConsultErrorCode;
 import com.example.sharemind.consult.exception.ConsultException;
-import com.example.sharemind.nonRealtimeConsult.application.NonRealtimeConsultService;
-import com.example.sharemind.nonRealtimeConsult.domain.NonRealtimeConsult;
+import com.example.sharemind.letter.application.LetterService;
+import com.example.sharemind.letter.domain.Letter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,7 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService {
 
     private final ConsultService consultService;
-    private final NonRealtimeConsultService nonRealtimeConsultService;
+    private final LetterService letterService;
 
     @Override
     public List<ConsultsGetUnpaidResponse> getUnpaidConsults() {
@@ -39,10 +39,10 @@ public class AdminServiceImpl implements AdminService {
         // TODO 상담 유형에 따라 비실시간/실시간 상담 생성
         switch (consult.getConsultType()) {
             // case REALTIME -> consult.updateIsPaidAndRealtimeConsult(realtimeConsult)
-            case NON_REALTIME -> {
-                NonRealtimeConsult nonRealtimeConsult = nonRealtimeConsultService.createNonRealtimeConsult();
+            case LETTER -> {
+                Letter letter = letterService.createLetter();
 
-                consult.updateIsPaidAndNonRealtimeConsult(nonRealtimeConsult);
+                consult.updateIsPaidAndLetter(letter);
             }
         }
     }
