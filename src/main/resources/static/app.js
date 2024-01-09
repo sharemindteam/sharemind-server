@@ -1,3 +1,4 @@
+//static 안 파일은 전체 삭제 예정
 var stompClient = null;
 var urlParams = new URLSearchParams(window.location.search);
 var userId = urlParams.get('userId');
@@ -13,13 +14,13 @@ function connect() {
             .then(response => response.json())
             .then(channelIds => {
                 channelIds.forEach(function (channelId) {
-                   stompClient.subscribe('/queue/chattings/customers/' + channelId, function (chatMessage) {
+                    stompClient.subscribe('/queue/demo/chattings/customers/' + channelId, function (chatMessage) {
                         var messageData = JSON.parse(chatMessage.body);
                         if (roomId == null || roomId === channelId.toString()) {
                             showMessage(messageData.senderName, messageData.content, messageData.sendTime);
                         }
                     });
-                    stompClient.subscribe('/queue/chattings/counselors/' + channelId, function (chatMessage) {
+                    stompClient.subscribe('/queue/demo/chattings/counselors/' + channelId, function (chatMessage) {
                         var messageData = JSON.parse(chatMessage.body);
                         if (roomId == null || roomId === channelId.toString()) {
                             showMessage(messageData.senderName, messageData.content, messageData.sendTime);
@@ -43,7 +44,7 @@ function sendMessage() {
         var chatMessage = {
             content: messageContent
         };
-        var destination = isCustomer ? "/app/chattings/customers/" + roomId : "/app/chattings/counselors/" + roomId;
+        var destination = isCustomer ? "/app/demo/chattings/customers/" + roomId : "/app/demo/chattings/counselors/" + roomId;
         stompClient.send(destination, {}, JSON.stringify(chatMessage));
     }
 }
