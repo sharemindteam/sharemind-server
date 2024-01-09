@@ -4,6 +4,8 @@ import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.exception.CustomerException;
+import com.example.sharemind.letter.exception.LetterException;
+import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,6 +41,20 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ConsultException.class)
     public ResponseEntity<CustomExceptionResponse> catchConsultException(ConsultException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(LetterException.class)
+    public ResponseEntity<CustomExceptionResponse> catchLetterException(LetterException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(LetterMessageException.class)
+    public ResponseEntity<CustomExceptionResponse> catchLetterMessageException(LetterMessageException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));

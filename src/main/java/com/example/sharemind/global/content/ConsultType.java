@@ -8,8 +8,8 @@ import java.util.Arrays;
 
 @Getter
 public enum ConsultType {
-    REALTIME("채팅"),
-    NON_REALTIME("편지");
+    CHAT("채팅"),
+    LETTER("편지");
 
     private final String displayName;
 

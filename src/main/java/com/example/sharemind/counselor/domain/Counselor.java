@@ -1,11 +1,12 @@
 package com.example.sharemind.counselor.domain;
 
+import com.example.sharemind.counselor.content.ConsultCost;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.Bank;
 import com.example.sharemind.global.content.ConsultCategory;
-import com.example.sharemind.global.content.ConsultStyle;
+import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.global.content.ConsultType;
 import jakarta.persistence.*;
 import java.util.Set;

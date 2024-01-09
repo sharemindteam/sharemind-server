@@ -1,10 +1,12 @@
 package com.example.sharemind.consult.domain;
 
+import com.example.sharemind.consult.exception.ConsultErrorCode;
+import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultType;
-import com.example.sharemind.global.content.RefundStatus;
-import com.example.sharemind.nonRealtimeConsult.domain.NonRealtimeConsult;
+import com.example.sharemind.consult.content.RefundStatus;
+import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.realtimeConsult.domain.RealtimeConsult;
 import com.example.sharemind.review.domain.Review;
 import com.example.sharemind.customer.domain.Customer;
@@ -48,8 +50,8 @@ public class Consult extends BaseEntity {
     private Review review;
 
     @OneToOne
-    @JoinColumn(name = "non_realtime_id", unique = true)
-    private NonRealtimeConsult nonRealtimeConsult;
+    @JoinColumn(name = "letter_id", unique = true)
+    private Letter letter;
 
     @OneToOne
     @JoinColumn(name = "realtime_id", unique = true)
@@ -66,7 +68,21 @@ public class Consult extends BaseEntity {
         this.refundStatus = RefundStatus.NO_REFUND;
     }
 
-    public void updateIsPaid() {
+    public void updateIsPaidAndLetter(Letter letter) {
+        validateLetter();
+
         this.isPaid = true;
+        setLetter(letter);
+    }
+
+    private void validateLetter() {
+        if (!this.consultType.equals(ConsultType.LETTER)) {
+            throw new ConsultException(ConsultErrorCode.CONSULT_TYPE_MISMATCH);
+        }
+    }
+
+    private void setLetter(Letter letter) {
+        this.letter = letter;
+        letter.setConsult(this);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.sharemind.customer.domain;
+package com.example.sharemind.customer.content;
 
 import lombok.Getter;
 

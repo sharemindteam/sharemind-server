@@ -1,4 +1,4 @@
-package com.example.sharemind.counselor.domain;
+package com.example.sharemind.counselor.content;
 
 import com.example.sharemind.global.content.ConsultType;
 import jakarta.persistence.Embeddable;
