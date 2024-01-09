@@ -20,6 +20,7 @@ public class Chat extends BaseEntity {
     private LocalDateTime startedAt;
 
     @Column(name = "consult_status")
+    @Enumerated(EnumType.STRING)
     private ChatStatus consultStatus;
 
     @Column(name = "read_id")
