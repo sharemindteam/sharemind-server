@@ -39,4 +39,19 @@ public class NonRealtimeConsult extends BaseEntity {
     public void setConsult(Consult consult) {
         this.consult = consult;
     }
+
+    public void checkAuthority(NonRealtimeMessageType messageType, Customer customer) {
+        switch (messageType) {
+            case FIRST_QUESTION, SECOND_QUESTION -> {
+                if (!this.consult.getCustomer().getCustomerId().equals(customer.getCustomerId())) {
+                    throw new NonRealtimeMessageException(NonRealtimeMessageErrorCode.MESSAGE_MODIFY_DENIED);
+                }
+            }
+            case FIRST_REPLY, SECOND_REPLY -> {
+                if (!this.consult.getCounselor().getCounselorId().equals(customer.getCounselor().getCounselorId())) {
+                    throw new NonRealtimeMessageException(NonRealtimeMessageErrorCode.MESSAGE_MODIFY_DENIED);
+                }
+            }
+        }
+    }
 }
