@@ -4,6 +4,7 @@ import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.exception.CustomerException;
+import com.example.sharemind.nonRealtimeConsult.exception.NonRealtimeConsultException;
 import com.example.sharemind.nonRealtimeMessage.exception.NonRealtimeMessageException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ConsultException.class)
     public ResponseEntity<CustomExceptionResponse> catchConsultException(ConsultException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(NonRealtimeConsultException.class)
+    public ResponseEntity<CustomExceptionResponse> catchNonRealtimeConsultException(NonRealtimeConsultException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
