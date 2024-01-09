@@ -23,9 +23,18 @@ public class NonRealtimeMessage extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NonRealtimeMessageType messageType;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(name = "is_completed")
+    @Column(name = "is_completed", nullable = false)
     private Boolean isCompleted;
+
+    @Builder
+    public NonRealtimeMessage(NonRealtimeConsult nonRealtimeConsult, NonRealtimeMessageType messageType,
+                              String content, Boolean isCompleted) {
+        this.nonRealtimeConsult = nonRealtimeConsult;
+        this.messageType = messageType;
+        this.content = content;
+        this.isCompleted = isCompleted;
+    }
 }
