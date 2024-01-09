@@ -2,6 +2,7 @@ package com.example.sharemind.nonRealtimeMessage.domain;
 
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.nonRealtimeConsult.domain.NonRealtimeConsult;
+import com.example.sharemind.nonRealtimeMessage.content.NonRealtimeMessageType;
 import jakarta.persistence.*;
 import lombok.*;
 

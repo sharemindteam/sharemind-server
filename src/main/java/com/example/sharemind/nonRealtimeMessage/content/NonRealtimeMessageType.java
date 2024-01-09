@@ -1,4 +1,4 @@
-package com.example.sharemind.nonRealtimeMessage.domain;
+package com.example.sharemind.nonRealtimeMessage.content;
 
 import com.example.sharemind.nonRealtimeMessage.exception.NonRealtimeMessageErrorCode;
 import com.example.sharemind.nonRealtimeMessage.exception.NonRealtimeMessageException;

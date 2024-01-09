@@ -5,7 +5,7 @@ import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultType;
-import com.example.sharemind.global.content.RefundStatus;
+import com.example.sharemind.consult.content.RefundStatus;
 import com.example.sharemind.nonRealtimeConsult.domain.NonRealtimeConsult;
 import com.example.sharemind.realtimeConsult.domain.RealtimeConsult;
 import com.example.sharemind.review.domain.Review;

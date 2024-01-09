@@ -1,7 +1,7 @@
 package com.example.sharemind.global.jwt;
 
 import com.example.sharemind.auth.repository.RefreshTokenRepository;
-import com.example.sharemind.customer.domain.Role;
+import com.example.sharemind.customer.content.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

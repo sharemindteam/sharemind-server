@@ -3,7 +3,7 @@ package com.example.sharemind.nonRealtimeMessage.application;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.nonRealtimeConsult.application.NonRealtimeConsultService;
 import com.example.sharemind.nonRealtimeConsult.domain.NonRealtimeConsult;
-import com.example.sharemind.nonRealtimeMessage.domain.NonRealtimeMessageType;
+import com.example.sharemind.nonRealtimeMessage.content.NonRealtimeMessageType;
 import com.example.sharemind.nonRealtimeMessage.dto.request.NonRealtimeMessageCreateRequest;
 import com.example.sharemind.nonRealtimeMessage.repository.NonRealtimeMessageRepository;
 import lombok.RequiredArgsConstructor;

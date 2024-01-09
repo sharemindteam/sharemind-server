@@ -1,6 +1,7 @@
 package com.example.sharemind.customer.domain;
 
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.Bank;
 import jakarta.persistence.*;

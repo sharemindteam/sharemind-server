@@ -2,7 +2,7 @@ package com.example.sharemind.nonRealtimeMessage.dto.request;
 
 import com.example.sharemind.nonRealtimeConsult.domain.NonRealtimeConsult;
 import com.example.sharemind.nonRealtimeMessage.domain.NonRealtimeMessage;
-import com.example.sharemind.nonRealtimeMessage.domain.NonRealtimeMessageType;
+import com.example.sharemind.nonRealtimeMessage.content.NonRealtimeMessageType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

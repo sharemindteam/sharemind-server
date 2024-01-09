@@ -1,4 +1,4 @@
-package com.example.sharemind.global.content;
+package com.example.sharemind.consult.content;
 
 public enum RefundStatus {
     NO_REFUND,
