@@ -27,8 +27,8 @@ public class LetterMessageServiceImpl implements LetterMessageService {
                 letterMessageCreateRequest.getMessageType());
 
         letter.checkAuthority(messageType, customer);
-        // TODO 순서에 맞게(1차 질문-답변, 2차 질문-답변) 메시지 유형이 들어온 것인지 확인하는 로직도 필요
+        LetterMessage letterMessage = letterMessageRepository.save(letterMessageCreateRequest.toEntity(letter, messageType));
 
-        letterMessageRepository.save(letterMessageCreateRequest.toEntity(letter, messageType));
+        letterMessage.updateLetterStatus();
     }
 }

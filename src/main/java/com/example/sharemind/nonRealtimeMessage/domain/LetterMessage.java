@@ -44,6 +44,12 @@ public class LetterMessage extends BaseEntity {
         this.isCompleted = isCompleted;
     }
 
+    public void updateLetterStatus() {
+        if (this.isCompleted) {
+            this.letter.updateLetterStatus(this.messageType.getLetterStatus());
+        }
+    }
+
     private void validateMessageType(LetterMessageType messageType, Letter letter) {
         LetterStatus letterStatus = letter.getLetterStatus();
 
