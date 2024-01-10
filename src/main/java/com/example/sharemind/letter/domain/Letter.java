@@ -24,16 +24,16 @@ public class Letter extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConsultCategory consultCategory;
 
-    @Column(name = "consult_status", nullable = false)
+    @Column(name = "letter_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private LetterStatus consultStatus;
+    private LetterStatus letterStatus;
 
     @OneToOne(mappedBy = "letter")
     private Consult consult;
 
     @Builder
     public Letter() {
-        this.consultStatus = LetterStatus.WAITING;
+        this.letterStatus = LetterStatus.WAITING;
     }
 
     public void setConsult(Consult consult) {
