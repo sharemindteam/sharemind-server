@@ -1,5 +1,6 @@
 package com.example.sharemind.nonRealtimeMessage.content;
 
+import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageErrorCode;
 import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageException;
 import lombok.Getter;
@@ -9,15 +10,17 @@ import java.util.Arrays;
 @Getter
 public enum LetterMessageType {
 
-    FIRST_QUESTION("질문"),
-    FIRST_REPLY("답장"),
-    SECOND_QUESTION("추가 질문"),
-    SECOND_REPLY("추가 답장");
+    FIRST_QUESTION("질문", LetterStatus.FIRST_ASKING),
+    FIRST_REPLY("답장", LetterStatus.FIRST_ANSWER),
+    SECOND_QUESTION("추가 질문", LetterStatus.SECOND_ASKING),
+    SECOND_REPLY("추가 답장", LetterStatus.FINISH);
 
     private final String displayName;
+    private final LetterStatus letterStatus;
 
-    LetterMessageType(String displayName) {
+    LetterMessageType(String displayName, LetterStatus letterStatus) {
         this.displayName = displayName;
+        this.letterStatus = letterStatus;
     }
 
     public static LetterMessageType getLetterMessageTypeByName(String name) {
