@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 public enum LetterMessageErrorCode {
 
     Letter_MESSAGE_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "메시지 유형이 존재하지 않습니다."),
-    MESSAGE_MODIFY_DENIED(HttpStatus.FORBIDDEN, "메시지 작성 권한이 없습니다.");
+    MESSAGE_MODIFY_DENIED(HttpStatus.FORBIDDEN, "메시지 작성 권한이 없습니다."),
+    INVALID_LETTER_MESSAGE_TYPE(HttpStatus.BAD_REQUEST, "현재 작성 가능한 메시지 유형이 아닙니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
