@@ -3,6 +3,7 @@ package com.example.sharemind.letterMessage.application;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
 import com.example.sharemind.letterMessage.dto.request.*;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 
@@ -18,4 +19,6 @@ public interface LetterMessageService {
     LetterMessageGetIsSavedResponse getIsSaved(LetterMessageGetIsSavedRequest letterMessageGetIsSavedRequest);
 
     LetterMessageGetResponse getLetterMessage(LetterMessageGetRequest letterMessageGetRequest);
+
+    LetterMessageGetDeadlineResponse getDeadline(LetterMessageGetDeadlineRequest letterMessageGetDeadlineRequest);
 }
