@@ -6,6 +6,7 @@ import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
 import com.example.sharemind.consult.repository.ConsultRepository;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +32,13 @@ public class ChatServiceImpl implements ChatService {
     public Chat getChatByChatId(Long chatId) {
         return chatRepository.findByChatIdAndIsActivatedIsTrue(chatId).orElseThrow(() -> new ChatException(
                 ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
+    }
+
+    @Override
+    public void validateChat(Map<String, Object> sessionAttributes, Long chatId) {
+        List<Long> chatRoomIds = (List<Long>) sessionAttributes.get("chatRoomIds");
+        if (!chatRoomIds.contains(chatId)) {
+            throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chatId.toString());
+        }
     }
 }

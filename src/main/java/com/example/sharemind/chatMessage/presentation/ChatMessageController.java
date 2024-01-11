@@ -1,7 +1,12 @@
 package com.example.sharemind.chatMessage.presentation;
 
 import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.chat.dto.request.ChattingRequest;
+import com.example.sharemind.chat.dto.response.ChattingResponse;
+import com.example.sharemind.chatMessage.application.ChatMessageService;
 import com.example.sharemind.chatMessage.dto.request.ChatMessageCreateRequest;
+import com.example.sharemind.chatMessage.dto.response.ChatMessageResponse;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +24,16 @@ public class ChatMessageController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatService chatService;
+    private final ChatMessageService chatMessageService;
 
-    @MessageMapping("/chatMessage/customers/{chattingRoomId}")
-    public void getCustomerChatMessage(@DestinationVariable Long chattingRoomId,
+    @MessageMapping("/chatMessage/customers/{chatId}")
+    public void getCustomerChatMessage(@DestinationVariable Long chatId,
                                        ChatMessageCreateRequest chatMessageCreateRequest,
                                        SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
-        Long userId = null;
-        String userNickname = null;
-        if (sessionAttributes.containsKey("userId")) {
-            userId = (Long) sessionAttributes.get("userId");
-        }
-        //todo: userId가 해당 방에 속해있는지
 
-        //todo: userId가 customer가 맞는지
-        //todo: chatMessage 저장 후 전송
+        chatService.validateChat(sessionAttributes, chatId);
+
+        chatMessageService.createChatMessage(chatMessageCreateRequest, chatId, true);
     }
 }
