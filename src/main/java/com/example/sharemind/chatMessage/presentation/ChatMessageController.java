@@ -1,12 +1,9 @@
 package com.example.sharemind.chatMessage.presentation;
 
 import com.example.sharemind.chat.application.ChatService;
-import com.example.sharemind.chat.dto.request.ChattingRequest;
-import com.example.sharemind.chat.dto.response.ChattingResponse;
 import com.example.sharemind.chatMessage.application.ChatMessageService;
 import com.example.sharemind.chatMessage.dto.request.ChatMessageCreateRequest;
 import com.example.sharemind.chatMessage.dto.response.ChatMessageResponse;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;

@@ -16,6 +16,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final ChatService chatService;
     private final ChatMessageRepository chatMessageRepository;
 
+    @Transactional
     @Override
     public void createChatMessage(ChatMessageCreateRequest chatMessageCreateRequest, Long chatId, Boolean isCustomer) {
         Chat chat = chatService.getChatByChatId(chatId);

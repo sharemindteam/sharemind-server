@@ -21,7 +21,7 @@ public class ChatMessageResponse {
         this.isCustomer = isCustomer;
     }
 
-    public static ChatMessageResponse of(String content, String senderName, Boolean isCustomer) {
+    public static ChatMessageResponse of(String senderName, String content, Boolean isCustomer) {
         return new ChatMessageResponse(senderName, content, LocalDateTime.now(), isCustomer);
     }
 }
