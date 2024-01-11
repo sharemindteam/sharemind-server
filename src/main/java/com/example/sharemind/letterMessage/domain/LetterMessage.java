@@ -1,6 +1,7 @@
 package com.example.sharemind.letterMessage.domain;
 
 import com.example.sharemind.global.common.BaseEntity;
+import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.content.LetterMessageType;
@@ -53,6 +54,10 @@ public class LetterMessage extends BaseEntity {
         if (this.isCompleted) {
             this.letter.updateLetterStatus(this.messageType.getLetterStatus());
         }
+    }
+
+    public void updateConsultCategory(ConsultCategory category) {
+        this.letter.updateConsultCategory(category);
     }
 
     private void validateMessageType(LetterMessageType messageType, Letter letter) {

@@ -5,6 +5,8 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.letter.content.LetterStatus;
+import com.example.sharemind.letter.exception.LetterErrorCode;
+import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letterMessage.content.LetterMessageType;
 import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
@@ -44,6 +46,12 @@ public class Letter extends BaseEntity {
         this.letterStatus = letterStatus;
     }
 
+    public void updateConsultCategory(ConsultCategory category) {
+        validateConsultCategory(category);
+
+        this.consultCategory = category;
+    }
+
     public void checkAuthority(LetterMessageType messageType, Customer customer) {
         switch (messageType) {
             case FIRST_QUESTION, SECOND_QUESTION -> {
@@ -56,6 +64,12 @@ public class Letter extends BaseEntity {
                     throw new LetterMessageException(LetterMessageErrorCode.MESSAGE_MODIFY_DENIED);
                 }
             }
+        }
+    }
+
+    private void validateConsultCategory(ConsultCategory category) {
+        if (!this.getConsult().getCounselor().getConsultCategories().contains(category)) {
+            throw new LetterException(LetterErrorCode.CONSULT_CATEGORY_MISMATCH, category.name());
         }
     }
 }

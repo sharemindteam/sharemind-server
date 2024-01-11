@@ -1,6 +1,10 @@
 package com.example.sharemind.global.content;
 
+import com.example.sharemind.global.exception.GlobalErrorCode;
+import com.example.sharemind.global.exception.GlobalException;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 @Getter
 public enum ConsultCategory {
@@ -17,5 +21,11 @@ public enum ConsultCategory {
 
     ConsultCategory(String displayName) {
         this.displayName = displayName;
+    }
+
+    public static ConsultCategory getConsultCategoryByName(String name) {
+        return Arrays.stream(ConsultCategory.values())
+                .filter(category -> category.name().equalsIgnoreCase(name))
+                .findAny().orElseThrow(() -> new GlobalException(GlobalErrorCode.CONSULT_CATEGORY_NOT_FOUND, name));
     }
 }
