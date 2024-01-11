@@ -3,6 +3,7 @@ package com.example.sharemind.letterMessage.presentation;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.letterMessage.application.LetterMessageService;
 import com.example.sharemind.letterMessage.dto.request.*;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 import jakarta.validation.Valid;
@@ -55,5 +56,10 @@ public class LetterMessageController {
     @GetMapping
     public ResponseEntity<LetterMessageGetResponse> getLetterMessage(@Valid @RequestBody LetterMessageGetRequest letterMessageGetRequest) {
         return ResponseEntity.ok(letterMessageService.getLetterMessage(letterMessageGetRequest));
+    }
+
+    @GetMapping("/deadline")
+    public ResponseEntity<LetterMessageGetDeadlineResponse> getDeadline(@Valid @RequestBody LetterMessageGetDeadlineRequest letterMessageGetDeadlineRequest) {
+        return ResponseEntity.ok(letterMessageService.getDeadline(letterMessageGetDeadlineRequest));
     }
 }
