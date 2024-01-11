@@ -2,10 +2,7 @@ package com.example.sharemind.letterMessage.presentation;
 
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.letterMessage.application.LetterMessageService;
-import com.example.sharemind.letterMessage.dto.request.LetterMessageCreateRequest;
-import com.example.sharemind.letterMessage.dto.request.LetterMessageGetIsSavedRequest;
-import com.example.sharemind.letterMessage.dto.request.LetterMessageGetRequest;
-import com.example.sharemind.letterMessage.dto.request.LetterMessageUpdateRequest;
+import com.example.sharemind.letterMessage.dto.request.*;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 import jakarta.validation.Valid;
@@ -33,6 +30,20 @@ public class LetterMessageController {
     public ResponseEntity<Void> updateLetterMessage(@Valid @RequestBody LetterMessageUpdateRequest letterMessageUpdateRequest,
                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         letterMessageService.updateLetterMessage(letterMessageUpdateRequest, customUserDetails.getCustomer());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/first-question")
+    public ResponseEntity<Void> createFirstQuestion(@Valid @RequestBody LetterMessageCreateFirstRequest letterMessageCreateFirstRequest,
+                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.createFirstQuestion(letterMessageCreateFirstRequest, customUserDetails.getCustomer());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PatchMapping("/first-question")
+    public ResponseEntity<Void> updateFirstQuestion(@Valid @RequestBody LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest,
+                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.updateFirstQuestion(letterMessageUpdateFirstRequest, customUserDetails.getCustomer());
         return ResponseEntity.ok().build();
     }
 
