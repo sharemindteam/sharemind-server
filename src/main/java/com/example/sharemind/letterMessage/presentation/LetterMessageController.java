@@ -4,8 +4,10 @@ import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.letterMessage.application.LetterMessageService;
 import com.example.sharemind.letterMessage.dto.request.LetterMessageCreateRequest;
 import com.example.sharemind.letterMessage.dto.request.LetterMessageGetIsSavedRequest;
+import com.example.sharemind.letterMessage.dto.request.LetterMessageGetRequest;
 import com.example.sharemind.letterMessage.dto.request.LetterMessageUpdateRequest;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,8 +36,13 @@ public class LetterMessageController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @GetMapping("/drafts")
     public ResponseEntity<LetterMessageGetIsSavedResponse> getIsSaved(@Valid @RequestBody LetterMessageGetIsSavedRequest letterMessageGetIsSavedRequest) {
         return ResponseEntity.ok(letterMessageService.getIsSaved(letterMessageGetIsSavedRequest));
+    }
+
+    @GetMapping
+    public ResponseEntity<LetterMessageGetResponse> getLetterMessage(@Valid @RequestBody LetterMessageGetRequest letterMessageGetRequest) {
+        return ResponseEntity.ok(letterMessageService.getLetterMessage(letterMessageGetRequest));
     }
 }
