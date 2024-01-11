@@ -40,6 +40,10 @@ public class Letter extends BaseEntity {
         this.consult = consult;
     }
 
+    public void updateLetterStatus(LetterStatus letterStatus) {
+        this.letterStatus = letterStatus;
+    }
+
     public void checkAuthority(LetterMessageType messageType, Customer customer) {
         switch (messageType) {
             case FIRST_QUESTION, SECOND_QUESTION -> {
