@@ -2,6 +2,7 @@ package com.example.sharemind.letter.application;
 
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letter.dto.response.LetterGetCounselorCategoriesResponse;
+import com.example.sharemind.letter.dto.response.LetterGetNicknameCategoryResponse;
 import com.example.sharemind.letter.exception.LetterErrorCode;
 import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letter.repository.LetterRepository;
@@ -37,5 +38,12 @@ public class LetterServiceImpl implements LetterService {
         Letter letter = getLetterByLetterId(letterId);
 
         return LetterGetCounselorCategoriesResponse.of(letter);
+    }
+
+    @Override
+    public LetterGetNicknameCategoryResponse getCustomerNicknameAndCategory(Long letterId) {
+        Letter letter = getLetterByLetterId(letterId);
+
+        return LetterGetNicknameCategoryResponse.of(letter);
     }
 }
