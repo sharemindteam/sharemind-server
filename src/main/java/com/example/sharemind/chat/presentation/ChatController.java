@@ -24,13 +24,6 @@ public class ChatController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatService chatService;
 
-    @MessageMapping("/chattings")
-    public void getChat(SimpMessageHeaderAccessor headerAccessor) {
-        String customerNickname = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes())
-                .get("userNickname");
-        log.info("customer " + customerNickname);
-    }
-
     @MessageMapping("/demo/chattings/customers/{chattingRoomId}")
     public void chatCustomer(@DestinationVariable Long chattingRoomId, ChattingRequest chattingRequest,
                              SimpMessageHeaderAccessor headerAccessor) {
