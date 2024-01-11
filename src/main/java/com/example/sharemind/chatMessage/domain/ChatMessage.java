@@ -16,7 +16,7 @@ public class ChatMessage extends BaseEntity {
     private Long messageId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "realtime_id")
+    @JoinColumn(name = "chat_id")
     private Chat chat;
 
     @Column(name = "is_customer")
@@ -24,4 +24,11 @@ public class ChatMessage extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @Builder
+    public ChatMessage(Chat chat, Boolean isCustomer, String content) {
+        this.chat = chat;
+        this.isCustomer = isCustomer;
+        this.content = content;
+    }
 }
