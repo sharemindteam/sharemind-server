@@ -1,9 +1,9 @@
-package com.example.sharemind.nonRealtimeMessage.presentation;
+package com.example.sharemind.letterMessage.presentation;
 
 import com.example.sharemind.global.jwt.CustomUserDetails;
-import com.example.sharemind.nonRealtimeMessage.application.LetterMessageService;
-import com.example.sharemind.nonRealtimeMessage.dto.request.LetterMessageCreateRequest;
-import com.example.sharemind.nonRealtimeMessage.dto.request.LetterMessageUpdateRequest;
+import com.example.sharemind.letterMessage.application.LetterMessageService;
+import com.example.sharemind.letterMessage.dto.request.LetterMessageCreateRequest;
+import com.example.sharemind.letterMessage.dto.request.LetterMessageUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

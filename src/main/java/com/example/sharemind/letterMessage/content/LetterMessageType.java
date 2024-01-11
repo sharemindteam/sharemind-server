@@ -1,8 +1,8 @@
-package com.example.sharemind.nonRealtimeMessage.content;
+package com.example.sharemind.letterMessage.content;
 
 import com.example.sharemind.letter.content.LetterStatus;
-import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageErrorCode;
-import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageException;
+import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
+import com.example.sharemind.letterMessage.exception.LetterMessageException;
 import lombok.Getter;
 
 import java.util.Arrays;

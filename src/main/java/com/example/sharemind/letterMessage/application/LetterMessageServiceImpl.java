@@ -1,15 +1,15 @@
-package com.example.sharemind.nonRealtimeMessage.application;
+package com.example.sharemind.letterMessage.application;
 
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
-import com.example.sharemind.nonRealtimeMessage.content.LetterMessageType;
-import com.example.sharemind.nonRealtimeMessage.domain.LetterMessage;
-import com.example.sharemind.nonRealtimeMessage.dto.request.LetterMessageCreateRequest;
-import com.example.sharemind.nonRealtimeMessage.dto.request.LetterMessageUpdateRequest;
-import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageErrorCode;
-import com.example.sharemind.nonRealtimeMessage.exception.LetterMessageException;
-import com.example.sharemind.nonRealtimeMessage.repository.LetterMessageRepository;
+import com.example.sharemind.letterMessage.content.LetterMessageType;
+import com.example.sharemind.letterMessage.domain.LetterMessage;
+import com.example.sharemind.letterMessage.dto.request.LetterMessageCreateRequest;
+import com.example.sharemind.letterMessage.dto.request.LetterMessageUpdateRequest;
+import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
+import com.example.sharemind.letterMessage.exception.LetterMessageException;
+import com.example.sharemind.letterMessage.repository.LetterMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

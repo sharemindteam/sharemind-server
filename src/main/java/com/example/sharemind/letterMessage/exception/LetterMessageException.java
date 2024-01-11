@@ -1,4 +1,4 @@
-package com.example.sharemind.nonRealtimeMessage.exception;
+package com.example.sharemind.letterMessage.exception;
 
 import lombok.Getter;
 

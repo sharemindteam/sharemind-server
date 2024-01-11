@@ -1,4 +1,4 @@
-package com.example.sharemind.nonRealtimeMessage.dto.request;
+package com.example.sharemind.letterMessage.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

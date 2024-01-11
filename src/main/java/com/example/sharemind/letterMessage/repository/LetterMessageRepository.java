@@ -1,6 +1,6 @@
-package com.example.sharemind.nonRealtimeMessage.repository;
+package com.example.sharemind.letterMessage.repository;
 
-import com.example.sharemind.nonRealtimeMessage.domain.LetterMessage;
+import com.example.sharemind.letterMessage.domain.LetterMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
