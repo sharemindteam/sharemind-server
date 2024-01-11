@@ -1,14 +1,12 @@
 package com.example.sharemind.letterMessage.application;
 
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.content.LetterMessageType;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
-import com.example.sharemind.letterMessage.dto.request.LetterMessageCreateRequest;
-import com.example.sharemind.letterMessage.dto.request.LetterMessageGetIsSavedRequest;
-import com.example.sharemind.letterMessage.dto.request.LetterMessageGetRequest;
-import com.example.sharemind.letterMessage.dto.request.LetterMessageUpdateRequest;
+import com.example.sharemind.letterMessage.dto.request.*;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
@@ -29,7 +27,7 @@ public class LetterMessageServiceImpl implements LetterMessageService {
 
     @Transactional
     @Override
-    public void createLetterMessage(LetterMessageCreateRequest letterMessageCreateRequest, Customer customer) {
+    public LetterMessage createLetterMessage(LetterMessageCreateRequest letterMessageCreateRequest, Customer customer) {
         Letter letter = letterService.getLetterByLetterId(
                 letterMessageCreateRequest.getLetterId());
         LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(
@@ -39,11 +37,13 @@ public class LetterMessageServiceImpl implements LetterMessageService {
         LetterMessage letterMessage = letterMessageRepository.save(letterMessageCreateRequest.toEntity(letter, messageType));
 
         letterMessage.updateLetterStatus();
+
+        return letterMessage;
     }
 
     @Transactional
     @Override
-    public void updateLetterMessage(LetterMessageUpdateRequest letterMessageUpdateRequest, Customer customer) {
+    public LetterMessage updateLetterMessage(LetterMessageUpdateRequest letterMessageUpdateRequest, Customer customer) {
         LetterMessage letterMessage = letterMessageRepository.findByMessageIdAndIsActivatedIsTrue(
                 letterMessageUpdateRequest.getMessageId())
                 .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
@@ -55,6 +55,26 @@ public class LetterMessageServiceImpl implements LetterMessageService {
         letterMessage.updateLetterMessage(letterMessageUpdateRequest.getContent(), letterMessageUpdateRequest.getIsCompleted());
 
         letterMessage.updateLetterStatus();
+
+        return letterMessage;
+    }
+
+    @Transactional
+    @Override
+    public void createFirstQuestion(LetterMessageCreateFirstRequest letterMessageCreateFirstRequest, Customer customer) {
+        ConsultCategory category = ConsultCategory.getConsultCategoryByName(letterMessageCreateFirstRequest.getConsultCategory());
+
+        LetterMessage letterMessage = createLetterMessage(LetterMessageCreateRequest.of(letterMessageCreateFirstRequest), customer);
+        letterMessage.updateConsultCategory(category);
+    }
+
+    @Transactional
+    @Override
+    public void updateFirstQuestion(LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest, Customer customer) {
+        ConsultCategory category = ConsultCategory.getConsultCategoryByName(letterMessageUpdateFirstRequest.getConsultCategory());
+
+        LetterMessage letterMessage = updateLetterMessage(LetterMessageUpdateRequest.of(letterMessageUpdateFirstRequest), customer);
+        letterMessage.updateConsultCategory(category);
     }
 
     @Override
