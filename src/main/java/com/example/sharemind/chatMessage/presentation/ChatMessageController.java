@@ -35,5 +35,14 @@ public class ChatMessageController {
         chatService.validateChat(sessionAttributes, chatId);
 
         chatMessageService.createChatMessage(chatMessageCreateRequest, chatId, true);
+
+        String customerNickname = (String) sessionAttributes.get("userNickname");
+        ChatMessageResponse chatMessageResponse = ChatMessageResponse.of(customerNickname,
+                chatMessageCreateRequest.getContent(), true);
+
+        simpMessagingTemplate.convertAndSend("/queue/chattings/counselors/" + chatId, chatMessageResponse);
+        simpMessagingTemplate.convertAndSend("/queue/chattings/customers/" + chatId, chatMessageResponse);
+        log.info("Message [{}] send by member: {} to chatting room: {}", chatMessageCreateRequest.getContent(),
+                customerNickname, chatId);
     }
 }
