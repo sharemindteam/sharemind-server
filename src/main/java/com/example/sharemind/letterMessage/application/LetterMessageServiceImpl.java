@@ -6,7 +6,9 @@ import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.content.LetterMessageType;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
 import com.example.sharemind.letterMessage.dto.request.LetterMessageCreateRequest;
+import com.example.sharemind.letterMessage.dto.request.LetterMessageGetIsSavedRequest;
 import com.example.sharemind.letterMessage.dto.request.LetterMessageUpdateRequest;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
 import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
 import com.example.sharemind.letterMessage.repository.LetterMessageRepository;
@@ -50,5 +52,22 @@ public class LetterMessageServiceImpl implements LetterMessageService {
         letterMessage.updateLetterMessage(letterMessageUpdateRequest.getContent(), letterMessageUpdateRequest.getIsCompleted());
 
         letterMessage.updateLetterStatus();
+    }
+
+    @Override
+    public LetterMessageGetIsSavedResponse getIsSaved(LetterMessageGetIsSavedRequest letterMessageGetIsSavedRequest) {
+        Letter letter = letterService.getLetterByLetterId(
+                letterMessageGetIsSavedRequest.getLetterId());
+        LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(
+                letterMessageGetIsSavedRequest.getMessageType());
+
+        if (letterMessageRepository.existsByLetterAndMessageTypeAndIsCompletedIsFalseAndIsActivatedIsTrue(letter, messageType)) {
+            LetterMessage letterMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedIsFalseAndIsActivatedIsTrue(letter, messageType)
+                    .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
+
+            return LetterMessageGetIsSavedResponse.of(letterMessage);
+        } else {
+            return LetterMessageGetIsSavedResponse.of();
+        }
     }
 }
