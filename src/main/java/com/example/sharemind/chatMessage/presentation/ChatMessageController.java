@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Slf4j
@@ -19,27 +18,30 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ChatMessageController {
 
-    private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatService chatService;
     private final ChatMessageService chatMessageService;
 
-    @MessageMapping("/chatMessage/customers/{chatId}")
-    public void getCustomerChatMessage(@DestinationVariable Long chatId,
-                                       ChatMessageCreateRequest chatMessageCreateRequest,
-                                       SimpMessageHeaderAccessor headerAccessor) {
+    private void handleChatMessage(Long chatId, ChatMessageCreateRequest request,
+                                   SimpMessageHeaderAccessor headerAccessor, boolean isCustomer) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
         chatService.validateChat(sessionAttributes, chatId);
 
-        chatMessageService.createChatMessage(chatMessageCreateRequest, chatId, true);
+        String nickName = (String) sessionAttributes.get("userNickname");
+        chatMessageService.createAndSendChatMessage(request, chatId, isCustomer, nickName);
+    }
 
-        String customerNickname = (String) sessionAttributes.get("userNickname");
-        ChatMessageResponse chatMessageResponse = ChatMessageResponse.of(customerNickname,
-                chatMessageCreateRequest.getContent(), true);
+    @MessageMapping("/chatMessage/customers/{chatId}")
+    public void getCustomerChatMessage(@DestinationVariable Long chatId,
+                                       ChatMessageCreateRequest request,
+                                       SimpMessageHeaderAccessor headerAccessor) {
+        handleChatMessage(chatId, request, headerAccessor, true);
+    }
 
-        simpMessagingTemplate.convertAndSend("/queue/chattings/counselors/" + chatId, chatMessageResponse);
-        simpMessagingTemplate.convertAndSend("/queue/chattings/customers/" + chatId, chatMessageResponse);
-        log.info("Message [{}] send by member: {} to chatting room: {}", chatMessageCreateRequest.getContent(),
-                customerNickname, chatId);
+    @MessageMapping("/chatMessage/counselors/{chatId}")
+    public void getCounselorsChatMessage(@DestinationVariable Long chatId,
+                                         ChatMessageCreateRequest request,
+                                         SimpMessageHeaderAccessor headerAccessor) {
+        handleChatMessage(chatId, request, headerAccessor, false);
     }
 }
