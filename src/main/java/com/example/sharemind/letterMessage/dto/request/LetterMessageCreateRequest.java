@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public class LetterMessageCreateRequest {
 
-    @NotNull(message = "비실시간 상담 id는 공백일 수 없습니다.")
+    @NotNull(message = "편지 id는 공백일 수 없습니다.")
     private Long letterId;
 
     @NotBlank(message = "메시지 유형은 공백일 수 없습니다.")
