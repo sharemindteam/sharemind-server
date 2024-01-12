@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LetterMessageGetResponse {
 
+    private final Long messageId;
     private final String messageType;
     private final String content;
 
@@ -19,11 +20,11 @@ public class LetterMessageGetResponse {
     private final LocalDateTime updatedAt;
 
     public static LetterMessageGetResponse of(LetterMessage letterMessage) {
-        return new LetterMessageGetResponse(letterMessage.getMessageType().getDisplayName(),
+        return new LetterMessageGetResponse(letterMessage.getMessageId(), letterMessage.getMessageType().getDisplayName(),
                 letterMessage.getContent(), letterMessage.getUpdatedAt());
     }
 
     public static LetterMessageGetResponse of() {
-        return new LetterMessageGetResponse(null, null, null);
+        return new LetterMessageGetResponse(null, null, null, null);
     }
 }
