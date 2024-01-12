@@ -8,18 +8,18 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ChattingResponse {
+public class ChatResponse {
     private final String senderName;
     private final String content;
     private final String sendTime;
 
-    private ChattingResponse(String senderName, String content, LocalDateTime sendTime) {
+    private ChatResponse(String senderName, String content, LocalDateTime sendTime) {
         this.senderName = senderName;
         this.content = content;
         this.sendTime = sendTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    public static ChattingResponse of(String content, String senderName) {
-        return new ChattingResponse(senderName, content, LocalDateTime.now());
+    public static ChatResponse of(String content, String senderName) {
+        return new ChatResponse(senderName, content, LocalDateTime.now());
     }
 }
