@@ -8,18 +8,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RequestMapping("/api/v1/chats")
+@RestController
 public class ChatController {
 
     private final ChatService chatService;
 
-    @GetMapping("/chat")
+    @GetMapping()
     public ResponseEntity<List<ChatInfoGetResponse>> getChatList(@RequestParam Boolean isCustomer,
                                                                  @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<ChatInfoGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
