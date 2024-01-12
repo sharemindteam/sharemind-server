@@ -1,3 +1,4 @@
+//todo: 삭제
 package com.example.sharemind.chat.dto.response;
 
 import java.time.LocalDateTime;
