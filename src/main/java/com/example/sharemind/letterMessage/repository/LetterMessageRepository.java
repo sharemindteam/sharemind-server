@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface LetterMessageRepository extends JpaRepository<LetterMessage, Long> {
     Optional<LetterMessage> findByMessageIdAndIsActivatedIsTrue(Long messageId);
 
+    Boolean existsByLetterAndMessageTypeAndIsActivatedIsTrue(Letter letter, LetterMessageType messageType);
+
     Boolean existsByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
             Letter letter, LetterMessageType messageType, Boolean isCompleted);
 

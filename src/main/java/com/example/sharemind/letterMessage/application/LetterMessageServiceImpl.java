@@ -34,6 +34,9 @@ public class LetterMessageServiceImpl implements LetterMessageService {
                 letterMessageCreateRequest.getLetterId());
         LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(
                 letterMessageCreateRequest.getMessageType());
+        if (letterMessageRepository.existsByLetterAndMessageTypeAndIsActivatedIsTrue(letter, messageType)) {
+            throw new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_ALREADY_CREATED);
+        }
 
         letter.checkAuthority(messageType, customer);
         LetterMessage letterMessage = letterMessageRepository.save(letterMessageCreateRequest.toEntity(letter, messageType));
