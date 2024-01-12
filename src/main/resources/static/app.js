@@ -59,16 +59,43 @@
 //
 // window.onload = connect;
 // window.onbeforeunload = disconnect;
-document.getElementById('connect').addEventListener('click', function() {
+var stompClient = null;
+
+window.onload = function () {
     var socket = new SockJS('/customerChat'); // WebSocket 연결 URL로 변경
-    var stompClient = Stomp.over(socket);
+    stompClient = Stomp.over(socket);
 
     stompClient.connect({
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYmJAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1ODgyMjMwfQ.LraOlUyXzZUUIGONBLZbmqZzXWs3piRE2uL1DbqP4uQ' // 로그인 시 나오는 토큰값으로 변경
-    }, function(frame) {
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYWFAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1OTgyMTM4fQ.0uSuq0_LJOPTlmDDy4fp90P9R8XZ-EBVEpo9tOAILjE', // 로그인 시 나오는 토큰값으로 변경
+        'isCustomer': false
+    }, function (frame) {
         console.log('Connected: ' + frame);
-
-        // '/chattings' 엔드포인트로 빈 메시지를 보내는 예시
-        stompClient.send('/app/chattings', {}, '');
+        subscribeToChat();
     });
-});
+
+    document.getElementById('sendMessage').addEventListener('click', sendMessage);
+};
+
+function subscribeToChat() {
+    stompClient.subscribe('/queue/chattings/customers/1', function (message) {
+        showMessage(JSON.parse(message.body));
+    });
+}
+
+function sendMessage() {
+    var chatId = document.getElementById('chatId').value;
+    var messageContent = document.getElementById('messageContent').value;
+
+    if (stompClient && stompClient.connected && chatId) {
+        var chatMessage = {content: messageContent};
+        stompClient.send('/app/chatMessage/customers/' + chatId, {}, JSON.stringify(chatMessage));
+        document.getElementById('messageContent').value = ''; // 메시지 전송 후 입력 필드 초기화
+    }
+}
+
+function showMessage(message) {
+    var chatWindow = document.getElementById('chatWindow');
+    var messageElement = document.createElement('div');
+    messageElement.innerHTML = "isCustomer : " + message.isCustomer + " " + message.sendTime + "From " + message.senderName + ": " + message.content;
+    chatWindow.appendChild(messageElement);
+}

@@ -27,13 +27,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WebSocket Example</title>
+    <title>WebSocket demo</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
-<h1>WebSocket Connection Example</h1>
-<button id="connect">Connect WebSocket</button>
+<h1>WebSocket connect</h1>
+<input type="text" id="chatId" placeholder="chatID">
+<input type="text" id="messageContent" placeholder="content">
+<button id="sendMessage">send</button>
+<div id="chatWindow"></div>
+
 <script src="app.js"></script>
 </body>
 </html>
