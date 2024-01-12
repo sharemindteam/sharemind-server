@@ -14,6 +14,7 @@ public class ChatInfoGetResponse {
     private final Long chatId;
     private final String opponentNickname;
     private final String chatStatus;
+
     private final int unreadMessageCount;
     private final String latestMessageContent;
     private final LocalDateTime latestMessageUpdatedAt;
