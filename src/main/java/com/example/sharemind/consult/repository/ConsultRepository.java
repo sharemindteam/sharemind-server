@@ -23,4 +23,7 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
 
     @Query("SELECT c FROM Consult c WHERE c.customer.customerId = :customerId AND c.consultType = :consultType AND c.isPaid = true")
     List<Consult> findByCustomerIdAndConsultTypeAndIsPaid(Long customerId, ConsultType consultType);
+
+    @Query("SELECT c FROM Consult c WHERE c.counselor.counselorId = :counselorId AND c.consultType = :consultType AND c.isPaid = true")
+    List<Consult> findByCounselorIdAndConsultTypeAndIsPaid(Long counselorId, ConsultType consultType);
 }

@@ -9,6 +9,8 @@ import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.chatMessage.repository.ChatMessageRepository;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.repository.ConsultRepository;
+import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.content.ConsultType;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ public class ChatServiceImpl implements ChatService {
     private final ConsultRepository consultRepository;
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final CounselorService counselorService;
 
     @Override
     public List<Long> getChatsByUserId(Long userId, Boolean isCustomer) {
@@ -51,8 +54,14 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<ChatInfoGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer) {
-        List<Consult> consults = consultRepository.findByCustomerIdAndConsultTypeAndIsPaid(customerId,
-                ConsultType.CHAT);
+        List<Consult> consults;
+        if (isCustomer) {
+            consults = consultRepository.findByCustomerIdAndConsultTypeAndIsPaid(customerId, ConsultType.CHAT);
+        } else {
+            Counselor counselor = counselorService.getCounselorByCustomerId(customerId);//todo: counselorId 없는거 에러처리
+            consults = consultRepository.findByCounselorIdAndConsultTypeAndIsPaid(counselor.getCounselorId(),
+                    ConsultType.CHAT);
+        }
         return consults.stream()
                 .map(consult -> createChatInfoGetResponse(consult, isCustomer))
                 .collect(Collectors.toList());
