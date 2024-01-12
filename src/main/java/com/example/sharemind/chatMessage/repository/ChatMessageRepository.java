@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     ChatMessage findLatestByChatOrderByUpdatedAtDesc(Chat chat);
 
-    int countByChatIdAndMessageIdGreaterThanAndIsCustomer(Long chatId, Long lastReadMessageId, Boolean isCustomer);
+    int countByChat_ChatIdAndMessageIdGreaterThanAndIsCustomer(Long chatId, Long lastReadMessageId, Boolean isCustomer);
 }

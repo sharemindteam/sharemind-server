@@ -67,7 +67,7 @@ public class ChatServiceImpl implements ChatService {
         ChatMessage latestChatMessage = chatMessageRepository.findLatestByChatOrderByUpdatedAtDesc(chat);
 
         Long lastReadMessageId = isCustomer ? chat.getCustomerReadId() : chat.getCounselorReadId();
-        int unreadMessageCount = chatMessageRepository.countByChatIdAndMessageIdGreaterThanAndIsCustomer(
+        int unreadMessageCount = chatMessageRepository.countByChat_ChatIdAndMessageIdGreaterThanAndIsCustomer(
                 chat.getChatId(), lastReadMessageId, isCustomer);
 
         return ChatInfoGetResponse.of(nickname, unreadMessageCount, chat, latestChatMessage);
