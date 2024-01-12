@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        requests -> requests.requestMatchers("/error", "/api/v1/auth/**").permitAll()
+                        requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**", "/api/v1/auth/**").permitAll()
                                 .requestMatchers("/api/v1/consults/**").hasRole(ROLE_CUSTOMER)
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
                                 .anyRequest().authenticated()
