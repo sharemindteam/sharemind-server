@@ -5,6 +5,8 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.letter.content.LetterStatus;
+import com.example.sharemind.letter.exception.LetterErrorCode;
+import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letterMessage.content.LetterMessageType;
 import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
@@ -24,20 +26,30 @@ public class Letter extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConsultCategory consultCategory;
 
-    @Column(name = "consult_status", nullable = false)
+    @Column(name = "letter_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private LetterStatus consultStatus;
+    private LetterStatus letterStatus;
 
     @OneToOne(mappedBy = "letter")
     private Consult consult;
 
     @Builder
     public Letter() {
-        this.consultStatus = LetterStatus.WAITING;
+        this.letterStatus = LetterStatus.WAITING;
     }
 
     public void setConsult(Consult consult) {
         this.consult = consult;
+    }
+
+    public void updateLetterStatus(LetterStatus letterStatus) {
+        this.letterStatus = letterStatus;
+    }
+
+    public void updateConsultCategory(ConsultCategory category) {
+        validateConsultCategory(category);
+
+        this.consultCategory = category;
     }
 
     public void checkAuthority(LetterMessageType messageType, Customer customer) {
@@ -52,6 +64,12 @@ public class Letter extends BaseEntity {
                     throw new LetterMessageException(LetterMessageErrorCode.MESSAGE_MODIFY_DENIED);
                 }
             }
+        }
+    }
+
+    private void validateConsultCategory(ConsultCategory category) {
+        if (!this.getConsult().getCounselor().getConsultCategories().contains(category)) {
+            throw new LetterException(LetterErrorCode.CONSULT_CATEGORY_MISMATCH, category.name());
         }
     }
 }
