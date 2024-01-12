@@ -19,10 +19,13 @@ public class Chat extends BaseEntity {
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 
-    @Column(name = "consult_status")
+    @Column(name = "chat_status")
     @Enumerated(EnumType.STRING)
-    private ChatStatus consultStatus;
+    private ChatStatus chatStatus;
 
-    @Column(name = "read_id")
-    private Long readId;
+    @Column(name = "customer_read_id")
+    private Long customerReadId;
+
+    @Column(name = "counseolor_read_id")
+    private Long counselorReadId;
 }
