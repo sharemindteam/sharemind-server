@@ -28,6 +28,10 @@ public class CounselorServiceImpl implements CounselorService {
     @Override
     public Counselor getCounselorByCustomerId(Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        return customer.getCounselor();
+        Counselor counselor = customer.getCounselor();
+        if (counselor == null) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND, null);
+        }
+        return counselor;
     }
 }

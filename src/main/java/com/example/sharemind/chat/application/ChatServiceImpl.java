@@ -58,7 +58,7 @@ public class ChatServiceImpl implements ChatService {
         if (isCustomer) {
             consults = consultRepository.findByCustomerIdAndConsultTypeAndIsPaid(customerId, ConsultType.CHAT);
         } else {
-            Counselor counselor = counselorService.getCounselorByCustomerId(customerId);//todo: counselorId 없는거 에러처리
+            Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
             consults = consultRepository.findByCounselorIdAndConsultTypeAndIsPaid(counselor.getCounselorId(),
                     ConsultType.CHAT);
         }
