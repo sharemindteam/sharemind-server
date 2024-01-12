@@ -48,18 +48,19 @@ public class LetterMessageController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/drafts")
-    public ResponseEntity<LetterMessageGetIsSavedResponse> getIsSaved(@Valid @RequestBody LetterMessageGetIsSavedRequest letterMessageGetIsSavedRequest) {
-        return ResponseEntity.ok(letterMessageService.getIsSaved(letterMessageGetIsSavedRequest));
+    @GetMapping("/drafts/{letterId}")
+    public ResponseEntity<LetterMessageGetIsSavedResponse> getIsSaved(@PathVariable Long letterId, @RequestParam String messageType) {
+        return ResponseEntity.ok(letterMessageService.getIsSaved(letterId, messageType));
     }
 
-    @GetMapping
-    public ResponseEntity<LetterMessageGetResponse> getLetterMessage(@Valid @RequestBody LetterMessageGetRequest letterMessageGetRequest) {
-        return ResponseEntity.ok(letterMessageService.getLetterMessage(letterMessageGetRequest));
+    @GetMapping("/{letterId}")
+    public ResponseEntity<LetterMessageGetResponse> getLetterMessage(@PathVariable Long letterId,
+                                                                     @RequestParam String messageType, @RequestParam Boolean isCompleted) {
+        return ResponseEntity.ok(letterMessageService.getLetterMessage(letterId, messageType, isCompleted));
     }
 
-    @GetMapping("/deadline")
-    public ResponseEntity<LetterMessageGetDeadlineResponse> getDeadline(@Valid @RequestBody LetterMessageGetDeadlineRequest letterMessageGetDeadlineRequest) {
-        return ResponseEntity.ok(letterMessageService.getDeadline(letterMessageGetDeadlineRequest));
+    @GetMapping("/deadline/{letterId}")
+    public ResponseEntity<LetterMessageGetDeadlineResponse> getDeadline(@PathVariable Long letterId, @RequestParam String messageType) {
+        return ResponseEntity.ok(letterMessageService.getDeadline(letterId, messageType));
     }
 }

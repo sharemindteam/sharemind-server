@@ -16,9 +16,9 @@ public interface LetterMessageService {
 
     void updateFirstQuestion(LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest, Customer customer);
 
-    LetterMessageGetIsSavedResponse getIsSaved(LetterMessageGetIsSavedRequest letterMessageGetIsSavedRequest);
+    LetterMessageGetIsSavedResponse getIsSaved(Long letterId, String messageType);
 
-    LetterMessageGetResponse getLetterMessage(LetterMessageGetRequest letterMessageGetRequest);
+    LetterMessageGetResponse getLetterMessage(Long letterId, String messageType, Boolean isCompleted);
 
-    LetterMessageGetDeadlineResponse getDeadline(LetterMessageGetDeadlineRequest letterMessageGetDeadlineRequest);
+    LetterMessageGetDeadlineResponse getDeadline(Long letterId, String messageType);
 }

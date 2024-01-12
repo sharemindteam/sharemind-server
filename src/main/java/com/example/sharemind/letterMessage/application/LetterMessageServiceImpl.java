@@ -83,11 +83,9 @@ public class LetterMessageServiceImpl implements LetterMessageService {
     }
 
     @Override
-    public LetterMessageGetIsSavedResponse getIsSaved(LetterMessageGetIsSavedRequest letterMessageGetIsSavedRequest) {
-        Letter letter = letterService.getLetterByLetterId(
-                letterMessageGetIsSavedRequest.getLetterId());
-        LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(
-                letterMessageGetIsSavedRequest.getMessageType());
+    public LetterMessageGetIsSavedResponse getIsSaved(Long letterId, String type) {
+        Letter letter = letterService.getLetterByLetterId(letterId);
+        LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(type);
 
         if (letterMessageRepository.existsByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
                 letter, messageType, IS_NOT_COMPLETED)) {
@@ -102,16 +100,14 @@ public class LetterMessageServiceImpl implements LetterMessageService {
     }
 
     @Override
-    public LetterMessageGetResponse getLetterMessage(LetterMessageGetRequest letterMessageGetRequest) {
-        Letter letter = letterService.getLetterByLetterId(
-                letterMessageGetRequest.getLetterId());
-        LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(
-                letterMessageGetRequest.getMessageType());
+    public LetterMessageGetResponse getLetterMessage(Long letterId, String type, Boolean isCompleted) {
+        Letter letter = letterService.getLetterByLetterId(letterId);
+        LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(type);
 
         if (letterMessageRepository.existsByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
-                letter, messageType, letterMessageGetRequest.getIsCompleted())) {
+                letter, messageType, isCompleted)) {
             LetterMessage letterMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
-                    letter, messageType, letterMessageGetRequest.getIsCompleted())
+                    letter, messageType, isCompleted)
                     .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
 
             return LetterMessageGetResponse.of(letterMessage);
@@ -121,11 +117,9 @@ public class LetterMessageServiceImpl implements LetterMessageService {
     }
 
     @Override
-    public LetterMessageGetDeadlineResponse getDeadline(LetterMessageGetDeadlineRequest letterMessageGetDeadlineRequest) {
-        Letter letter = letterService.getLetterByLetterId(
-                letterMessageGetDeadlineRequest.getLetterId());
-        LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(
-                letterMessageGetDeadlineRequest.getMessageType());
+    public LetterMessageGetDeadlineResponse getDeadline(Long letterId, String type) {
+        Letter letter = letterService.getLetterByLetterId(letterId);
+        LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(type);
 
         LetterMessageType previousType = null;
         switch (messageType) {
