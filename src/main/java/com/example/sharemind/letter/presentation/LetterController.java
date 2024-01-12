@@ -1,9 +1,11 @@
 package com.example.sharemind.letter.presentation;
 
 import com.example.sharemind.global.exception.CustomExceptionResponse;
+import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.dto.response.LetterGetCounselorCategoriesResponse;
 import com.example.sharemind.letter.dto.response.LetterGetNicknameCategoryResponse;
+import com.example.sharemind.letter.dto.response.LetterGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -14,10 +16,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Letter Controller", description = "편지(비실시간 상담) 컨트롤러")
 @RestController
@@ -57,5 +59,12 @@ public class LetterController {
     @GetMapping("/customer-info/{letterId}")
     public ResponseEntity<LetterGetNicknameCategoryResponse> getCustomerNicknameAndCategory(@PathVariable Long letterId) {
         return ResponseEntity.ok(letterService.getCustomerNicknameAndCategory(letterId));
+    }
+
+    // TODO 임시, 나중에 보완 필요
+    @GetMapping
+    public ResponseEntity<List<LetterGetResponse>> getLetters(@RequestParam Boolean isCustomer,
+                                           @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(letterService.getLetters(customUserDetails.getCustomer(), isCustomer));
     }
 }
