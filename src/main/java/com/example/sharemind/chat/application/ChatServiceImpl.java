@@ -64,7 +64,7 @@ public class ChatServiceImpl implements ChatService {
         }
         return consults.stream()
                 .map(consult -> createChatInfoGetResponse(consult, isCustomer))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private ChatInfoGetResponse createChatInfoGetResponse(Consult consult, Boolean isCustomer) {

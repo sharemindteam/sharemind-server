@@ -15,15 +15,15 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
 
     List<Consult> findAllByIsPaidIsFalseAndIsActivatedIsTrue();
 
-    @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat WHERE c.customer.customerId = :customerId")
+    @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat WHERE c.customer.customerId = :customerId AND c.isActivated = true")
     List<Long> findChatIdsByCustomerId(Long customerId); //todo: 쿼리 최적화 필요
 
-    @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat WHERE c.counselor.counselorId = :counselorId")
+    @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat WHERE c.counselor.counselorId = :counselorId AND c.isActivated = true")
     List<Long> findChatIdsByCounselorId(Long counselorId);
 
-    @Query("SELECT c FROM Consult c WHERE c.customer.customerId = :customerId AND c.consultType = :consultType AND c.isPaid = true")
+    @Query("SELECT c FROM Consult c WHERE c.customer.customerId = :customerId AND c.consultType = :consultType AND c.isPaid = true AND c.isActivated = true")
     List<Consult> findByCustomerIdAndConsultTypeAndIsPaid(Long customerId, ConsultType consultType);
 
-    @Query("SELECT c FROM Consult c WHERE c.counselor.counselorId = :counselorId AND c.consultType = :consultType AND c.isPaid = true")
+    @Query("SELECT c FROM Consult c WHERE c.counselor.counselorId = :counselorId AND c.consultType = :consultType AND c.isPaid = true AND c.isActivated = true")
     List<Consult> findByCounselorIdAndConsultTypeAndIsPaid(Long counselorId, ConsultType consultType);
 }

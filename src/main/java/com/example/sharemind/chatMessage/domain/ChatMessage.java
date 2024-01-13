@@ -19,10 +19,10 @@ public class ChatMessage extends BaseEntity {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @Column(name = "is_customer")
+    @Column(name = "is_customer", nullable = false)
     private Boolean isCustomer;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Builder
