@@ -1,40 +1,49 @@
-var stompClient = null;
-
-window.onload = function () {
-    var socket = new SockJS('/customerChat'); // WebSocket 연결 URL로 변경
-    stompClient = Stomp.over(socket);
-
-    stompClient.connect({
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYmJAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA2MTI4MDczfQ.qHmvZ6A6nTKdxmJXFlq6-nMG-ELkrUFEacf4ILuXR-M', // 로그인 시 나오는 토큰값으로 변경
-        'isCustomer': true
-    }, function (frame) {
-        console.log('Connected: ' + frame);
-        subscribeToChat();
-    });
-
+document.addEventListener('DOMContentLoaded', function() {
+    // Bind event listener for the "Send Message" button
     document.getElementById('sendMessage').addEventListener('click', sendMessage);
-};
 
-function subscribeToChat() {
-    stompClient.subscribe('/queue/chattings/customers/1', function (message) {
-        showMessage(JSON.parse(message.body));
+    var stompClient = null;
+    var token = '';
+    var isCustomer = false;
+
+    document.getElementById('connect').addEventListener('click', function() {
+        token = document.getElementById('token').value;
+        isCustomer = document.getElementById('isCustomer').checked;
+
+        var socket = new SockJS('/customerChat');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({
+            'Authorization': 'Bearer ' + token,
+            'isCustomer': isCustomer
+        }, function(frame) {
+            console.log('Connected: ' + frame);
+
+            var subscriptionPath = isCustomer ? '/queue/chattings/customers/1' : '/queue/chattings/counselors/1'; //만약 다른 채팅방에 들어가고 싶다면 chatId를 다른 걸로 바꿔야함
+            stompClient.subscribe(subscriptionPath, function(message) {
+                showMessage(JSON.parse(message.body));
+            });
+
+            console.log('Subscribed to ' + subscriptionPath);
+        });
     });
-}
 
-function sendMessage() {
-    var chatId = document.getElementById('chatId').value;
-    var messageContent = document.getElementById('messageContent').value;
-
-    if (stompClient && stompClient.connected && chatId) {
-        var chatMessage = {content: messageContent};
-        stompClient.send('/app/api/v1/chatMessages/customers/' + chatId, {}, JSON.stringify(chatMessage));
-        document.getElementById('messageContent').value = ''; // 메시지 전송 후 입력 필드 초기화
+    function showMessage(message) {
+        var chatWindow = document.getElementById('chatWindow');
+        var messageElement = document.createElement('div');
+        messageElement.innerHTML = "isCustomer : " + message.isCustomer + " " + message.sendTime + " From " + message.senderName + ": " + message.content;
+        chatWindow.appendChild(messageElement);
     }
-}
 
-function showMessage(message) {
-    var chatWindow = document.getElementById('chatWindow');
-    var messageElement = document.createElement('div');
-    messageElement.innerHTML = "isCustomer : " + message.isCustomer + " " + message.sendTime + "From " + message.senderName + ": " + message.content;
-    chatWindow.appendChild(messageElement);
-}
+    function sendMessage() {
+        console.log("sendMessage function triggered"); // Debugging line
+        var chatId = document.getElementById('chatId').value;
+        var messageContent = document.getElementById('messageContent').value;
+
+        if (stompClient && stompClient.connected && chatId) {
+            var chatMessage = {content: messageContent};
+            stompClient.send('/app/api/v1/chatMessages/' + (isCustomer ? 'customers' : 'counselors') + '/' + chatId, {}, JSON.stringify(chatMessage));
+            document.getElementById('messageContent').value = '';
+        }
+    }
+});
