@@ -9,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class ChatMessageController {
 
     private final ChatService chatService;
@@ -22,7 +22,7 @@ public class ChatMessageController {
                                    SimpMessageHeaderAccessor headerAccessor, boolean isCustomer) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
-        chatService.validateChat(sessionAttributes, chatId);
+        chatService.validateChat(sessionAttributes, chatId); //todo: chatId 에러 처리 해야됨
 
         String nickName = (String) sessionAttributes.get("userNickname");
         chatMessageService.createAndSendChatMessage(request, chatId, isCustomer, nickName);
