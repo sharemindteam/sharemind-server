@@ -5,7 +5,7 @@ window.onload = function () {
     stompClient = Stomp.over(socket);
 
     stompClient.connect({
-        'Authorization': 'Bearer ', // 로그인 시 나오는 토큰값으로 변경
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYmJAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA2MTI4MDczfQ.qHmvZ6A6nTKdxmJXFlq6-nMG-ELkrUFEacf4ILuXR-M', // 로그인 시 나오는 토큰값으로 변경
         'isCustomer': true
     }, function (frame) {
         console.log('Connected: ' + frame);
@@ -27,7 +27,7 @@ function sendMessage() {
 
     if (stompClient && stompClient.connected && chatId) {
         var chatMessage = {content: messageContent};
-        stompClient.send('/app/chatMessage/customers/' + chatId, {}, JSON.stringify(chatMessage));
+        stompClient.send('/app/api/v1/chatMessages/customers/' + chatId, {}, JSON.stringify(chatMessage));
         document.getElementById('messageContent').value = ''; // 메시지 전송 후 입력 필드 초기화
     }
 }

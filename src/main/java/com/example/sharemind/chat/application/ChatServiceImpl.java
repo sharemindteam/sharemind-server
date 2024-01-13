@@ -14,7 +14,6 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.content.ConsultType;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,8 +75,8 @@ public class ChatServiceImpl implements ChatService {
         ChatMessage latestChatMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
 
         Long lastReadMessageId = isCustomer ? chat.getCustomerReadId() : chat.getCounselorReadId();
-        int unreadMessageCount = chatMessageRepository.countByChat_ChatIdAndMessageIdGreaterThanAndIsCustomer(
-                chat.getChatId(), lastReadMessageId, !isCustomer);
+        int unreadMessageCount = chatMessageRepository.countByChatAndMessageIdGreaterThanAndIsCustomer(
+                chat, lastReadMessageId, !isCustomer);
 
         return ChatInfoGetResponse.of(nickname, unreadMessageCount, chat, latestChatMessage);
     }
