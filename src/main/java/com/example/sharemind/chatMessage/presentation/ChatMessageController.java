@@ -3,6 +3,7 @@ package com.example.sharemind.chatMessage.presentation;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chatMessage.application.ChatMessageService;
 import com.example.sharemind.chatMessage.dto.request.ChatMessageCreateRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "ChatMessage Controller", description = "채팅 메세지(실시간) 컨트롤러")
 @RequiredArgsConstructor
 @RestController
 public class ChatMessageController {
