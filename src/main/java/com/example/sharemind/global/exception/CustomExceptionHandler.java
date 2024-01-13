@@ -1,6 +1,7 @@
 package com.example.sharemind.global.exception;
 
 import com.example.sharemind.auth.exception.AuthException;
+import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.exception.CustomerException;
@@ -60,6 +61,13 @@ public class CustomExceptionHandler {
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
     }
 
+    @ExceptionHandler(ChatException.class)
+    public ResponseEntity<CustomExceptionResponse> catchChatException(ChatException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
     @ExceptionHandler(GlobalException.class)
     public ResponseEntity<CustomExceptionResponse> catchGlobalException(GlobalException e) {
         log.error(e.getMessage(), e);
@@ -68,17 +76,20 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<CustomExceptionResponse> catchMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<CustomExceptionResponse> catchMethodArgumentNotValidException(
+            MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(CustomExceptionResponse.of(HttpStatus.BAD_REQUEST.name(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+                .body(CustomExceptionResponse.of(HttpStatus.BAD_REQUEST.name(),
+                        e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<CustomExceptionResponse> catchConstraintViolationException(ConstraintViolationException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(CustomExceptionResponse.of(HttpStatus.BAD_REQUEST.name(), e.getConstraintViolations().stream().findFirst().get().getMessage()));
+                .body(CustomExceptionResponse.of(HttpStatus.BAD_REQUEST.name(),
+                        e.getConstraintViolations().stream().findFirst().get().getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
