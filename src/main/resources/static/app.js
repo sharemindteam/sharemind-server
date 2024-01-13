@@ -1,60 +1,49 @@
-var stompClient = null;
-var urlParams = new URLSearchParams(window.location.search);
-var userId = urlParams.get('userId');
-var roomId = urlParams.get('room');
-var isCustomer = urlParams.get('customer') === 'true';
+document.addEventListener('DOMContentLoaded', function() {
+    // Bind event listener for the "Send Message" button
+    document.getElementById('sendMessage').addEventListener('click', sendMessage);
 
-function connect() {
-    var socket = isCustomer ? new SockJS('/customerChat') : new SockJS('/counselorChat');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({userId: userId, isCustomer: isCustomer}, function (frame) {
-        console.log('Connected: ' + frame);
-        fetch('/channels?userId=' + userId + '&isCustomer=' + isCustomer)
-            .then(response => response.json())
-            .then(channelIds => {
-                channelIds.forEach(function (channelId) {
-                   stompClient.subscribe('/queue/chattings/customers/' + channelId, function (chatMessage) {
-                        var messageData = JSON.parse(chatMessage.body);
-                        if (roomId == null || roomId === channelId.toString()) {
-                            showMessage(messageData.senderName, messageData.content, messageData.sendTime);
-                        }
-                    });
-                    stompClient.subscribe('/queue/chattings/counselors/' + channelId, function (chatMessage) {
-                        var messageData = JSON.parse(chatMessage.body);
-                        if (roomId == null || roomId === channelId.toString()) {
-                            showMessage(messageData.senderName, messageData.content, messageData.sendTime);
-                        }
-                    });
-                });
-            })
-            .catch(error => console.error('Error fetching channel IDs:', error));
+    var stompClient = null;
+    var token = '';
+    var isCustomer = false;
+
+    document.getElementById('connect').addEventListener('click', function() {
+        token = document.getElementById('token').value;
+        isCustomer = document.getElementById('isCustomer').checked;
+
+        var socket = new SockJS('/customerChat');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({
+            'Authorization': 'Bearer ' + token,
+            'isCustomer': isCustomer
+        }, function(frame) {
+            console.log('Connected: ' + frame);
+
+            var subscriptionPath = isCustomer ? '/queue/chattings/customers/1' : '/queue/chattings/counselors/1'; //만약 다른 채팅방에 들어가고 싶다면 chatId를 다른 걸로 바꿔야함
+            stompClient.subscribe(subscriptionPath, function(message) {
+                showMessage(JSON.parse(message.body));
+            });
+
+            console.log('Subscribed to ' + subscriptionPath);
+        });
     });
-}
 
-function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
+    function showMessage(message) {
+        var chatWindow = document.getElementById('chatWindow');
+        var messageElement = document.createElement('div');
+        messageElement.innerHTML = "isCustomer : " + message.isCustomer + " " + message.sendTime + " From " + message.senderName + ": " + message.content;
+        chatWindow.appendChild(messageElement);
     }
-}
 
-function sendMessage() {
-    var messageContent = document.getElementById('message').value;
-    if (messageContent) {
-        var chatMessage = {
-            content: messageContent
-        };
-        var destination = isCustomer ? "/app/chattings/customers/" + roomId : "/app/chattings/counselors/" + roomId;
-        stompClient.send(destination, {}, JSON.stringify(chatMessage));
+    function sendMessage() {
+        console.log("sendMessage function triggered"); // Debugging line
+        var chatId = document.getElementById('chatId').value;
+        var messageContent = document.getElementById('messageContent').value;
+
+        if (stompClient && stompClient.connected && chatId) {
+            var chatMessage = {content: messageContent};
+            stompClient.send('/app/api/v1/chatMessages/' + (isCustomer ? 'customers' : 'counselors') + '/' + chatId, {}, JSON.stringify(chatMessage));
+            document.getElementById('messageContent').value = '';
+        }
     }
-}
-
-function showMessage(senderName, message, sendTime) {
-    var chat = document.getElementById('chat');
-    var text = document.createTextNode(senderName + ": " + message + " (" + sendTime + ")");
-    var p = document.createElement('p');
-    p.appendChild(text);
-    chat.appendChild(p);
-}
-
-window.onload = connect;
-window.onbeforeunload = disconnect;
+});

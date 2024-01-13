@@ -1,4 +1,4 @@
-package com.example.sharemind.realtimeConsult.dto.response;
+package com.example.sharemind.chatMessage.dto.response;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,18 +8,20 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ChattingResponse {
+public class ChatMessageResponse {
     private final String senderName;
     private final String content;
     private final String sendTime;
+    private final Boolean isCustomer;
 
-    private ChattingResponse(String senderName, String content, LocalDateTime sendTime) {
+    private ChatMessageResponse(String senderName, String content, LocalDateTime sendTime, Boolean isCustomer) {
         this.senderName = senderName;
         this.content = content;
         this.sendTime = sendTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.isCustomer = isCustomer;
     }
 
-    public static ChattingResponse of(String content, String senderName) {
-        return new ChattingResponse(senderName, content, LocalDateTime.now());
+    public static ChatMessageResponse of(String senderName, String content, Boolean isCustomer) {
+        return new ChatMessageResponse(senderName, content, LocalDateTime.now(), isCustomer);
     }
 }
