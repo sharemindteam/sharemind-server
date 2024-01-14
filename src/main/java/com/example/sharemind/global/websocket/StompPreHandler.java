@@ -91,29 +91,4 @@ public class StompPreHandler implements ChannelInterceptor {
         sessionAttributes.put("chatRoomIds", chatRoomIds);
         accessor.setSessionAttributes(sessionAttributes);
     }
-
-
-    /*demo용
-    @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
-        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String userId = accessor.getFirstNativeHeader("userId");
-            boolean isCustomer = Boolean.parseBoolean(accessor.getFirstNativeHeader("isCustomer"));
-            if (userId != null) {
-                String nickname =
-                        isCustomer ? customerService.getCustomerByCustomerId(Long.parseLong(userId)).getNickname() :
-                                counselorService.getCounselorByCounselorId(Long.parseLong(userId)).getNickname();
-                Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
-                sessionAttributes.put("userId", userId);
-                sessionAttributes.put("userNickname", nickname);
-                accessor.setSessionAttributes(sessionAttributes);
-                log.info("Session attributes after setting: " + sessionAttributes.toString());
-            }
-            return message;
-        }
-        return message;
-    }
-     */
 }
