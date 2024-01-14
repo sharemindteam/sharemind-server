@@ -28,6 +28,14 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final CounselorService counselorService;
 
+    @Transactional
+    @Override
+    public Chat createChat() {
+        Chat chat = Chat.newInstance();
+        chatRepository.save(chat);
+        return chat;
+    }
+
     @Override
     public List<Long> getChatsByUserId(Long userId, Boolean isCustomer) {
         if (isCustomer) {

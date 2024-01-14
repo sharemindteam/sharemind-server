@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface ChatService {
+    Chat createChat();
+
     List<Long> getChatsByUserId(Long userId, Boolean isCustomer);
 
     Chat getChatByChatId(Long chatId);
