@@ -32,7 +32,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void verifyCode(String email, String code) {
-        String storedCode = redisTemplate.opsForValue().get(email);
+        String storedCode = redisTemplate.opsForValue().get(EMAIL_PREFIX + email);
         if (!code.equals(storedCode)) {
             throw new EmailException(EmailErrorCode.CODE_MISMATCH, code);
         }
@@ -46,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void storeCodeInRedis(String email, String code) {
-        redisTemplate.opsForValue().set(email, code, EXPIRATION_TIME, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(EMAIL_PREFIX + email, code, EXPIRATION_TIME, TimeUnit.SECONDS);
     }
 
     private String createVerificationCode() {
@@ -58,8 +58,8 @@ public class EmailServiceImpl implements EmailService {
     private void sendEmail(String to, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setSubject("ceos vote 인증 메일입니다.");
-        message.setText(text);
+        message.setSubject("sharemind 회원 가입 인증 코드입니다.");
+        message.setText("sharemind 회원 가입 인증 코드입니다.\n5분 내에 입력해주세요\n코드 : " + text);
         mailSender.send(message);
     }
 
