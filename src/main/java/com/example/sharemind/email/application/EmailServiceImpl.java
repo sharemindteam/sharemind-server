@@ -62,5 +62,4 @@ public class EmailServiceImpl implements EmailService {
         message.setText("sharemind 회원 가입 인증 코드입니다.\n5분 내에 입력해주세요\n코드 : " + text);
         mailSender.send(message);
     }
-
 }
