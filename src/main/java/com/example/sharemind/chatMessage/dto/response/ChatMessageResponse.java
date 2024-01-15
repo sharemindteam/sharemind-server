@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChatMessageResponse {
+
     private final String senderName;
     private final String content;
     private final String sendTime;
