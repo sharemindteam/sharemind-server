@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageChannel;
@@ -30,6 +31,7 @@ public class StompPreHandler implements ChannelInterceptor {
     private final CounselorService counselorService;
     private final ChatService chatService;
     private final TokenProvider tokenProvider;
+    private final RedisTemplate<String, List<Long>> redisTemplate;
     private static final String TOKEN_PREFIX = "Bearer ";
 
     @Override
@@ -63,16 +65,25 @@ public class StompPreHandler implements ChannelInterceptor {
 
         Long userId = getUserId(userDetails, isCustomer);
         String nickname = getNickname(userId, isCustomer);
-        List<Long> chatRoomIds = getChatRoomIds(userId, isCustomer);
 
-        setSessionAttributes(accessor, userId, nickname, chatRoomIds);
+        setSessionAttributes(accessor, userId, nickname);
+
         log.info("Session attributes after setting: " + accessor.getSessionAttributes().toString());
+
+        setChatIdsInRedis(userId, isCustomer);
+    }
+
+    private void setChatIdsInRedis(Long userId, Boolean isCustomer) {
+        List<Long> chatIds = getChatRoomIds(userId, isCustomer);
+        String redisKey = (isCustomer ? "customer:" : "counselor:") + userId;
+        redisTemplate.opsForValue().set(redisKey, chatIds);
+        log.info("Chat IDs for user {} saved to Redis: {}", userId, chatIds);
     }
 
     private Long getUserId(CustomUserDetails userDetails, boolean isCustomer) {
         return isCustomer ? userDetails.getCustomer().getCustomerId()
                 : userDetails.getCustomer().getCounselor().getCounselorId();
-    }//todo: counseolorId가 null인 경우 에러 처리
+    }//todo: counselorId가 null인 경우 에러 처리
 
     private String getNickname(Long userId, boolean isCustomer) {
         return isCustomer ? customerService.getCustomerByCustomerId(userId).getNickname()
@@ -84,11 +95,10 @@ public class StompPreHandler implements ChannelInterceptor {
     }
 
     private void setSessionAttributes(StompHeaderAccessor accessor, Long userId,
-                                      String nickname, List<Long> chatRoomIds) {
+                                      String nickname) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
         sessionAttributes.put("userNickname", nickname);
         sessionAttributes.put("userId", userId);
-        sessionAttributes.put("chatRoomIds", chatRoomIds);
         accessor.setSessionAttributes(sessionAttributes);
     }
 }
