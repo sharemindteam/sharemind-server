@@ -1,6 +1,7 @@
 package com.example.sharemind.chat.application;
 
 import com.example.sharemind.chat.domain.Chat;
+import com.example.sharemind.chat.domain.ChatCreateEvent;
 import com.example.sharemind.chat.dto.response.ChatInfoGetResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
@@ -15,6 +16,7 @@ import com.example.sharemind.global.content.ConsultType;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +29,16 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final CounselorService counselorService;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     @Override
-    public Chat createChat() {
+    public Chat createChat(Consult consult) {
         Chat chat = Chat.newInstance();
         chatRepository.save(chat);
+
+        //todo: 레디스에 채팅목록이 있다면 chatId 새로 추가
+        notifyNewChat(chat, consult);
         return chat;
     }
 
@@ -87,5 +93,10 @@ public class ChatServiceImpl implements ChatService {
                 chat, lastReadMessageId, !isCustomer);
 
         return ChatInfoGetResponse.of(nickname, unreadMessageCount, chat, latestChatMessage);
+    }
+
+    private void notifyNewChat(Chat chat, Consult consult) {
+        publisher.publishEvent(ChatCreateEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
+                consult.getCounselor().getCounselorId()));
     }
 }

@@ -1,5 +1,6 @@
 package com.example.sharemind.global.websocket;
 
+import com.example.sharemind.chat.domain.ChatCreateEvent;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,5 +28,14 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String nickname = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("userNickname");
         log.info("{} disconnected", nickname);
+    }
+
+    @EventListener
+    public void handleChatCreateEvent(ChatCreateEvent chatCreateEvent) {
+        messageSendingOperations.convertAndSend(
+                "/app/api/v1/notifications/customers/" + chatCreateEvent.getCustomerId(), chatCreateEvent.getChatId());
+        messageSendingOperations.convertAndSend(
+                "/app/api/v1/notifications/counselors/" + chatCreateEvent.getCounselorId(),
+                chatCreateEvent.getChatId());
     }
 }
