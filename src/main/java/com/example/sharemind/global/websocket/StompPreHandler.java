@@ -1,5 +1,9 @@
 package com.example.sharemind.global.websocket;
 
+import static com.example.sharemind.global.constants.Constants.COUNSELOR_PREFIX;
+import static com.example.sharemind.global.constants.Constants.CUSTOMER_PREFIX;
+import static com.example.sharemind.global.constants.Constants.TOKEN_PREFIX;
+
 import com.example.sharemind.auth.exception.AuthErrorCode;
 import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.chat.application.ChatService;
@@ -32,9 +36,6 @@ public class StompPreHandler implements ChannelInterceptor {
     private final ChatService chatService;
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, List<Long>> redisTemplate;
-    private static final String TOKEN_PREFIX = "Bearer ";
-    private static final String CUSTOMER_PREFIX = "customer: ";
-    private static final String COUNSELOR_PREFIX = "counselor: ";
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -70,7 +71,8 @@ public class StompPreHandler implements ChannelInterceptor {
 
         setSessionAttributes(accessor, userId, nickname);
 
-        log.info("Session attributes after setting: " + Objects.requireNonNull(accessor.getSessionAttributes()).toString());
+        log.info("Session attributes after setting: " + Objects.requireNonNull(accessor.getSessionAttributes())
+                .toString());
 
         setChatIdsInRedis(userId, isCustomer);
     }
