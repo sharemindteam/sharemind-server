@@ -1,5 +1,8 @@
 package com.example.sharemind.chat.application;
 
+import static com.example.sharemind.global.constants.Constants.COUNSELOR_PREFIX;
+import static com.example.sharemind.global.constants.Constants.CUSTOMER_PREFIX;
+
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.domain.ChatCreateEvent;
 import com.example.sharemind.chat.dto.response.ChatInfoGetResponse;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +34,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final CounselorService counselorService;
     private final ApplicationEventPublisher publisher;
+    private final RedisTemplate<String, List<Long>> redisTemplate;
 
     @Transactional
     @Override
@@ -37,7 +42,8 @@ public class ChatServiceImpl implements ChatService {
         Chat chat = Chat.newInstance();
         chatRepository.save(chat);
 
-        //todo: 레디스에 채팅목록이 있다면 chatId 새로 추가
+        updateChatIdsRedis(chat, consult);
+
         notifyNewChat(chat, consult);
         return chat;
     }
@@ -93,6 +99,31 @@ public class ChatServiceImpl implements ChatService {
                 chat, lastReadMessageId, !isCustomer);
 
         return ChatInfoGetResponse.of(nickname, unreadMessageCount, chat, latestChatMessage);
+    }
+
+    private void updateChatIdsRedis(Chat chat, Consult consult) {
+        updateCustomerRedis(chat, consult);
+        updateCounselorRedis(chat, consult);
+    }
+
+    private void updateCustomerRedis(Chat chat, Consult consult) {
+        String customerKey = CUSTOMER_PREFIX + consult.getCustomer().getCustomerId();
+        List<Long> customerChatIds = redisTemplate.opsForValue()
+                .get(customerKey);
+        if (customerChatIds != null) {
+            customerChatIds.add(chat.getChatId()); //todo: 혹시나 모르니 이미 레디스에 해당 방이 있는 상황 검토..
+            redisTemplate.opsForValue().set(customerKey, customerChatIds);
+        }
+    }
+
+    private void updateCounselorRedis(Chat chat, Consult consult) {
+        String counselorKey = COUNSELOR_PREFIX + consult.getCounselor().getCounselorId();
+        List<Long> counselorChatIds = redisTemplate.opsForValue()
+                .get(counselorKey);
+        if (counselorChatIds != null) {
+            counselorChatIds.add(chat.getChatId());
+            redisTemplate.opsForValue().set(counselorKey, counselorChatIds);
+        }
     }
 
     private void notifyNewChat(Chat chat, Consult consult) {
