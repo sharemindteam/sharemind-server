@@ -3,8 +3,12 @@ package com.example.sharemind.chat.application;
 import static com.example.sharemind.global.constants.Constants.COUNSELOR_PREFIX;
 import static com.example.sharemind.global.constants.Constants.CUSTOMER_PREFIX;
 
+import com.example.sharemind.chat.content.ChatStatus;
+import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.domain.ChatCreateEvent;
+import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
+import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
 import com.example.sharemind.chat.dto.response.ChatInfoGetResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
@@ -19,11 +23,13 @@ import com.example.sharemind.global.content.ConsultType;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -64,9 +70,13 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void validateChat(Map<String, Object> sessionAttributes, Long chatId) {
-        List<Long> chatRoomIds = (List<Long>) sessionAttributes.get("chatRoomIds");
-        if (!chatRoomIds.contains(chatId)) {
+    public void validateChat(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer) {
+
+        String userId = (String) sessionAttributes.get("userId");
+        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId : COUNSELOR_PREFIX + userId;
+        List<Long> chatRoomIds = redisTemplate.opsForValue()
+                .get(redisKey);
+        if (chatRoomIds == null || !chatRoomIds.contains(chatId)) {
             throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chatId.toString());
         }
     }
@@ -84,6 +94,46 @@ public class ChatServiceImpl implements ChatService {
         return consults.stream()
                 .map(consult -> createChatInfoGetResponse(consult, isCustomer))
                 .toList();
+    }
+
+    public ChatGetStatusResponse getChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+                                               Boolean isCustomer) {
+
+        validateChatRoleRequest(chatStatusUpdateRequest, isCustomer);
+        validateChatStatusRequest(chatId, chatStatusUpdateRequest);
+    }
+
+    private void validateChatRoleRequest(ChatStatusUpdateRequest chatStatusUpdateRequest, Boolean isCustomer) {
+        String status = chatStatusUpdateRequest.getChatWebsocketStatus().toString();
+
+        if ((isCustomer && status.startsWith("COUNSELOR")) || (!isCustomer && status.startsWith("CUSTOMER"))) {
+            throw new ChatException(ChatErrorCode.INVALID_CHAT_ROLE_REQUEST, status);
+        }
+    }
+
+    private void validateChatStatusRequest(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest) {
+        Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
+
+        ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
+        switch (chatWebsocketStatus) {
+            case COUNSELOR_CHAT_START_REQUEST: {
+                compareChatStatus(chat, ChatStatus.WAITING, chatWebsocketStatus);
+            }
+            case CUSTOMER_CHAT_START_RESPONSE: {
+                compareChatStatus(chat, ChatStatus.SEND_REQUEST, chatWebsocketStatus);
+            }
+            case CUSTOMER_CHAT_FINISH_REQUEST: {
+                compareChatStatus(chat, ChatStatus.TIME_OVER, chatWebsocketStatus);
+            }
+        }
+    }
+
+    private void compareChatStatus(Chat chat, ChatStatus expectedStatus,
+                                   ChatWebsocketStatus chatWebsocketStatus) {
+        if (chat.getChatStatus() != expectedStatus) {
+            throw new ChatException(ChatErrorCode.INVALID_CHAT_STATUS_REQUEST, chatWebsocketStatus.toString());
+        }
     }
 
     private ChatInfoGetResponse createChatInfoGetResponse(Consult consult, Boolean isCustomer) {
@@ -113,6 +163,7 @@ public class ChatServiceImpl implements ChatService {
         if (customerChatIds != null) {
             customerChatIds.add(chat.getChatId()); //todo: 혹시나 모르니 이미 레디스에 해당 방이 있는 상황 검토..
             redisTemplate.opsForValue().set(customerKey, customerChatIds);
+            log.info("Updated chat IDs for user {} in Redis: {}", customerKey, customerChatIds); //todo: 테스트 후 삭제
         }
     }
 
@@ -123,6 +174,7 @@ public class ChatServiceImpl implements ChatService {
         if (counselorChatIds != null) {
             counselorChatIds.add(chat.getChatId());
             redisTemplate.opsForValue().set(counselorKey, counselorChatIds);
+            log.info("Updated chat IDs for user {} in Redis: {}", counselorKey, counselorChatIds); //todo: 테스트 후 삭제
         }
     }
 

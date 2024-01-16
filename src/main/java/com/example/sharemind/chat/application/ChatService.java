@@ -13,7 +13,7 @@ public interface ChatService {
 
     Chat getChatByChatId(Long chatId);
 
-    void validateChat(Map<String, Object> sessionAttributes, Long chatId);
+    void validateChat(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer);
 
     List<ChatInfoGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer);
 }
