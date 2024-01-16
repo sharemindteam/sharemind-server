@@ -33,6 +33,8 @@ public class StompPreHandler implements ChannelInterceptor {
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private static final String TOKEN_PREFIX = "Bearer ";
+    private static final String CUSTOMER_PREFIX = "customer: ";
+    private static final String COUNSELOR_PREFIX = "counselor: ";
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -68,14 +70,14 @@ public class StompPreHandler implements ChannelInterceptor {
 
         setSessionAttributes(accessor, userId, nickname);
 
-        log.info("Session attributes after setting: " + accessor.getSessionAttributes().toString());
+        log.info("Session attributes after setting: " + Objects.requireNonNull(accessor.getSessionAttributes()).toString());
 
         setChatIdsInRedis(userId, isCustomer);
     }
 
     private void setChatIdsInRedis(Long userId, Boolean isCustomer) {
         List<Long> chatIds = getChatRoomIds(userId, isCustomer);
-        String redisKey = (isCustomer ? "customer:" : "counselor:") + userId;
+        String redisKey = (isCustomer ? CUSTOMER_PREFIX : COUNSELOR_PREFIX) + userId;
         redisTemplate.opsForValue().set(redisKey, chatIds);
         log.info("Chat IDs for user {} saved to Redis: {}", userId, chatIds);
     }
