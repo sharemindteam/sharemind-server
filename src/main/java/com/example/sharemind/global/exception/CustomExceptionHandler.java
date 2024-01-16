@@ -5,6 +5,7 @@ import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.exception.CustomerException;
+import com.example.sharemind.email.exception.EmailException;
 import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
 import jakarta.validation.ConstraintViolationException;
@@ -42,6 +43,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ConsultException.class)
     public ResponseEntity<CustomExceptionResponse> catchConsultException(ConsultException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<CustomExceptionResponse> catchEmailException(EmailException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));

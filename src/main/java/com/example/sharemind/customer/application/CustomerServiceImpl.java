@@ -21,4 +21,11 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new CustomerException(
                         CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
     }
+
+    @Override
+    public void checkDuplicateEmail(String email) {
+        if (customerRepository.existsByEmailAndIsActivatedIsTrue(email)) {
+            throw new CustomerException(CustomerErrorCode.EMAIL_ALREADY_EXIST, email);
+        }
+    }
 }
