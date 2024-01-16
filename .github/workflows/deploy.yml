@@ -3,7 +3,7 @@ name: sharemind-deploy
 on:
   push:
     branches:
-      - 'main'
+      - 'develop'
 
 jobs:
   build:
