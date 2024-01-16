@@ -20,16 +20,6 @@ public class ChatMessageController {
     private final ChatService chatService;
     private final ChatMessageService chatMessageService;
 
-    private void handleChatMessage(Long chatId, ChatMessageCreateRequest request,
-                                   SimpMessageHeaderAccessor headerAccessor, boolean isCustomer) {
-        Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
-
-        chatService.validateChat(sessionAttributes, chatId); //todo: chatId 에러 처리 해야됨
-
-        String nickName = (String) sessionAttributes.get("userNickname");
-        chatMessageService.createAndSendChatMessage(request, chatId, isCustomer, nickName);
-    }
-
     @MessageMapping("/api/v1/chatMessages/customers/{chatId}")
     public void getCustomerChatMessage(@DestinationVariable Long chatId,
                                        ChatMessageCreateRequest request,
@@ -42,5 +32,15 @@ public class ChatMessageController {
                                          ChatMessageCreateRequest request,
                                          SimpMessageHeaderAccessor headerAccessor) {
         handleChatMessage(chatId, request, headerAccessor, false);
+    }
+
+    private void handleChatMessage(Long chatId, ChatMessageCreateRequest request,
+                                   SimpMessageHeaderAccessor headerAccessor, boolean isCustomer) {
+        Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
+
+        chatService.validateChat(chatId, sessionAttributes, isCustomer);
+
+        String nickName = (String) sessionAttributes.get("userNickname");
+        chatMessageService.createAndSendChatMessage(request, chatId, isCustomer, nickName);
     }
 }
