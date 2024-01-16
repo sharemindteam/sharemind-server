@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @Tag(name = "Consult Controller", description = "상담 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/consults")

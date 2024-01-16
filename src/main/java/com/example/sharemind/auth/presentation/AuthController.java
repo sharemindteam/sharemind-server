@@ -16,11 +16,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @Tag(name = "Auth Controller", description = "인증 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,11 +31,11 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공"),
             @ApiResponse(responseCode = "400", description = "이미 가입된 이메일 주소",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 상담 아이디로 요청됨\n 2. 존재하지 않는 후원 아이디로 요청됨",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
@@ -51,11 +49,11 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = "비밀번호 불일치",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 이메일로 요청됨",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
@@ -68,11 +66,11 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "재발급 성공"),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 refreshToken",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원에 대해 요청됨",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })

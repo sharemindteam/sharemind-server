@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin
 @Tag(name = "Admin Controller", description = "관리자 페이지 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/admins")
@@ -38,11 +39,11 @@ public class AdminController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "400", description = "이미 결제 완료된 상담",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 상담 아이디로 요청됨\n 2. 존재하지 않는 후원 아이디로 요청됨",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })

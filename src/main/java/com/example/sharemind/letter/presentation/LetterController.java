@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin
 @Tag(name = "Letter Controller", description = "편지(비실시간 상담) 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/letters")

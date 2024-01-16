@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @Tag(name = "LetterMessage Controller", description = "편지(비실시간 상담) 메시지 컨트롤러")
 @RestController
 @RequestMapping("/api/v1/letterMessages")
