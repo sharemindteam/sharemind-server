@@ -46,8 +46,8 @@ public class ChatController {
 
     @MessageMapping("/api/v1/chat/counselors/{chatId}") //request를 보낼 수 있는 웹소켓
     public ResponseEntity<Void> getAndSendChatStatus(@DestinationVariable Long chatId,
-                                                       ChatStatusUpdateRequest chatStatusUpdateRequest,
-                                                       SimpMessageHeaderAccessor headerAccessor) {
+                                                     ChatStatusUpdateRequest chatStatusUpdateRequest,
+                                                     SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
         chatService.validateChat(chatId, sessionAttributes, false);
