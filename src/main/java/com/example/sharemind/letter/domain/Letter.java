@@ -67,6 +67,16 @@ public class Letter extends BaseEntity {
         }
     }
 
+    public Boolean checkReadAuthority(Customer customer) {
+        if (this.consult.getCustomer().getCustomerId().equals(customer.getCustomerId())) {
+            return true;
+        } else if ((customer.getCounselor() != null) && (this.consult.getCounselor().getCounselorId().equals(customer.getCounselor().getCounselorId()))) {
+            return false;
+        } else {
+            throw new LetterMessageException(LetterMessageErrorCode.MESSAGE_ACCESS_DENIED);
+        }
+    }
+
     private void validateConsultCategory(ConsultCategory category) {
         if (!this.getConsult().getCounselor().getConsultCategories().contains(category)) {
             throw new LetterException(LetterErrorCode.CONSULT_CATEGORY_MISMATCH, category.name());
