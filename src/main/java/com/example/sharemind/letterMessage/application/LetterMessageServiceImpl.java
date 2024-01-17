@@ -155,12 +155,13 @@ public class LetterMessageServiceImpl implements LetterMessageService {
     public LetterMessageGetRecentTypeResponse getRecentMessageType(Long letterId) {
         Letter letter = letterService.getLetterByLetterId(letterId);
 
-        String recentType;
-        try {
-            LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByStatus(letter.getLetterStatus());
-            recentType = messageType.getDisplayName();
-        } catch (LetterMessageException e) {
-            recentType = "해당 편지에 대해 작성된 메시지가 없습니다.";
+        String recentType = null;
+        switch (letterMessageRepository.countByLetterAndIsCompletedIsTrueAndIsActivatedIsTrue(letter)) {
+            case 0 -> recentType = "해당 편지에 대해 작성된 메시지가 없습니다.";
+            case 1 -> recentType = LetterMessageType.FIRST_QUESTION.getDisplayName();
+            case 2 -> recentType = LetterMessageType.FIRST_REPLY.getDisplayName();
+            case 3 -> recentType = LetterMessageType.SECOND_QUESTION.getDisplayName();
+            case 4 -> recentType = LetterMessageType.SECOND_REPLY.getDisplayName();
         }
 
         return LetterMessageGetRecentTypeResponse.of(recentType);
