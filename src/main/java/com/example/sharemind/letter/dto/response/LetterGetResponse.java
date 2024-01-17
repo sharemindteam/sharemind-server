@@ -46,12 +46,12 @@ public class LetterGetResponse {
     private static String getUpdatedAt(LocalDateTime updatedAt) {
         LocalDateTime now = LocalDateTime.now();
 
-        if (ChronoUnit.DAYS.between(now, updatedAt) > 0) {
+        if (ChronoUnit.DAYS.between(updatedAt, now) > 0) {
             return updatedAt.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
-        } else if (ChronoUnit.HOURS.between(now, updatedAt) > 0) {
-            return ChronoUnit.HOURS.between(now, updatedAt) + "시간 전";
+        } else if (ChronoUnit.HOURS.between(updatedAt, now) > 0) {
+            return ChronoUnit.HOURS.between(updatedAt, now) + "시간 전";
         } else {
-            return ChronoUnit.MINUTES.between(now, updatedAt) + "분 전";
+            return ChronoUnit.MINUTES.between(updatedAt, now) + "분 전";
         }
     }
 }
