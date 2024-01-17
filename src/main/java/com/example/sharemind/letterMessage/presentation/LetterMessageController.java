@@ -165,8 +165,9 @@ public class LetterMessageController {
     })
     @GetMapping("/{letterId}")
     public ResponseEntity<LetterMessageGetResponse> getLetterMessage(@PathVariable Long letterId,
-                                                                     @RequestParam String messageType, @RequestParam Boolean isCompleted) {
-        return ResponseEntity.ok(letterMessageService.getLetterMessage(letterId, messageType, isCompleted));
+                                                                     @RequestParam String messageType, @RequestParam Boolean isCompleted,
+                                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(letterMessageService.getLetterMessage(letterId, messageType, isCompleted, customUserDetails.getCustomer()));
     }
 
     @Operation(summary = "메시지 마감일시 조회",

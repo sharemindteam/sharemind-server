@@ -30,6 +30,12 @@ public class Letter extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private LetterStatus letterStatus;
 
+    @Column(name = "counselor_read_id")
+    private Long counselorReadId;
+
+    @Column(name = "customer_read_id")
+    private Long customerReadId;
+
     @OneToOne(mappedBy = "letter")
     private Consult consult;
 
@@ -42,8 +48,13 @@ public class Letter extends BaseEntity {
         this.consult = consult;
     }
 
-    public void updateLetterStatus(LetterStatus letterStatus) {
+    public void updateLetterStatusAndReadId(LetterStatus letterStatus, Long messageId) {
         this.letterStatus = letterStatus;
+
+        switch (this.letterStatus) {
+            case FIRST_ASKING, SECOND_ASKING -> updateCustomerReadId(messageId);
+            case FIRST_ANSWER, FINISH -> updateCounselorReadId(messageId);
+        }
     }
 
     public void updateConsultCategory(ConsultCategory category) {
@@ -52,7 +63,19 @@ public class Letter extends BaseEntity {
         this.consultCategory = category;
     }
 
-    public void checkAuthority(LetterMessageType messageType, Customer customer) {
+    public void updateCounselorReadId(Long counselorReadId) {
+        if ((this.counselorReadId == null) || (this.counselorReadId < counselorReadId)) {
+            this.counselorReadId = counselorReadId;
+        }
+    }
+
+    public void updateCustomerReadId(Long customerReadId) {
+        if ((this.customerReadId == null) || (this.customerReadId < customerReadId)) {
+            this.customerReadId = customerReadId;
+        }
+    }
+
+    public void checkWriteAuthority(LetterMessageType messageType, Customer customer) {
         switch (messageType) {
             case FIRST_QUESTION, SECOND_QUESTION -> {
                 if (!this.consult.getCustomer().getCustomerId().equals(customer.getCustomerId())) {

@@ -19,7 +19,7 @@ public interface LetterMessageService {
 
     LetterMessageGetIsSavedResponse getIsSaved(Long letterId, String messageType);
 
-    LetterMessageGetResponse getLetterMessage(Long letterId, String messageType, Boolean isCompleted);
+    LetterMessageGetResponse getLetterMessage(Long letterId, String messageType, Boolean isCompleted, Customer customer);
 
     LetterMessageGetDeadlineResponse getDeadline(Long letterId, String messageType);
 

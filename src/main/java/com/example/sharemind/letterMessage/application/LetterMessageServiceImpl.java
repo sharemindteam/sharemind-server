@@ -39,7 +39,7 @@ public class LetterMessageServiceImpl implements LetterMessageService {
             throw new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_ALREADY_CREATED);
         }
 
-        letter.checkAuthority(messageType, customer);
+        letter.checkWriteAuthority(messageType, customer);
         LetterMessage letterMessage = letterMessageRepository.save(letterMessageCreateRequest.toEntity(letter, messageType));
 
         letterMessage.updateLetterStatus();
@@ -57,7 +57,7 @@ public class LetterMessageServiceImpl implements LetterMessageService {
             throw new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_ALREADY_COMPLETED);
         }
 
-        letterMessage.getLetter().checkAuthority(letterMessage.getMessageType(), customer);
+        letterMessage.getLetter().checkWriteAuthority(letterMessage.getMessageType(), customer);
         letterMessage.updateLetterMessage(letterMessageUpdateRequest.getContent(), letterMessageUpdateRequest.getIsCompleted());
 
         letterMessage.updateLetterStatus();
@@ -100,16 +100,27 @@ public class LetterMessageServiceImpl implements LetterMessageService {
         }
     }
 
+    @Transactional
     @Override
-    public LetterMessageGetResponse getLetterMessage(Long letterId, String type, Boolean isCompleted) {
+    public LetterMessageGetResponse getLetterMessage(Long letterId, String type, Boolean isCompleted, Customer customer) {
         Letter letter = letterService.getLetterByLetterId(letterId);
         LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(type);
+
+        Boolean isCustomer = letter.checkReadAuthority(customer);
 
         if (letterMessageRepository.existsByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
                 letter, messageType, isCompleted)) {
             LetterMessage letterMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
                     letter, messageType, isCompleted)
                     .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
+
+            if (isCompleted) {
+                if (isCustomer) {
+                    letter.updateCustomerReadId(letterMessage.getMessageId());
+                } else {
+                    letter.updateCounselorReadId(letterMessage.getMessageId());
+                }
+            }
 
             return LetterMessageGetResponse.of(letterMessage);
         } else {
