@@ -9,6 +9,7 @@ import com.example.sharemind.letterMessage.domain.LetterMessage;
 import com.example.sharemind.letterMessage.dto.request.*;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetRecentTypeResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
@@ -137,5 +138,20 @@ public class LetterMessageServiceImpl implements LetterMessageService {
         }
 
         return LetterMessageGetDeadlineResponse.of(letter.getUpdatedAt().plusDays(DEADLINE_OFFSET));
+    }
+
+    @Override
+    public LetterMessageGetRecentTypeResponse getRecentMessageType(Long letterId) {
+        Letter letter = letterService.getLetterByLetterId(letterId);
+
+        String recentType;
+        try {
+            LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByStatus(letter.getLetterStatus());
+            recentType = messageType.getDisplayName();
+        } catch (LetterMessageException e) {
+            recentType = "해당 편지에 대해 작성된 메시지가 없습니다.";
+        }
+
+        return LetterMessageGetRecentTypeResponse.of(recentType);
     }
 }

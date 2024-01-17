@@ -5,6 +5,7 @@ import com.example.sharemind.letterMessage.domain.LetterMessage;
 import com.example.sharemind.letterMessage.dto.request.*;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetRecentTypeResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 
 public interface LetterMessageService {
@@ -21,4 +22,6 @@ public interface LetterMessageService {
     LetterMessageGetResponse getLetterMessage(Long letterId, String messageType, Boolean isCompleted);
 
     LetterMessageGetDeadlineResponse getDeadline(Long letterId, String messageType);
+
+    LetterMessageGetRecentTypeResponse getRecentMessageType(Long letterId);
 }
