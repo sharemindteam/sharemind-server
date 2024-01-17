@@ -34,8 +34,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                                  String nickname) {
         ChatMessageResponse chatMessageResponse = ChatMessageResponse.of(nickname,
                 chatMessageCreateRequest.getContent(), isCustomer);
-        simpMessagingTemplate.convertAndSend("/queue/chattings/counselors/" + chatId, chatMessageResponse);
-        simpMessagingTemplate.convertAndSend("/queue/chattings/customers/" + chatId, chatMessageResponse);
+        simpMessagingTemplate.convertAndSend("/queue/chatMessages/counselors/" + chatId, chatMessageResponse);
+        simpMessagingTemplate.convertAndSend("/queue/chatMessages/customers/" + chatId, chatMessageResponse);
 
         log.info("Message [{}] send by member: {} to chatting room: {}", chatMessageCreateRequest.getContent(),
                 nickname, chatId);
