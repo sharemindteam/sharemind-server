@@ -61,10 +61,9 @@ public class LetterController {
         return ResponseEntity.ok(letterService.getCustomerNicknameAndCategory(letterId));
     }
 
-    // TODO 임시, 나중에 보완 필요
     @GetMapping
-    public ResponseEntity<List<LetterGetResponse>> getLetters(@RequestParam Boolean isCustomer,
+    public ResponseEntity<List<LetterGetResponse>> getLetters(@RequestParam Boolean filter, @RequestParam Boolean isCustomer, @RequestParam String sortType,
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(letterService.getLetters(customUserDetails.getCustomer(), isCustomer));
+        return ResponseEntity.ok(letterService.getLetters(filter, isCustomer, sortType, customUserDetails.getCustomer()));
     }
 }
