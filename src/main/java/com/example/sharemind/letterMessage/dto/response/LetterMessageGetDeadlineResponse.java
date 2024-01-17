@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LetterMessageGetDeadlineResponse {
 
-    @Schema(description = "마감일시", example = "2024년 1월 25일 9시")
+    @Schema(description = "마감일시", example = "2024년 1월 25일 9시", type = "string")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년 MM월 dd일 HH시")
     private final LocalDateTime deadline;
 

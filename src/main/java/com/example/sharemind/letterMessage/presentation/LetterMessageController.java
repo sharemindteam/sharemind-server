@@ -84,7 +84,7 @@ public class LetterMessageController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "생성 성공"),
             @ApiResponse(responseCode = "400",
-                    description = "1. 이미 최초 생성된 메시지 유형에 대한 요청\n 2. 올바른 순서의 메시지 유형이 아님(ex. 첫번째 답장 순서에 추가 질문 생성 요청",
+                    description = "1. 이미 최초 생성된 메시지 유형에 대한 요청\n 2. 올바른 순서의 메시지 유형이 아님(ex. 첫번째 답장 순서에 추가 질문 생성 요청)",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
@@ -184,8 +184,7 @@ public class LetterMessageController {
     })
     @Parameters({
             @Parameter(name = "letterId", description = "편지 아이디"),
-            @Parameter(name = "messageType", description = "메시지 유형"),
-            @Parameter(name = "isCompleted", description = "조회하려는 메시지가 임시저장된건지 최종 제출된건지")
+            @Parameter(name = "messageType", description = "메시지 유형")
     })
     @GetMapping("/deadline/{letterId}")
     public ResponseEntity<LetterMessageGetDeadlineResponse> getDeadline(@PathVariable Long letterId, @RequestParam String messageType) {

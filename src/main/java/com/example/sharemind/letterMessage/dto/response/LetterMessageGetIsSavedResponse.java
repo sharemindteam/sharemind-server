@@ -16,7 +16,7 @@ public class LetterMessageGetIsSavedResponse {
     @Schema(description = "임시저장 메시지 존재하면 true, 아니면 false", example = "true")
     private final Boolean isSaved;
 
-    @Schema(description = "마지막 수정일시, isSaved false면 null", example = "2023년 12월 25일 오후 12시 34분")
+    @Schema(description = "마지막 수정일시, isSaved false면 null", example = "2023년 12월 25일 오후 12시 34분", type = "string")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년 MM월 dd일 a HH시 mm분")
     private final LocalDateTime updatedAt;
 
