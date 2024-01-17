@@ -6,6 +6,7 @@ import com.example.sharemind.letterMessage.application.LetterMessageService;
 import com.example.sharemind.letterMessage.dto.request.*;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetRecentTypeResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -189,5 +190,10 @@ public class LetterMessageController {
     @GetMapping("/deadline/{letterId}")
     public ResponseEntity<LetterMessageGetDeadlineResponse> getDeadline(@PathVariable Long letterId, @RequestParam String messageType) {
         return ResponseEntity.ok(letterMessageService.getDeadline(letterId, messageType));
+    }
+
+    @GetMapping("/recent-type/{letterId}")
+    public ResponseEntity<LetterMessageGetRecentTypeResponse> getRecentMessageType(@PathVariable Long letterId) {
+        return ResponseEntity.ok(letterMessageService.getRecentMessageType(letterId));
     }
 }
