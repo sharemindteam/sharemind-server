@@ -1,5 +1,6 @@
 package com.example.sharemind.chat.dto.response;
 
+import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.consult.domain.Consult;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -12,10 +13,11 @@ public class ChatGetStatusResponse {
 
     private final String customerNickname;
     private final String counselorNickname;
+    private final ChatWebsocketStatus chatWebsocketStatus;
     private final LocalDateTime localDateTime;
 
-    public static ChatGetStatusResponse of(Consult consult) {
+    public static ChatGetStatusResponse of(Consult consult, ChatWebsocketStatus chatWebsocketStatus) {
         return new ChatGetStatusResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                LocalDateTime.now());
+                chatWebsocketStatus, LocalDateTime.now());
     }
 }
