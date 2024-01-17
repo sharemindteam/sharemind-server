@@ -17,6 +17,5 @@ public interface LetterService {
 
     LetterGetNicknameCategoryResponse getCustomerNicknameAndCategory(Long letterId);
 
-    // TODO 임시, 나중에 보완 필요
-    List<LetterGetResponse> getLetters(Customer customer, Boolean isCustomer);
+    List<LetterGetResponse> getLetters(Boolean filter, Boolean isCustomer, String sortType, Customer customer);
 }
