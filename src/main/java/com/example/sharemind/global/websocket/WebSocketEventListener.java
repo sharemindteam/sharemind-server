@@ -1,7 +1,9 @@
 package com.example.sharemind.global.websocket;
 
 import com.example.sharemind.chat.domain.ChatCreateEvent;
+import com.example.sharemind.chat.domain.ChatUpdateStatusEvent;
 import com.example.sharemind.chat.dto.response.ChatCreateEventResponse;
+import com.example.sharemind.chat.dto.response.ChatUpdateStatusResponse;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +36,20 @@ public class WebSocketEventListener {
     @EventListener
     public void handleChatCreateEvent(ChatCreateEvent chatCreateEvent) {
         messageSendingOperations.convertAndSend(
-                "/app/api/v1/notifications/customers/" + chatCreateEvent.getCustomerId(),
+                "/queue/chattings/notifications/customers/" + chatCreateEvent.getCustomerId(),
                 ChatCreateEventResponse.of(chatCreateEvent.getChatId()));
         messageSendingOperations.convertAndSend(
                 "/app/api/v1/notifications/counselors/" + chatCreateEvent.getCounselorId(),
                 ChatCreateEventResponse.of(chatCreateEvent.getChatId()));
+    }
+
+    @EventListener
+    public void handleChatTimeEvent(ChatUpdateStatusEvent chatUpdateStatusEvent) {
+        messageSendingOperations.convertAndSend(
+                "/queue/chattings/status/customers/" + chatUpdateStatusEvent.getChatId(),
+                ChatUpdateStatusResponse.of(chatUpdateStatusEvent.getChatWebsocketStatus()));
+        messageSendingOperations.convertAndSend(
+                "/queue/chattings/status/counselors/" + chatUpdateStatusEvent.getChatId(),
+                ChatUpdateStatusResponse.of(chatUpdateStatusEvent.getChatWebsocketStatus()));
     }
 }
