@@ -134,7 +134,12 @@ public class LetterMessageController {
     @Operation(summary = "임시저장 메시지 존재 여부 조회",
             description = "특정 편지의 특정 메시지 유형에 대한 임시저장 메시지 존재 여부 조회, 주소 형식: /api/v1/letterMessages/drafts/{letterId}?messageType=first_reply")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "200", description = "조회 성공(임시저장 메시지 존재하지 않으면 수정일시는 null로 반환됨)"),
+            @ApiResponse(responseCode = "403",
+                    description = "접근 권한이 없는 메시지에 대한 요청(ex. 해당 상담의 참여자가 아님)",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 편지 아이디로 요청됨\n 2. 존재하지 않는 메시지 유형으로 요청됨",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
@@ -152,7 +157,8 @@ public class LetterMessageController {
     @Operation(summary = "메시지 조회",
             description = "메시지 조회, 주소 형식: /api/v1/letterMessages/{letterId}?messageType=first_reply&isCompleted=true")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "200",
+                    description = "1. 조회 성공\n 2. 올바른 편지 아이디와 메시지 유형으로 요청되었으나 해당하는 메시지가 아직 작성되지 않음(필드값이 모두 null로 반환됨)"),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 편지 아이디로 요청됨\n 2. 존재하지 않는 메시지 유형으로 요청됨",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
@@ -193,6 +199,18 @@ public class LetterMessageController {
         return ResponseEntity.ok(letterMessageService.getDeadline(letterId, messageType));
     }
 
+    @Operation(summary = "편지 진행 상태 조회",
+            description = "편지에서 가장 최근에 작성된 메시지 종류 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(아직 아무 메시지도 작성되지 않은 경우도 포함)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 편지 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "letterId", description = "편지 아이디")
+    })
     @GetMapping("/recent-type/{letterId}")
     public ResponseEntity<LetterMessageGetRecentTypeResponse> getRecentMessageType(@PathVariable Long letterId) {
         return ResponseEntity.ok(letterMessageService.getRecentMessageType(letterId));

@@ -2,6 +2,7 @@ package com.example.sharemind.letter.dto.response;
 
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +16,19 @@ import java.time.temporal.ChronoUnit;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LetterGetResponse {
 
+    @Schema(description = "편지 아이디")
     private final Long letterId;
 
+    @Schema(description = "편지 진행 상태", example = "답변 대기")
     private final String letterStatus;
 
+    @Schema(description = "대화 상대방 닉네임", example = "사용자37482")
     private final String opponentName;
 
+    @Schema(description = "마지막 업데이트 일시", example = "8분 전")
     private final String updatedAt;
 
+    @Schema(description = "마지막 업데이트 내용", example = "안녕하세요, 어쩌구저쩌구~")
     private final String recentContent;
 
     public static LetterGetResponse of(Letter letter, LetterMessage recentMessage, Boolean isCustomer) {
