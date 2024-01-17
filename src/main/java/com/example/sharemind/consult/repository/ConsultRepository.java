@@ -1,5 +1,6 @@
 package com.example.sharemind.consult.repository;
 
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.counselor.domain.Counselor;
@@ -34,4 +35,6 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
 
     // TODO 임시
     List<Consult> findAllByCounselorAndConsultType(Counselor counselor, ConsultType consultType);
+
+    Optional<Consult> findByChatAndIsActivatedIsTrue(Chat chat);
 }

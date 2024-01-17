@@ -16,6 +16,8 @@ import com.example.sharemind.chat.repository.ChatRepository;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.chatMessage.repository.ChatMessageRepository;
 import com.example.sharemind.consult.domain.Consult;
+import com.example.sharemind.consult.exception.ConsultErrorCode;
+import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.consult.repository.ConsultRepository;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
@@ -41,6 +43,7 @@ public class ChatServiceImpl implements ChatService {
     private final CounselorService counselorService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
+    private final ChatTaskScheduler chatTaskScheduler;
 
     @Transactional
     @Override
@@ -96,11 +99,49 @@ public class ChatServiceImpl implements ChatService {
                 .toList();
     }
 
-    public ChatGetStatusResponse getChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
-                                               Boolean isCustomer) {
+    @Override
+    public ChatGetStatusResponse getAndUpdateChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+                                                        Boolean isCustomer) {
+        Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
+        Consult consult = consultRepository.findByChatAndIsActivatedIsTrue(chat).orElseThrow(
+                () -> new ConsultException(ConsultErrorCode.CONSULT_NOT_FOUND, "chatId : " + chatId.toString()));
 
+        validateChatStatusRequest(chat, chatStatusUpdateRequest, isCustomer);
+
+        handleStatusRequest(chat, chatStatusUpdateRequest);
+
+        return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
+    }
+
+    private void handleStatusRequest(Chat chat, ChatStatusUpdateRequest chatStatusUpdateRequest) {
+
+        ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
+        switch (chatWebsocketStatus) {
+            case COUNSELOR_CHAT_START_REQUEST: { //counselor가 상담 요청을 보낸 상황
+                chat.updateChatStatus(ChatStatus.SEND_REQUEST);
+
+                chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
+            }
+            case CUSTOMER_CHAT_START_RESPONSE: {
+                chat.updateChatStatus(ChatStatus.ONGOING);
+                chat.updateStartedAt();
+
+                chatTaskScheduler.checkChatDuration(chat);
+            }
+
+            case CUSTOMER_CHAT_FINISH_REQUEST: { //구매자가 상담 종료를 누른 상황
+                chat.updateChatStatus(ChatStatus.FINISH);
+            }
+            default:
+                throw new ChatException(ChatErrorCode.INVALID_CHAT_REQUEST, chatWebsocketStatus.toString());
+        }
+    }
+
+    private void validateChatStatusRequest(Chat chat, ChatStatusUpdateRequest chatStatusUpdateRequest,
+                                           Boolean isCustomer) {
         validateChatRoleRequest(chatStatusUpdateRequest, isCustomer);
-        validateChatStatusRequest(chatId, chatStatusUpdateRequest);
+        validateChatProgressRequest(chat, chatStatusUpdateRequest);
     }
 
     private void validateChatRoleRequest(ChatStatusUpdateRequest chatStatusUpdateRequest, Boolean isCustomer) {
@@ -111,10 +152,7 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private void validateChatStatusRequest(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest) {
-        Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
-                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
-
+    private void validateChatProgressRequest(Chat chat, ChatStatusUpdateRequest chatStatusUpdateRequest) {
         ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
         switch (chatWebsocketStatus) {
             case COUNSELOR_CHAT_START_REQUEST: {
@@ -126,6 +164,8 @@ public class ChatServiceImpl implements ChatService {
             case CUSTOMER_CHAT_FINISH_REQUEST: {
                 compareChatStatus(chat, ChatStatus.TIME_OVER, chatWebsocketStatus);
             }
+            default:
+                throw new ChatException(ChatErrorCode.INVALID_CHAT_REQUEST, chatWebsocketStatus.toString());
         }
     }
 
