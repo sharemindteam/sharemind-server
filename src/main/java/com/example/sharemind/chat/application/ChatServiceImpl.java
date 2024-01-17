@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ public class ChatServiceImpl implements ChatService {
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Transactional
     @Override
@@ -100,8 +102,17 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatGetStatusResponse getAndUpdateChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
-                                                        Boolean isCustomer) {
+    public void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+                                     Boolean isCustomer) {
+
+        ChatGetStatusResponse chatGetStatusResponse = getChatStatus(chatId, chatStatusUpdateRequest, isCustomer);
+
+        sendChatStatus(chatId, chatGetStatusResponse);
+
+    }
+
+    private ChatGetStatusResponse getChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+                                                Boolean isCustomer) {
         Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
         Consult consult = consultRepository.findByChatAndIsActivatedIsTrue(chat).orElseThrow(
@@ -112,6 +123,14 @@ public class ChatServiceImpl implements ChatService {
         handleStatusRequest(chat, chatStatusUpdateRequest);
 
         return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
+    }
+
+    private void sendChatStatus(Long chatId, ChatGetStatusResponse chatGetStatusResponse) {
+        simpMessagingTemplate.convertAndSend("/queue/chattings/counselors/" + chatId, chatGetStatusResponse);
+        simpMessagingTemplate.convertAndSend("/queue/chattings/customers/" + chatId, chatGetStatusResponse);
+
+        log.info("status [{}] : chatting room: {}",
+                chatGetStatusResponse.getChatWebsocketStatus().toString(), chatId);
     }
 
     private void handleStatusRequest(Chat chat, ChatStatusUpdateRequest chatStatusUpdateRequest) {

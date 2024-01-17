@@ -19,6 +19,6 @@ public interface ChatService {
 
     List<ChatInfoGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer);
 
-    ChatGetStatusResponse getAndUpdateChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
-                                                 Boolean isCustomer);
+    void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+                              Boolean isCustomer);
 }

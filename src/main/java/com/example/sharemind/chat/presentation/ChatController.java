@@ -45,12 +45,15 @@ public class ChatController {
     }
 
     @MessageMapping("/api/v1/chat/counselors/{chatId}") //request를 보낼 수 있는 웹소켓
-    public void getChatStatus(@DestinationVariable Long chatId,
-                                              ChatStatusUpdateRequest chatStatusUpdateRequest,
-                                              SimpMessageHeaderAccessor headerAccessor) {
+    public ResponseEntity<Void> getAndSendChatStatus(@DestinationVariable Long chatId,
+                                                       ChatStatusUpdateRequest chatStatusUpdateRequest,
+                                                       SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
         chatService.validateChat(chatId, sessionAttributes, false);
+
+        chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, false);
+        return ResponseEntity.ok().build();
         //request 보낼 수 있는 거 종류 : 1. counselor가 보내는 상담 요청, 2. customer가 보내는 상담 요청 허락(허락되면 chat status도 업데이트 -> 상담중으로 변화), 3.customer가 상담 종료 request 보내는거
         //eventhandler 만들거 : 5분 남았을 때, 30분 지낫을 때(이때는 다른 response로 보내주어야함), 상담종료가되엇을때 리뷰 요청을 customer로 보내는 이벤트핸들러
         //todo: 전달 받은 status에 따른 채팅 상태 업데이트
