@@ -32,7 +32,7 @@ public class AuthController {
     @Operation(summary = "회원가입", description = "customer 생성")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 이미 가입된 이메일 주소\n 2. 올바르지 않은 이메일/비밀번호/전화번호 형식",
+            @ApiResponse(responseCode = "400", description = "1. 이미 가입된 이메일 주소\n 2. 올바르지 않은 이메일/비밀번호/전화번호 형식\n 3. 로그인 이메일과 복구 이메일 주소가 동일",
                             content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )

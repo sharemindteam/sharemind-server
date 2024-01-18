@@ -12,7 +12,7 @@ public class LetterMessageCreateFirstRequest {
     @NotNull(message = "편지 id는 공백일 수 없습니다.")
     private Long letterId;
 
-    @Schema(description = "선택한 상담 카테고리", example = "권태기")
+    @Schema(description = "선택한 상담 카테고리", example = "BOREDOM")
     @NotBlank(message = "상담 카테고리는 공백일 수 없습니다.")
     private String consultCategory;
 

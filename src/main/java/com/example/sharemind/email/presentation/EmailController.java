@@ -1,6 +1,6 @@
 package com.example.sharemind.email.presentation;
 
-import com.example.sharemind.customer.application.CustomerService;
+import com.example.sharemind.auth.application.AuthService;
 import com.example.sharemind.email.application.EmailService;
 import com.example.sharemind.email.dto.request.EmailPostCodeRequest;
 import com.example.sharemind.email.dto.request.EmailPostRequest;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmailController {
 
     private final EmailService emailService;
-    private final CustomerService customerService;
+    private final AuthService authService;
 
     @Operation(summary = "이메일 인증코드 발송", description = "회원가입 시 이메일 인증코드를 발송")
     @ApiResponses({
@@ -32,7 +32,7 @@ public class EmailController {
     })
     @PostMapping
     public ResponseEntity<Void> sendVerificationCode(@Valid @RequestBody EmailPostRequest emailPostRequest) {
-        customerService.checkDuplicateEmail(emailPostRequest.getEmail());
+        authService.checkDuplicateEmail(emailPostRequest.getEmail());
 
         emailService.sendVerificationCode(emailPostRequest.getEmail());
         return ResponseEntity.ok().build();
