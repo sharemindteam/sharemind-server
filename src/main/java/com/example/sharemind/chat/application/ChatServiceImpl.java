@@ -98,6 +98,7 @@ public class ChatServiceImpl implements ChatService {
                     ConsultType.CHAT);
         }
         return consults.stream()
+                .filter(consult -> consult.getChat() != null)
                 .map(consult -> createChatInfoGetResponse(consult, isCustomer))
                 .toList();
     }
