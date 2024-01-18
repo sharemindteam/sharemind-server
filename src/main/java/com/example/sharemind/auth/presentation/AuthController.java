@@ -32,11 +32,7 @@ public class AuthController {
     @Operation(summary = "회원가입", description = "customer 생성")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공"),
-            @ApiResponse(responseCode = "400", description = "이미 가입된 이메일 주소",
-                            content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomExceptionResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 상담 아이디로 요청됨\n 2. 존재하지 않는 후원 아이디로 요청됨",
+            @ApiResponse(responseCode = "400", description = "1. 이미 가입된 이메일 주소\n 2. 올바르지 않은 이메일/비밀번호/전화번호 형식",
                             content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -64,7 +60,8 @@ public class AuthController {
         return ResponseEntity.ok(authService.signIn(authSignInRequest));
     }
 
-    @Operation(summary = "accessToken 재발급", description = "accessToken 유효기간 1시간, refreshToken 유효기간 1주")
+    @Operation(summary = "accessToken, refreshToken 재발급",
+            description = "accessToken 유효기간 1시간, refreshToken 유효기간 1주 (refreshToken도 같이 재발급되므로 1주가 지나지 않아도 재발급 후엔 이전 refreshToken은 사용 불가)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "재발급 성공"),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 refreshToken",

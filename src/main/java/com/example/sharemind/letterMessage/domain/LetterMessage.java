@@ -52,7 +52,7 @@ public class LetterMessage extends BaseEntity {
 
     public void updateLetterStatus() {
         if (this.isCompleted) {
-            this.letter.updateLetterStatus(this.messageType.getLetterStatus());
+            this.letter.updateLetterStatusAndReadId(this.messageType.getLetterStatus(), this.messageId);
         }
     }
 

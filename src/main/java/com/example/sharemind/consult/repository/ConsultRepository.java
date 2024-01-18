@@ -30,11 +30,5 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
     @Query("SELECT c FROM Consult c WHERE c.counselor.counselorId = :counselorId AND c.consultType = :consultType AND c.isPaid = true AND c.isActivated = true")
     List<Consult> findByCounselorIdAndConsultTypeAndIsPaid(Long counselorId, ConsultType consultType);
 
-    // TODO 임시
-    List<Consult> findAllByCustomerAndConsultType(Customer customer, ConsultType consultType);
-
-    // TODO 임시
-    List<Consult> findAllByCounselorAndConsultType(Counselor counselor, ConsultType consultType);
-
     Optional<Consult> findByChatAndIsActivatedIsTrue(Chat chat);
 }
