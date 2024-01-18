@@ -77,6 +77,16 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public void validateNotFinishChat(Long chatId) {
+        Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
+        if (chat.getChatStatus() == ChatStatus.FINISH) {
+            throw new ChatException(ChatErrorCode.CHAT_STATUS_FINISH, chatId.toString());
+        }
+
+    }
+
+    @Override
     public List<ChatInfoGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer) {
         List<Consult> consults;
 

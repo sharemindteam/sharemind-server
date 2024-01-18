@@ -25,6 +25,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public void createAndSendChatMessage(ChatMessageCreateRequest chatMessageCreateRequest, Long chatId,
                                          Boolean isCustomer, String nickname) {
+        chatService.validateNotFinishChat(chatId);
+
         createChatMessage(chatMessageCreateRequest, chatId, isCustomer);
 
         sendChatMessage(chatMessageCreateRequest, chatId, isCustomer, nickname);

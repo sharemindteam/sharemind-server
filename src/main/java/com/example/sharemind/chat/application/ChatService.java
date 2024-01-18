@@ -19,4 +19,6 @@ public interface ChatService {
 
     void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
                               Boolean isCustomer);
+
+    void validateNotFinishChat(Long chatId);
 }
