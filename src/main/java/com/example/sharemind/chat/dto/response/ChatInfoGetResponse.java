@@ -2,6 +2,7 @@ package com.example.sharemind.chat.dto.response;
 
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,12 +13,18 @@ import lombok.RequiredArgsConstructor;
 public class ChatInfoGetResponse {
 
     private final Long chatId;
+
     private final String opponentNickname;
+
     private final String chatStatus;
 
     private final int unreadMessageCount;
+
     private final String latestMessageContent;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년 MM월 dd일 a HH시 mm분")
     private final LocalDateTime latestMessageUpdatedAt;
+
     private final Boolean latestMessageIsCustomer;
 
     public static ChatInfoGetResponse of(String nickname, int unreadMessageCount, Chat chat, ChatMessage chatMessage) {
