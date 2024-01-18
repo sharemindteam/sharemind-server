@@ -60,6 +60,8 @@ public class CounselorServiceImpl implements CounselorService {
 
         if (counselor.getRetryEducation() == null) {
             return true;
+        } else if (counselor.getIsEducated()) {
+            return false;
         }
         return counselor.getRetryEducation().isBefore(LocalDateTime.now());
     }

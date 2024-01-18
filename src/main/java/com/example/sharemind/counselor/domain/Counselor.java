@@ -99,12 +99,19 @@ public class Counselor extends BaseEntity {
     }
 
     public void updateIsEducated(Boolean isEducated) {
+        validateIsEducated();
         this.isEducated = isEducated;
 
         if (isEducated.equals(false)) {
             this.retryEducation = LocalDateTime.now().plusDays(RETRY_EDUCATION_OFFSET);
         } else {
             this.level = COUNSELOR_BASIC_LEVEL;
+        }
+    }
+
+    private void validateIsEducated() {
+        if (this.isEducated.equals(true)) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_ALREADY_EDUCATED);
         }
     }
 }
