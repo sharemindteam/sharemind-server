@@ -8,4 +8,6 @@ public interface CounselorService {
     Counselor getCounselorByCustomerId(Long customerId);
 
     void updateIsEducated(Boolean isEducated, Long customerId);
+
+    Boolean getRetryPermission(Long customerId);
 }
