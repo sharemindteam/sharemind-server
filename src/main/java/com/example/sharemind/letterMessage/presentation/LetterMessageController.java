@@ -4,7 +4,6 @@ import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.letterMessage.application.LetterMessageService;
 import com.example.sharemind.letterMessage.dto.request.*;
-import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetRecentTypeResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
@@ -174,29 +173,6 @@ public class LetterMessageController {
                                                                      @RequestParam String messageType, @RequestParam Boolean isCompleted,
                                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(letterMessageService.getLetterMessage(letterId, messageType, isCompleted, customUserDetails.getCustomer()));
-    }
-
-    @Operation(summary = "메시지 마감일시 조회",
-            description = "메시지 마감일시 조회, 주소 형식: /api/v1/letterMessages/deadline/{letterId}?messageType=first_reply")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400",
-                    description = "마감기한이 존재하지 않음(ex. 순서 상 아직 마감기한이 존재하는 메시지 유형이 아님, 이미 제출된 메시지 유형임)",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomExceptionResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 편지 아이디로 요청됨\n 2. 존재하지 않는 메시지 유형으로 요청됨",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomExceptionResponse.class))
-            )
-    })
-    @Parameters({
-            @Parameter(name = "letterId", description = "편지 아이디"),
-            @Parameter(name = "messageType", description = "메시지 유형")
-    })
-    @GetMapping("/deadline/{letterId}")
-    public ResponseEntity<LetterMessageGetDeadlineResponse> getDeadline(@PathVariable Long letterId, @RequestParam String messageType) {
-        return ResponseEntity.ok(letterMessageService.getDeadline(letterId, messageType));
     }
 
     @Operation(summary = "편지 진행 상태 조회",

@@ -7,7 +7,6 @@ import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.content.LetterMessageType;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
 import com.example.sharemind.letterMessage.dto.request.*;
-import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetRecentTypeResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LetterMessageServiceImpl implements LetterMessageService {
     private static final Boolean IS_NOT_COMPLETED = false;
-    private static final Integer DEADLINE_OFFSET = 1;
 
     private final LetterService letterService;
     private final LetterMessageRepository letterMessageRepository;
@@ -126,29 +124,6 @@ public class LetterMessageServiceImpl implements LetterMessageService {
         } else {
             return LetterMessageGetResponse.of();
         }
-    }
-
-    @Override
-    public LetterMessageGetDeadlineResponse getDeadline(Long letterId, String type) {
-        Letter letter = letterService.getLetterByLetterId(letterId);
-        LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(type);
-
-        LetterMessageType previousType = null;
-        switch (messageType) {
-            case FIRST_QUESTION -> throw new LetterMessageException(LetterMessageErrorCode.NO_DEADLINE);
-
-            case FIRST_REPLY -> previousType = LetterMessageType.FIRST_QUESTION;
-
-            case SECOND_QUESTION -> previousType = LetterMessageType.FIRST_REPLY;
-
-            case SECOND_REPLY -> previousType = LetterMessageType.SECOND_QUESTION;
-        }
-
-        if (!letter.getLetterStatus().equals(previousType.getLetterStatus())) {
-            throw new LetterMessageException(LetterMessageErrorCode.NO_DEADLINE);
-        }
-
-        return LetterMessageGetDeadlineResponse.of(letter.getUpdatedAt().plusDays(DEADLINE_OFFSET));
     }
 
     @Override
