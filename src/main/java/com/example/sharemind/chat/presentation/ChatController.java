@@ -44,8 +44,20 @@ public class ChatController {
         //todo: 메세지 읽지 않은 순, 완료/취소된 상담 포함한 것도 구현해야함ㅜㅜ
     }
 
-    @MessageMapping("/api/v1/chat/counselors/{chatId}") //request를 보낼 수 있는 웹소켓
-    public ResponseEntity<Void> getAndSendChatStatus(@DestinationVariable Long chatId,
+    @MessageMapping("/api/v1/chat/customers/{chatId}")
+    public ResponseEntity<Void> getAndSendCustomerChatStatus(@DestinationVariable Long chatId,
+                                                     ChatStatusUpdateRequest chatStatusUpdateRequest,
+                                                     SimpMessageHeaderAccessor headerAccessor) {
+        Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
+
+        chatService.validateChat(chatId, sessionAttributes, true);
+
+        chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, true);
+        return ResponseEntity.ok().build();
+    }
+
+    @MessageMapping("/api/v1/chat/counselors/{chatId}")
+    public ResponseEntity<Void> getAndSendCounselorChatStatus(@DestinationVariable Long chatId,
                                                      ChatStatusUpdateRequest chatStatusUpdateRequest,
                                                      SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
@@ -54,8 +66,5 @@ public class ChatController {
 
         chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, false);
         return ResponseEntity.ok().build();
-        //request 보낼 수 있는 거 종류 : 1. counselor가 보내는 상담 요청, 2. customer가 보내는 상담 요청 허락(허락되면 chat status도 업데이트 -> 상담중으로 변화), 3.customer가 상담 종료 request 보내는거
-        //eventhandler 만들거 : 5분 남았을 때, 30분 지낫을 때(이때는 다른 response로 보내주어야함), 상담종료가되엇을때 리뷰 요청을 customer로 보내는 이벤트핸들러
-        //todo: 전달 받은 status에 따른 채팅 상태 업데이트
     }
 }
