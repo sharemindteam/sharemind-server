@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
     public void signUp(AuthSignUpRequest authSignUpRequest) {
 
         if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail())) {
-            throw new CustomerException(CustomerErrorCode.EMAIL_ALREADY_EXIST, authSignUpRequest.getEmail());
+            throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST, authSignUpRequest.getEmail());
         }
 
         Customer customer = authSignUpRequest.toEntity(passwordEncoder.encode(authSignUpRequest.getPassword()));
@@ -68,5 +68,12 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = tokenProvider.createRefreshToken(customer.getEmail());
 
         return TokenDto.of(accessToken, refreshToken);
+    }
+
+    @Override
+    public void checkDuplicateEmail(String email) {
+        if (customerRepository.existsByEmailAndIsActivatedIsTrue(email)) {
+            throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST, email);
+        }
     }
 }

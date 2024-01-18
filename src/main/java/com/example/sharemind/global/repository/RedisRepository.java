@@ -1,4 +1,4 @@
-package com.example.sharemind.auth.repository;
+package com.example.sharemind.global.repository;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.time.Duration;
 
 @Repository
-public class RefreshTokenRepository {
+public class RedisRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public RefreshTokenRepository(RedisTemplate<String, String> redisTemplate) {
+    public RedisRepository(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

@@ -12,7 +12,7 @@ public class LetterMessageUpdateFirstRequest {
     @NotNull(message = "메시지 id는 공백일 수 없습니다.")
     private Long messageId;
 
-    @Schema(description = "선택한 상담 카테고리", example = "이별/재회")
+    @Schema(description = "선택한 상담 카테고리", example = "BREAKUP")
     @NotBlank(message = "상담 카테고리는 공백일 수 없습니다.")
     private String consultCategory;
 

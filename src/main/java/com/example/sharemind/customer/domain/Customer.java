@@ -1,5 +1,7 @@
 package com.example.sharemind.customer.domain;
 
+import com.example.sharemind.auth.exception.AuthErrorCode;
+import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.global.common.BaseEntity;
@@ -59,6 +61,8 @@ public class Customer extends BaseEntity {
 
     @Builder
     public Customer(String nickname, String email, String password, String phoneNumber, String recoveryEmail) {
+        validateEmails(email, recoveryEmail);
+
         this.nickname = nickname;
         this.email = email;
         this.password = password;
@@ -68,5 +72,11 @@ public class Customer extends BaseEntity {
         this.roles = new ArrayList<>() {{
             add(Role.ROLE_CUSTOMER);
         }};
+    }
+
+    private void validateEmails(String email, String recoveryEmail) {
+        if (email.equals(recoveryEmail)) {
+            throw new AuthException(AuthErrorCode.INVALID_RECOVERY_EMAIL);
+        }
     }
 }

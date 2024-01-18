@@ -28,7 +28,7 @@ public enum LetterMessageType {
                 .filter(messageType -> messageType.name().equalsIgnoreCase(name))
                 .findAny().orElseThrow(
                         () -> new LetterMessageException(
-                                LetterMessageErrorCode.Letter_MESSAGE_TYPE_NOT_FOUND, name
+                                LetterMessageErrorCode.LETTER_MESSAGE_TYPE_NOT_FOUND, name
                         )
                 );
     }
@@ -38,7 +38,7 @@ public enum LetterMessageType {
                 .filter(messageType -> messageType.getLetterStatus().equals(letterStatus))
                 .findAny().orElseThrow(
                         () -> new LetterMessageException(
-                                LetterMessageErrorCode.Letter_MESSAGE_TYPE_NOT_FOUND
+                                LetterMessageErrorCode.LETTER_MESSAGE_TYPE_NOT_FOUND
                         )
                 );
     }

@@ -4,6 +4,7 @@ import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.dto.response.LetterGetCounselorCategoriesResponse;
+import com.example.sharemind.letter.dto.response.LetterGetDeadlineResponse;
 import com.example.sharemind.letter.dto.response.LetterGetNicknameCategoryResponse;
 import com.example.sharemind.letter.dto.response.LetterGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -78,5 +79,22 @@ public class LetterController {
     public ResponseEntity<List<LetterGetResponse>> getLetters(@RequestParam Boolean filter, @RequestParam Boolean isCustomer, @RequestParam String sortType,
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(letterService.getLetters(filter, isCustomer, sortType, customUserDetails.getCustomer()));
+    }
+
+    @Operation(summary = "편지 마감기한 조회",
+            description = "편지 환불까지 마감기한 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(첫번째 질문은 마감기한이 없으므로 null 반환)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 편지 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "letterId", description = "편지 아이디")
+    })
+    @GetMapping("/deadline/{letterId}")
+    public ResponseEntity<LetterGetDeadlineResponse> getDeadline(@PathVariable Long letterId) {
+        return ResponseEntity.ok(letterService.getDeadline(letterId));
     }
 }

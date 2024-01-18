@@ -11,4 +11,9 @@ public class AuthException extends RuntimeException {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
+
+    public AuthException(AuthErrorCode errorCode, String message) {
+        super(errorCode.getMessage() + " : " + message);
+        this.errorCode = errorCode;
+    }
 }
