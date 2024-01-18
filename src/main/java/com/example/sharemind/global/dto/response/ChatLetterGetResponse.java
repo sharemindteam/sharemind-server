@@ -13,6 +13,9 @@ public class ChatLetterGetResponse {
     @Schema(description = "아이디")
     private final Long id;
 
+    @Schema(description = "상담 스타일", example = "조언")
+    private final String consultStyle;
+
     @Schema(description = "진행 상태", example = "답변 대기")
     private final String status;
 
@@ -32,7 +35,7 @@ public class ChatLetterGetResponse {
     private final Integer unreadMessageCount;
 
     public static ChatLetterGetResponse of(LetterGetResponse letterGetResponse) {
-        return new ChatLetterGetResponse(letterGetResponse.getLetterId(), letterGetResponse.getLetterStatus(), letterGetResponse.getOpponentName(),
+        return new ChatLetterGetResponse(letterGetResponse.getLetterId(), letterGetResponse.getConsultStyle(), letterGetResponse.getLetterStatus(), letterGetResponse.getOpponentName(),
                 letterGetResponse.getUpdatedAt(), letterGetResponse.getRecentContent(), null, null);
     }
 }
