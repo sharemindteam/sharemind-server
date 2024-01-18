@@ -13,9 +13,12 @@ import com.example.sharemind.letterMessage.exception.LetterMessageException;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 public class Letter extends BaseEntity {
+    private static final Long DEADLINE_OFFSET = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +39,9 @@ public class Letter extends BaseEntity {
     @Column(name = "customer_read_id")
     private Long customerReadId;
 
+    @Column
+    private LocalDateTime deadline;
+
     @OneToOne(mappedBy = "letter")
     private Consult consult;
 
@@ -52,8 +58,15 @@ public class Letter extends BaseEntity {
         this.letterStatus = letterStatus;
 
         switch (this.letterStatus) {
-            case FIRST_ASKING, SECOND_ASKING -> updateCustomerReadId(messageId);
-            case FIRST_ANSWER, FINISH -> updateCounselorReadId(messageId);
+            case FIRST_ASKING, SECOND_ASKING -> {
+                updateCustomerReadId(messageId);
+                updateDeadline();
+            }
+            case FIRST_ANSWER -> {
+                updateCounselorReadId(messageId);
+                updateDeadline();
+            }
+            case FINISH -> updateCounselorReadId(messageId);
         }
     }
 
@@ -98,6 +111,10 @@ public class Letter extends BaseEntity {
         } else {
             throw new LetterMessageException(LetterMessageErrorCode.MESSAGE_ACCESS_DENIED);
         }
+    }
+
+    private void updateDeadline() {
+        this.deadline = LocalDateTime.now().plusDays(DEADLINE_OFFSET);
     }
 
     private void validateConsultCategory(ConsultCategory category) {
