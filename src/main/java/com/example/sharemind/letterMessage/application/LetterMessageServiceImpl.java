@@ -9,6 +9,7 @@ import com.example.sharemind.letterMessage.domain.LetterMessage;
 import com.example.sharemind.letterMessage.dto.request.*;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetRecentTypeResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
@@ -38,7 +39,7 @@ public class LetterMessageServiceImpl implements LetterMessageService {
             throw new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_ALREADY_CREATED);
         }
 
-        letter.checkAuthority(messageType, customer);
+        letter.checkWriteAuthority(messageType, customer);
         LetterMessage letterMessage = letterMessageRepository.save(letterMessageCreateRequest.toEntity(letter, messageType));
 
         letterMessage.updateLetterStatus();
@@ -56,7 +57,7 @@ public class LetterMessageServiceImpl implements LetterMessageService {
             throw new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_ALREADY_COMPLETED);
         }
 
-        letterMessage.getLetter().checkAuthority(letterMessage.getMessageType(), customer);
+        letterMessage.getLetter().checkWriteAuthority(letterMessage.getMessageType(), customer);
         letterMessage.updateLetterMessage(letterMessageUpdateRequest.getContent(), letterMessageUpdateRequest.getIsCompleted());
 
         letterMessage.updateLetterStatus();
@@ -99,16 +100,27 @@ public class LetterMessageServiceImpl implements LetterMessageService {
         }
     }
 
+    @Transactional
     @Override
-    public LetterMessageGetResponse getLetterMessage(Long letterId, String type, Boolean isCompleted) {
+    public LetterMessageGetResponse getLetterMessage(Long letterId, String type, Boolean isCompleted, Customer customer) {
         Letter letter = letterService.getLetterByLetterId(letterId);
         LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(type);
+
+        Boolean isCustomer = letter.checkReadAuthority(customer);
 
         if (letterMessageRepository.existsByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
                 letter, messageType, isCompleted)) {
             LetterMessage letterMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
                     letter, messageType, isCompleted)
                     .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
+
+            if (isCompleted) {
+                if (isCustomer) {
+                    letter.updateCustomerReadId(letterMessage.getMessageId());
+                } else {
+                    letter.updateCounselorReadId(letterMessage.getMessageId());
+                }
+            }
 
             return LetterMessageGetResponse.of(letterMessage);
         } else {
@@ -137,5 +149,21 @@ public class LetterMessageServiceImpl implements LetterMessageService {
         }
 
         return LetterMessageGetDeadlineResponse.of(letter.getUpdatedAt().plusDays(DEADLINE_OFFSET));
+    }
+
+    @Override
+    public LetterMessageGetRecentTypeResponse getRecentMessageType(Long letterId) {
+        Letter letter = letterService.getLetterByLetterId(letterId);
+
+        String recentType = null;
+        switch (letterMessageRepository.countByLetterAndIsCompletedIsTrueAndIsActivatedIsTrue(letter)) {
+            case 0 -> recentType = "해당 편지에 대해 작성된 메시지가 없습니다.";
+            case 1 -> recentType = LetterMessageType.FIRST_QUESTION.getDisplayName();
+            case 2 -> recentType = LetterMessageType.FIRST_REPLY.getDisplayName();
+            case 3 -> recentType = LetterMessageType.SECOND_QUESTION.getDisplayName();
+            case 4 -> recentType = LetterMessageType.SECOND_REPLY.getDisplayName();
+        }
+
+        return LetterMessageGetRecentTypeResponse.of(recentType);
     }
 }

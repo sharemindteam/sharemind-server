@@ -61,10 +61,22 @@ public class LetterController {
         return ResponseEntity.ok(letterService.getCustomerNicknameAndCategory(letterId));
     }
 
-    // TODO 임시, 나중에 보완 필요
+    @Operation(summary = "편지 리스트 조회", description = "편지 리스트 조회, 주소 형식: /api/v1/letters?filter=true&isCustomer=false&sortType=latest")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(아직 메시지가 존재하지 않는 경우 updatedAt과 recentContent는 null)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 정렬 방식으로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "filter", description = "완료/취소된 상담 제외 여부"),
+            @Parameter(name = "isCustomer", description = "요청 주체가 구매자인지 판매자인지 여부"),
+            @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
+    })
     @GetMapping
-    public ResponseEntity<List<LetterGetResponse>> getLetters(@RequestParam Boolean isCustomer,
+    public ResponseEntity<List<LetterGetResponse>> getLetters(@RequestParam Boolean filter, @RequestParam Boolean isCustomer, @RequestParam String sortType,
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(letterService.getLetters(customUserDetails.getCustomer(), isCustomer));
+        return ResponseEntity.ok(letterService.getLetters(filter, isCustomer, sortType, customUserDetails.getCustomer()));
     }
 }

@@ -19,4 +19,6 @@ public interface LetterMessageRepository extends JpaRepository<LetterMessage, Lo
 
     Optional<LetterMessage> findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
             Letter letter, LetterMessageType messageType, Boolean isCompleted);
+
+    Integer countByLetterAndIsCompletedIsTrueAndIsActivatedIsTrue(Letter letter);
 }

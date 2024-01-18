@@ -41,7 +41,7 @@ public class AdminController {
                             content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
-            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 상담 아이디로 요청됨\n 2. 존재하지 않는 후원 아이디로 요청됨",
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담 아이디로 요청됨",
                             content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )

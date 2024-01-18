@@ -32,4 +32,14 @@ public enum LetterMessageType {
                         )
                 );
     }
+
+    public static LetterMessageType getLetterMessageTypeByStatus(LetterStatus letterStatus) {
+        return Arrays.stream(LetterMessageType.values())
+                .filter(messageType -> messageType.getLetterStatus().equals(letterStatus))
+                .findAny().orElseThrow(
+                        () -> new LetterMessageException(
+                                LetterMessageErrorCode.Letter_MESSAGE_TYPE_NOT_FOUND
+                        )
+                );
+    }
 }
