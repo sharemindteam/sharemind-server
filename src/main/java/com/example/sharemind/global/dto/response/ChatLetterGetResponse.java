@@ -3,7 +3,7 @@ package com.example.sharemind.global.dto.response;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.counselor.domain.Counselor;
-import com.example.sharemind.global.timeUtil.GetUpdatedAt;
+import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.letter.dto.response.LetterGetResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -51,7 +51,7 @@ public class ChatLetterGetResponse {
                     chat.getChatStatus().getDisplayName(), nickname, null, null, null, null);
         }
         return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
-                chat.getChatStatus().getDisplayName(), nickname, GetUpdatedAt.getUpdatedAt(chatMessage.getUpdatedAt()),
+                chat.getChatStatus().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
                 chatMessage.getContent(), chatMessage.getIsCustomer(), unreadMessageCount);
     }
 }

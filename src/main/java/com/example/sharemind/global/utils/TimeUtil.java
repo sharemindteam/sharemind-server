@@ -1,11 +1,11 @@
-package com.example.sharemind.global.timeUtil;
+package com.example.sharemind.global.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 
-public class GetUpdatedAt {
+public class TimeUtil {
     public static String getUpdatedAt(LocalDateTime updatedAt) {
         LocalDateTime now = LocalDateTime.now();
 

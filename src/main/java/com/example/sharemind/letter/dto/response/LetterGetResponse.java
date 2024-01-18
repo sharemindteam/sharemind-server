@@ -1,7 +1,7 @@
 package com.example.sharemind.letter.dto.response;
 
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
-import com.example.sharemind.global.timeUtil.GetUpdatedAt;
+import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,6 +50,6 @@ public class LetterGetResponse {
 
         return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                 letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
-                GetUpdatedAt.getUpdatedAt((recentMessage.getUpdatedAt())), recentMessage.getContent()));
+                TimeUtil.getUpdatedAt((recentMessage.getUpdatedAt())), recentMessage.getContent()));
     }
 }
