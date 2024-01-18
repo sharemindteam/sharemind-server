@@ -1,74 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Counselor Chat</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <title>Counselor Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
 <h2>Counselor Chat</h2>
 <div id="chat">
-  <div id="messages"></div>
-  <input type="text" id="messageInput">
-  <button onclick="sendMessage()">Send Message</button>
-  <button onclick="sendChatStartRequest()">Start Chat Request</button>
-  <button onclick="sendChatStartResponse()">Start Chat Resonse</button>
-  <button onclick="sendChatFinishRequest()">End Chat</button>
+    <div id="messages"></div>
+    <input type="text" id="messageInput">
+    <button onclick="sendMessage()">Send Message</button>
+    <button onclick="sendChatStartRequest()">Start Chat Request</button>
+    <button onclick="sendChatStartResponse()">Start Chat Resonse</button>
+    <button onclick="sendChatFinishRequest()">End Chat</button>
 
 </div>
 
 <script type="text/javascript">
-  var stompClient = null;
-  var chatId = 3; // 채팅방 ID
-  var token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYmJAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1NTc4OTI4fQ.RUH8YVimvzPFdRUMISiXqfuVd90iSuwy8AdiW21RaKQ"; // 인증 토큰
-  var isCustomer = false;
+    var stompClient = null;
+    var chatId = 3; // 채팅방 ID
+    var token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYmJAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1NTgzMTk0fQ.i-SSBCdKl4SDC9Lyxs25W85N5AGOJTjLkqEeYLKpHQ8"; // 인증 토큰
+    var isCustomer = false;
 
-  function connect() {
-    var socket = new SockJS('/chat'); // 서버의 웹소켓 연결 주소
-    stompClient = Stomp.over(socket);
-    stompClient.connect({
-      'Authorization': 'Bearer ' + token,
-      'isCustomer': isCustomer
-    }, function (frame) {
-      console.log('Connected: ' + frame);
+    function connect() {
+        var socket = new SockJS('/chat'); // 서버의 웹소켓 연결 주소
+        stompClient = Stomp.over(socket);
+        stompClient.connect({
+            'Authorization': 'Bearer ' + token,
+            'isCustomer': isCustomer
+        }, function (frame) {
+            console.log('Connected: ' + frame);
 
-      // 구독
-      stompClient.subscribe('/queue/chattings/notifications/counselors/1', function (notification) {
-        console.log('Notification: ', notification.body);
-      });
-      stompClient.subscribe('/queue/chattings/counselors/' + chatId, function (statusUpdate) {
-        console.log('Status Update: ', statusUpdate.body);
-      });
-      stompClient.subscribe('/queue/chatMessages/counselors/' + chatId, function (message) {
-        console.log('Message: ', message.body);
-        displayMessage(message.body);
-      });
-    });
-  }
+            // 구독
+            stompClient.subscribe('/queue/chattings/notifications/counselors/1', function (notification) {
+                console.log('Notification: ', notification.body);
+            });
+            stompClient.subscribe('/queue/chattings/counselors/' + chatId, function (statusUpdate) {
+                console.log('Status Update: ', statusUpdate.body);
+            });
+            stompClient.subscribe('/queue/chattings/status/counselors/' + chatId, function (statusAutoUpdate) {
+                console.log('Status Auto Update: ', statusAutoUpdate.body);
+            });
+            stompClient.subscribe('/queue/chatMessages/counselors/' + chatId, function (message) {
+                console.log('Message: ', message.body);
+                displayMessage(message.body);
+            });
+        });
+    }
 
-  function sendMessage() {
-    var message = document.getElementById('messageInput').value;
-    stompClient.send("/app/api/v1/chatMessages/counselors/" + chatId, {}, JSON.stringify({content: message}));
-  }
+    function sendMessage() {
+        var message = document.getElementById('messageInput').value;
+        stompClient.send("/app/api/v1/chatMessages/counselors/" + chatId, {}, JSON.stringify({content: message}));
+    }
 
-  function sendChatStartRequest() {
-    stompClient.send("/app/api/v1/chat/counselors/" + chatId, {}, JSON.stringify({chatWebsocketStatus: "COUNSELOR_CHAT_START_REQUEST"}));
-  }
+    function sendChatStartRequest() {
+        stompClient.send("/app/api/v1/chat/counselors/" + chatId, {}, JSON.stringify({chatWebsocketStatus: "COUNSELOR_CHAT_START_REQUEST"}));
+    }
 
-  function sendChatStartResponse() {
-    stompClient.send("/app/api/v1/chat/counselors/" + chatId, {}, JSON.stringify({chatWebsocketStatus: "CUSTOMER_CHAT_START_RESPONSE"}));
-  }
+    function sendChatStartResponse() {
+        stompClient.send("/app/api/v1/chat/counselors/" + chatId, {}, JSON.stringify({chatWebsocketStatus: "CUSTOMER_CHAT_START_RESPONSE"}));
+    }
 
-  function sendChatFinishRequest() {
-    stompClient.send("/app/api/v1/chat/counselors/" + chatId, {}, JSON.stringify({chatWebsocketStatus: "CUSTOMER_CHAT_FINISH_REQUEST"}));
-  }
+    function sendChatFinishRequest() {
+        stompClient.send("/app/api/v1/chat/counselors/" + chatId, {}, JSON.stringify({chatWebsocketStatus: "CUSTOMER_CHAT_FINISH_REQUEST"}));
+    }
 
-  function displayMessage(message) {
-    var messagesDiv = document.getElementById('messages');
-    messagesDiv.innerHTML += '<div>' + message + '</div>';
-  }
+    function displayMessage(message) {
+        var messagesDiv = document.getElementById('messages');
+        messagesDiv.innerHTML += '<div>' + message + '</div>';
+    }
 
-  connect();
+    connect();
 </script>
 </body>
 </html>

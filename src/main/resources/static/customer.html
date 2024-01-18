@@ -19,7 +19,7 @@
 <script type="text/javascript">
     var stompClient = null;
     var chatId = 3; // 채팅방 ID
-    var token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYWFAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1NTc4OTA3fQ.YRfAdJu3mglNEMkgj1ddCgPpEw5ZhdjpRJ1T4VIJGRw"; // 인증 토큰
+    var token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYWFAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1NTgzMTUzfQ.fBz1IQh4GTI0dmoKmeHUDtZtcnhKQFV-Dtmnv5cd57s"; // 인증 토큰
     var isCustomer = true; // 고객 여부
 
     function connect() {
@@ -38,6 +38,9 @@
             stompClient.subscribe('/queue/chattings/customers/' + chatId, function (statusUpdate) {
                 console.log('Status Update: ', statusUpdate.body);
             });
+            stompClient.subscribe('/queue/chattings/status/customers/' + chatId, function (statusAutoUpdate) {
+                console.log('Status Auto Update: ', statusAutoUpdate.body);
+            });
             stompClient.subscribe('/queue/chatMessages/customers/' + chatId, function (message) {
                 console.log('Message: ', message.body);
                 displayMessage(message.body);
@@ -49,6 +52,7 @@
         var message = document.getElementById('messageInput').value;
         stompClient.send("/app/api/v1/chatMessages/customers/" + chatId, {}, JSON.stringify({content: message}));
     }
+
     function sendChatStartRequest() {
         stompClient.send("/app/api/v1/chat/customers/" + chatId, {}, JSON.stringify({chatWebsocketStatus: "COUNSELOR_CHAT_START_REQUEST"}));
     }
