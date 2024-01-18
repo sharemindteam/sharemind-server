@@ -19,8 +19,8 @@
 
 <script type="text/javascript">
     var stompClient = null;
-    var chatId = 3; // 채팅방 ID
-    var token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYmJAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1NTgzMTk0fQ.i-SSBCdKl4SDC9Lyxs25W85N5AGOJTjLkqEeYLKpHQ8"; // 인증 토큰
+    var chatId = 3; // 채팅방 ID로 업데이트
+    var token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYmJAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1NTkxMDQxfQ.oz8v5cOWqDfbU1Kt5iQ0YO94blN4WOJPLoZuc6fw6Rc"; // 인증 토큰
     var isCustomer = false;
 
     function connect() {
@@ -33,7 +33,7 @@
             console.log('Connected: ' + frame);
 
             // 구독
-            stompClient.subscribe('/queue/chattings/notifications/counselors/1', function (notification) {
+            stompClient.subscribe('/queue/chattings/notifications/counselors/1', function (notification) {//데모 테스트 때, 여기 userId를 counselorId로 바꾸어주면 됨
                 console.log('Notification: ', notification.body);
             });
             stompClient.subscribe('/queue/chattings/counselors/' + chatId, function (statusUpdate) {

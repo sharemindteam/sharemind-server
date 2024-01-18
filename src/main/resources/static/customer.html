@@ -18,8 +18,8 @@
 
 <script type="text/javascript">
     var stompClient = null;
-    var chatId = 3; // 채팅방 ID
-    var token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYWFAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1NTgzMTUzfQ.fBz1IQh4GTI0dmoKmeHUDtZtcnhKQFV-Dtmnv5cd57s"; // 인증 토큰
+    var chatId = 3; // 채팅방 ID로 업데이트
+    var token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYWFAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOiJST0xFX0NVU1RPTUVSIiwiZXhwIjoxNzA1NTkxMDExfQ.6K3po9TiIKmU8N3qrpHI8mFms5-DdEZd6W05Q8--nGM"; // 인증 토큰
     var isCustomer = true; // 고객 여부
 
     function connect() {
@@ -32,7 +32,7 @@
             console.log('Connected: ' + frame);
 
             // 구독
-            stompClient.subscribe('/queue/chattings/notifications/customers/1', function (notification) {
+            stompClient.subscribe('/queue/chattings/notifications/customers/1', function (notification) {//데모 테스트 때, 여기 userId를 customerId로 바꾸어주면 됨
                 console.log('Notification: ', notification.body);
             });
             stompClient.subscribe('/queue/chattings/customers/' + chatId, function (statusUpdate) {
