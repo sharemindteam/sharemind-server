@@ -11,6 +11,7 @@ import com.example.sharemind.letter.content.LetterSortType;
 import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letter.dto.response.LetterGetCounselorCategoriesResponse;
+import com.example.sharemind.letter.dto.response.LetterGetDeadlineResponse;
 import com.example.sharemind.letter.dto.response.LetterGetNicknameCategoryResponse;
 import com.example.sharemind.letter.dto.response.LetterGetResponse;
 import com.example.sharemind.letter.exception.LetterErrorCode;
@@ -68,6 +69,13 @@ public class LetterServiceImpl implements LetterService {
         Letter letter = getLetterByLetterId(letterId);
 
         return LetterGetNicknameCategoryResponse.of(letter);
+    }
+
+    @Override
+    public LetterGetDeadlineResponse getDeadline(Long letterId) {
+        Letter letter = getLetterByLetterId(letterId);
+
+        return LetterGetDeadlineResponse.of(letter);
     }
 
     @Override
