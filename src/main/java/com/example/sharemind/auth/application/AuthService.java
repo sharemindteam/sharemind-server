@@ -7,6 +7,10 @@ import com.example.sharemind.auth.dto.response.TokenDto;
 
 public interface AuthService {
     void signUp(AuthSignUpRequest authSignUpRequest);
+
     TokenDto signIn(AuthSignInRequest authSignInRequest);
+
     TokenDto reissueToken(AuthReissueRequest authReissueRequest);
+
+    void checkDuplicateEmail(String email);
 }
