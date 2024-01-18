@@ -1,12 +1,12 @@
 package com.example.sharemind.letter.presentation;
 
+import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.dto.response.LetterGetCounselorCategoriesResponse;
 import com.example.sharemind.letter.dto.response.LetterGetDeadlineResponse;
 import com.example.sharemind.letter.dto.response.LetterGetNicknameCategoryResponse;
-import com.example.sharemind.letter.dto.response.LetterGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -76,7 +76,7 @@ public class LetterController {
             @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
     })
     @GetMapping
-    public ResponseEntity<List<LetterGetResponse>> getLetters(@RequestParam Boolean filter, @RequestParam Boolean isCustomer, @RequestParam String sortType,
+    public ResponseEntity<List<ChatLetterGetResponse>> getLetters(@RequestParam Boolean filter, @RequestParam Boolean isCustomer, @RequestParam String sortType,
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(letterService.getLetters(filter, isCustomer, sortType, customUserDetails.getCustomer()));
     }

@@ -7,6 +7,7 @@ import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultType;
+import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.letter.content.LetterSortType;
 import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
@@ -79,7 +80,7 @@ public class LetterServiceImpl implements LetterService {
     }
 
     @Override
-    public List<LetterGetResponse> getLetters(Boolean filter, Boolean isCustomer, String letterSortType, Customer customer) {
+    public List<ChatLetterGetResponse> getLetters(Boolean filter, Boolean isCustomer, String letterSortType, Customer customer) {
         LetterSortType sortType = LetterSortType.getSortTypeByName(letterSortType);
 
         List<Consult> consults;
