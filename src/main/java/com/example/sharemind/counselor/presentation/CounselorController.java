@@ -11,10 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Counselor Controller", description = "상담사 컨트롤러")
 @RestController
@@ -37,5 +34,14 @@ public class CounselorController {
                                                  @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         counselorService.updateIsEducated(isEducated, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "퀴즈 재응시 가능 여부 조회", description = "퀴즈 통과 실패 후 24시간 경과 여부 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공")
+    })
+    @GetMapping("/quiz")
+    public ResponseEntity<Boolean> getRetryPermission(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(counselorService.getRetryPermission(customUserDetails.getCustomer().getCustomerId()));
     }
 }
