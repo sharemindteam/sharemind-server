@@ -34,4 +34,17 @@ public class CounselorServiceImpl implements CounselorService {
         }
         return counselor;
     }
+
+    @Transactional
+    @Override
+    public void updateIsEducated(Boolean isEducated, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        if (customer.getCounselor() == null) {
+            Counselor counselor = counselorRepository.save(Counselor.builder().isEducated(isEducated).build());
+            customer.setCounselor(counselor);
+        }
+
+        Counselor counselor = customer.getCounselor();
+        counselor.updateIsEducated(isEducated);
+    }
 }
