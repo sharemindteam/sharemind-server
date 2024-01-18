@@ -1,5 +1,6 @@
 package com.example.sharemind.letter.dto.response;
 
+import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,7 +32,7 @@ public class LetterGetResponse {
     @Schema(description = "마지막 업데이트 내용", example = "안녕하세요, 어쩌구저쩌구~")
     private final String recentContent;
 
-    public static LetterGetResponse of(Letter letter, LetterMessage recentMessage, Boolean isCustomer) {
+    public static ChatLetterGetResponse of(Letter letter, LetterMessage recentMessage, Boolean isCustomer) {
         String letterStatus;
         String opponentName;
         if (isCustomer) {
@@ -43,10 +44,10 @@ public class LetterGetResponse {
         }
 
         if (recentMessage == null) {
-            return new LetterGetResponse(letter.getLetterId(), letterStatus, opponentName, null, null);
+            return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus, opponentName, null, null));
         }
 
-        return new LetterGetResponse(letter.getLetterId(), letterStatus, opponentName, getUpdatedAt(recentMessage.getUpdatedAt()), recentMessage.getContent());
+        return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus, opponentName, getUpdatedAt(recentMessage.getUpdatedAt()), recentMessage.getContent()));
     }
 
     private static String getUpdatedAt(LocalDateTime updatedAt) {

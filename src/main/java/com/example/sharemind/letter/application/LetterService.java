@@ -1,11 +1,11 @@
 package com.example.sharemind.letter.application;
 
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letter.dto.response.LetterGetCounselorCategoriesResponse;
 import com.example.sharemind.letter.dto.response.LetterGetDeadlineResponse;
 import com.example.sharemind.letter.dto.response.LetterGetNicknameCategoryResponse;
-import com.example.sharemind.letter.dto.response.LetterGetResponse;
 
 import java.util.List;
 
@@ -20,5 +20,5 @@ public interface LetterService {
 
     LetterGetDeadlineResponse getDeadline(Long letterId);
 
-    List<LetterGetResponse> getLetters(Boolean filter, Boolean isCustomer, String sortType, Customer customer);
+    List<ChatLetterGetResponse> getLetters(Boolean filter, Boolean isCustomer, String sortType, Customer customer);
 }
