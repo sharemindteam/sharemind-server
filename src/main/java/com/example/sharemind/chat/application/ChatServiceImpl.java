@@ -60,15 +60,6 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<Long> getChatsByUserId(Long userId, Boolean isCustomer) {
-        if (isCustomer) {
-            return consultRepository.findChatIdsByCustomerId(userId);
-        } else {
-            return consultRepository.findChatIdsByCounselorId(userId);
-        }
-    }
-
-    @Override
     public Chat getChatByChatId(Long chatId) {
         return chatRepository.findByChatIdAndIsActivatedIsTrue(chatId).orElseThrow(() -> new ChatException(
                 ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));

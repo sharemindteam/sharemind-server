@@ -6,7 +6,7 @@ import static com.example.sharemind.global.constants.Constants.TOKEN_PREFIX;
 
 import com.example.sharemind.auth.exception.AuthErrorCode;
 import com.example.sharemind.auth.exception.AuthException;
-import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.consult.repository.ConsultRepository;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.global.jwt.CustomUserDetails;
@@ -33,7 +33,7 @@ public class StompPreHandler implements ChannelInterceptor {
 
     private final CustomerService customerService;
     private final CounselorService counselorService;
-    private final ChatService chatService;
+    private final ConsultRepository consultRepository;
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, List<Long>> redisTemplate;
 
@@ -95,7 +95,11 @@ public class StompPreHandler implements ChannelInterceptor {
     }
 
     private List<Long> getChatRoomIds(Long userId, boolean isCustomer) {
-        return chatService.getChatsByUserId(userId, isCustomer);
+        if (isCustomer) {
+            return consultRepository.findChatIdsByCustomerId(userId);
+        } else {
+            return consultRepository.findChatIdsByCounselorId(userId);
+        }
     }
 
     private void setSessionAttributes(StompHeaderAccessor accessor, Long userId,

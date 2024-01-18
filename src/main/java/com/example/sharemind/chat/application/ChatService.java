@@ -11,8 +11,6 @@ import java.util.Map;
 public interface ChatService {
     Chat createChat(Consult consult);
 
-    List<Long> getChatsByUserId(Long userId, Boolean isCustomer);
-
     Chat getChatByChatId(Long chatId);
 
     void validateChat(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer);
