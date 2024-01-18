@@ -1,5 +1,6 @@
 package com.example.sharemind.consult.application;
 
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.dto.request.ConsultCreateRequest;
 import com.example.sharemind.consult.dto.response.ConsultCreateResponse;
@@ -65,5 +66,11 @@ public class ConsultServiceImpl implements ConsultService {
     @Override
     public List<Consult> getConsultsByCounselorIdAndConsultTypeAndIsPaid(Long counselorId, ConsultType consultType) {
         return consultRepository.findByCounselorIdAndConsultTypeAndIsPaid(counselorId, consultType);
+    }
+
+    @Override
+    public Consult getConsultByChat(Chat chat) {
+        return consultRepository.findByChatAndIsActivatedIsTrue(chat).orElseThrow(
+                () -> new ConsultException(ConsultErrorCode.CONSULT_NOT_FOUND, "chatId : " + chat.getChatId()));
     }
 }

@@ -15,10 +15,8 @@ import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.chatMessage.repository.ChatMessageRepository;
+import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
-import com.example.sharemind.consult.exception.ConsultErrorCode;
-import com.example.sharemind.consult.exception.ConsultException;
-import com.example.sharemind.consult.repository.ConsultRepository;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.content.ConsultType;
@@ -38,10 +36,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
-    private final ConsultRepository consultRepository;
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final CounselorService counselorService;
+    private final ConsultService consultService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
@@ -91,10 +89,10 @@ public class ChatServiceImpl implements ChatService {
         List<Consult> consults;
 
         if (isCustomer) {
-            consults = consultRepository.findByCustomerIdAndConsultTypeAndIsPaid(customerId, ConsultType.CHAT);
+            consults = consultService.getConsultsByCustomerIdAndConsultTypeAndIsPaid(customerId, ConsultType.CHAT);
         } else {
             Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
-            consults = consultRepository.findByCounselorIdAndConsultTypeAndIsPaid(counselor.getCounselorId(),
+            consults = consultService.getConsultsByCounselorIdAndConsultTypeAndIsPaid(counselor.getCounselorId(),
                     ConsultType.CHAT);
         }
         return consults.stream()
@@ -115,8 +113,7 @@ public class ChatServiceImpl implements ChatService {
                                                 Boolean isCustomer) {
         Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
-        Consult consult = consultRepository.findByChatAndIsActivatedIsTrue(chat).orElseThrow(
-                () -> new ConsultException(ConsultErrorCode.CONSULT_NOT_FOUND, "chatId : " + chatId.toString()));
+        Consult consult = consultService.getConsultByChat(chat);
 
         validateChatStatusRequest(chat, chatStatusUpdateRequest, isCustomer);
 
