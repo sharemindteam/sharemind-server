@@ -41,6 +41,9 @@
             stompClient.subscribe('/queue/chattings/status/customers/' + chatId, function (statusAutoUpdate) {
                 console.log('Status Auto Update: ', statusAutoUpdate.body);
             });
+        stompClient.subscribe('/queue/chattings/exception/customers/' + chatId, function (error) {
+            console.log('error: ', error.body);
+        });
             stompClient.subscribe('/queue/chatMessages/customers/' + chatId, function (message) {
                 console.log('Message: ', message.body);
                 displayMessage(message.body);
