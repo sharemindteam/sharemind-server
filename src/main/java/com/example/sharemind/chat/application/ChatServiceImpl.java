@@ -139,7 +139,6 @@ public class ChatServiceImpl implements ChatService {
         switch (chatWebsocketStatus) {
             case COUNSELOR_CHAT_START_REQUEST: { //counselor가 상담 요청을 보낸 상황
                 chat.updateChatStatus(ChatStatus.SEND_REQUEST);
-                chatRepository.save(chat);
 
                 chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
 
@@ -149,7 +148,6 @@ public class ChatServiceImpl implements ChatService {
             case CUSTOMER_CHAT_START_RESPONSE: {
                 chat.updateChatStatus(ChatStatus.ONGOING);
                 chat.updateStartedAt();
-                chatRepository.save(chat);
 
                 chatTaskScheduler.checkChatDuration(chat);
 
@@ -158,7 +156,6 @@ public class ChatServiceImpl implements ChatService {
 
             case CUSTOMER_CHAT_FINISH_REQUEST: { //구매자가 상담 종료를 누른 상황
                 chat.updateChatStatus(ChatStatus.FINISH);
-                chatRepository.save(chat);
 
                 break;
             }
@@ -185,12 +182,10 @@ public class ChatServiceImpl implements ChatService {
         ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
         switch (chatWebsocketStatus) {
             case COUNSELOR_CHAT_START_REQUEST: {
-                System.out.println("counselor_chat_Start_request here");
                 compareChatStatus(chat, ChatStatus.WAITING, chatWebsocketStatus);
                 break;
             }
             case CUSTOMER_CHAT_START_RESPONSE: {
-                System.out.println("customer_chat_Start");
                 compareChatStatus(chat, ChatStatus.SEND_REQUEST, chatWebsocketStatus);
                 break;
             }
@@ -205,7 +200,6 @@ public class ChatServiceImpl implements ChatService {
 
     private void compareChatStatus(Chat chat, ChatStatus expectedStatus,
                                    ChatWebsocketStatus chatWebsocketStatus) {
-        System.out.println("compareChatStatus : " + chat.getChatStatus() + "expectedStatus : " + expectedStatus);
         if (chat.getChatStatus() != expectedStatus) {
             throw new ChatException(ChatErrorCode.INVALID_CHAT_STATUS_REQUEST, chatWebsocketStatus.toString());
         }
