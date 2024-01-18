@@ -3,8 +3,6 @@ package com.example.sharemind.consult.repository;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.global.content.ConsultType;
-import com.example.sharemind.counselor.domain.Counselor;
-import com.example.sharemind.customer.domain.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
