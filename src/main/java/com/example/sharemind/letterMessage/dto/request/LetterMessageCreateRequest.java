@@ -30,7 +30,7 @@ public class LetterMessageCreateRequest {
     private Boolean isCompleted;
 
     public static LetterMessageCreateRequest of(LetterMessageCreateFirstRequest letterMessageCreateFirstRequest) {
-        return new LetterMessageCreateRequest(letterMessageCreateFirstRequest.getLetterId(), LetterMessageType.FIRST_QUESTION.getDisplayName(),
+        return new LetterMessageCreateRequest(letterMessageCreateFirstRequest.getLetterId(), LetterMessageType.FIRST_QUESTION.name(),
                 letterMessageCreateFirstRequest.getContent(), letterMessageCreateFirstRequest.getIsCompleted());
     }
 
