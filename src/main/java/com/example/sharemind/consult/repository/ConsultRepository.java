@@ -1,5 +1,6 @@
 package com.example.sharemind.consult.repository;
 
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.global.content.ConsultType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +27,6 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
 
     @Query("SELECT c FROM Consult c WHERE c.counselor.counselorId = :counselorId AND c.consultType = :consultType AND c.isPaid = true AND c.isActivated = true")
     List<Consult> findByCounselorIdAndConsultTypeAndIsPaid(Long counselorId, ConsultType consultType);
+
+    Optional<Consult> findByChatAndIsActivatedIsTrue(Chat chat);
 }

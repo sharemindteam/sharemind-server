@@ -1,6 +1,8 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
+import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.exception.ConsultErrorCode;
@@ -20,6 +22,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final ConsultService consultService;
     private final LetterService letterService;
+    private final ChatService chatService;
 
     @Override
     public List<ConsultsGetUnpaidResponse> getUnpaidConsults() {
@@ -36,13 +39,16 @@ public class AdminServiceImpl implements AdminService {
             throw new ConsultException(ConsultErrorCode.CONSULT_ALREADY_PAID, consultId.toString());
         }
 
-        // TODO 상담 유형에 따라 비실시간/실시간 상담 생성
         switch (consult.getConsultType()) {
-            // case REALTIME -> consult.updateIsPaidAndRealtimeConsult(realtimeConsult)
             case LETTER -> {
                 Letter letter = letterService.createLetter();
 
                 consult.updateIsPaidAndLetter(letter);
+            }
+            case CHAT -> {
+                Chat chat = chatService.createChat(consult);
+
+                consult.updateIsPaidAndChat(chat);
             }
         }
     }

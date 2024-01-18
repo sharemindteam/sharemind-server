@@ -47,10 +47,12 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**", "/api/v1/auth/**", "/api/v1/emails/**").permitAll()
+                        requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**",
+                                        "/api/v1/auth/**", "/api/v1/emails/**").permitAll()
                                 .requestMatchers("/api/v1/consults/**").hasRole(ROLE_CUSTOMER)
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
-                                .requestMatchers("/index.html","/app.js", "/customerChat/**").permitAll()
+                                .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html",
+                                        "/counselor.html").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer

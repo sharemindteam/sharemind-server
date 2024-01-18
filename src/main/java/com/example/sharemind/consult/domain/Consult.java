@@ -69,14 +69,21 @@ public class Consult extends BaseEntity {
     }
 
     public void updateIsPaidAndLetter(Letter letter) {
-        validateLetter();
+        validateConsultType(ConsultType.LETTER);
 
         this.isPaid = true;
         setLetter(letter);
     }
 
-    private void validateLetter() {
-        if (!this.consultType.equals(ConsultType.LETTER)) {
+    public void updateIsPaidAndChat(Chat chat) {
+        validateConsultType(ConsultType.CHAT);
+
+        this.isPaid = true;
+        setChat(chat);
+    }
+
+    private void validateConsultType(ConsultType consultType) {
+        if (!this.consultType.equals(consultType)) {
             throw new ConsultException(ConsultErrorCode.CONSULT_TYPE_MISMATCH);
         }
     }
@@ -84,5 +91,9 @@ public class Consult extends BaseEntity {
     private void setLetter(Letter letter) {
         this.letter = letter;
         letter.setConsult(this);
+    }
+
+    private void setChat(Chat chat) {
+        this.chat = chat;
     }
 }

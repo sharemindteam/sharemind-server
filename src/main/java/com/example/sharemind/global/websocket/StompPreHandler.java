@@ -1,8 +1,12 @@
 package com.example.sharemind.global.websocket;
 
+import static com.example.sharemind.global.constants.Constants.COUNSELOR_PREFIX;
+import static com.example.sharemind.global.constants.Constants.CUSTOMER_PREFIX;
+import static com.example.sharemind.global.constants.Constants.TOKEN_PREFIX;
+
 import com.example.sharemind.auth.exception.AuthErrorCode;
 import com.example.sharemind.auth.exception.AuthException;
-import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.consult.repository.ConsultRepository;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.global.jwt.CustomUserDetails;
@@ -12,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageChannel;
@@ -28,9 +33,9 @@ public class StompPreHandler implements ChannelInterceptor {
 
     private final CustomerService customerService;
     private final CounselorService counselorService;
-    private final ChatService chatService;
+    private final ConsultRepository consultRepository;
     private final TokenProvider tokenProvider;
-    private static final String TOKEN_PREFIX = "Bearer ";
+    private final RedisTemplate<String, List<Long>> redisTemplate;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -63,16 +68,26 @@ public class StompPreHandler implements ChannelInterceptor {
 
         Long userId = getUserId(userDetails, isCustomer);
         String nickname = getNickname(userId, isCustomer);
-        List<Long> chatRoomIds = getChatRoomIds(userId, isCustomer);
 
-        setSessionAttributes(accessor, userId, nickname, chatRoomIds);
-        log.info("Session attributes after setting: " + accessor.getSessionAttributes().toString());
+        setSessionAttributes(accessor, userId, nickname);
+
+        log.info("Session attributes after setting: " + Objects.requireNonNull(accessor.getSessionAttributes())
+                .toString());
+
+        setChatIdsInRedis(userId, isCustomer);
+    }
+
+    private void setChatIdsInRedis(Long userId, Boolean isCustomer) {
+        List<Long> chatIds = getChatRoomIds(userId, isCustomer);
+        String redisKey = (isCustomer ? CUSTOMER_PREFIX : COUNSELOR_PREFIX) + userId;
+        redisTemplate.opsForValue().set(redisKey, chatIds);
+        log.info("Chat IDs for user {} saved to Redis: {}", userId, chatIds);
     }
 
     private Long getUserId(CustomUserDetails userDetails, boolean isCustomer) {
         return isCustomer ? userDetails.getCustomer().getCustomerId()
                 : userDetails.getCustomer().getCounselor().getCounselorId();
-    }//todo: counseolorId가 null인 경우 에러 처리
+    }//todo: counselorId가 null인 경우 에러 처리
 
     private String getNickname(Long userId, boolean isCustomer) {
         return isCustomer ? customerService.getCustomerByCustomerId(userId).getNickname()
@@ -80,40 +95,18 @@ public class StompPreHandler implements ChannelInterceptor {
     }
 
     private List<Long> getChatRoomIds(Long userId, boolean isCustomer) {
-        return chatService.getChatsByUserId(userId, isCustomer);
+        if (isCustomer) {
+            return consultRepository.findChatIdsByCustomerId(userId);
+        } else {
+            return consultRepository.findChatIdsByCounselorId(userId);
+        }
     }
 
     private void setSessionAttributes(StompHeaderAccessor accessor, Long userId,
-                                      String nickname, List<Long> chatRoomIds) {
+                                      String nickname) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
         sessionAttributes.put("userNickname", nickname);
         sessionAttributes.put("userId", userId);
-        sessionAttributes.put("chatRoomIds", chatRoomIds);
         accessor.setSessionAttributes(sessionAttributes);
     }
-
-
-    /*demo용
-    @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
-        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String userId = accessor.getFirstNativeHeader("userId");
-            boolean isCustomer = Boolean.parseBoolean(accessor.getFirstNativeHeader("isCustomer"));
-            if (userId != null) {
-                String nickname =
-                        isCustomer ? customerService.getCustomerByCustomerId(Long.parseLong(userId)).getNickname() :
-                                counselorService.getCounselorByCounselorId(Long.parseLong(userId)).getNickname();
-                Map<String, Object> sessionAttributes = Objects.requireNonNull(accessor.getSessionAttributes());
-                sessionAttributes.put("userId", userId);
-                sessionAttributes.put("userNickname", nickname);
-                accessor.setSessionAttributes(sessionAttributes);
-                log.info("Session attributes after setting: " + sessionAttributes.toString());
-            }
-            return message;
-        }
-        return message;
-    }
-     */
 }

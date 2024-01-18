@@ -1,5 +1,7 @@
 package com.example.sharemind.global.jwt;
 
+import static com.example.sharemind.global.constants.Constants.TOKEN_PREFIX;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +20,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String TOKEN_PREFIX = "Bearer ";
 
     private final TokenProvider tokenProvider;
 

@@ -19,13 +19,33 @@ public class Chat extends BaseEntity {
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 
-    @Column(name = "chat_status")
+    @Column(name = "chat_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ChatStatus chatStatus;
+    private ChatStatus chatStatus = ChatStatus.WAITING;
 
-    @Column(name = "customer_read_id")
-    private Long customerReadId;
+    @Column(name = "customer_read_id", nullable = false)
+    private Long customerReadId = 0L;
 
-    @Column(name = "counseolor_read_id")
-    private Long counselorReadId;
+    @Column(name = "counseolor_read_id", nullable = false)
+    private Long counselorReadId = 0L;
+
+    public void updateChatStatus(ChatStatus chatStatus) {
+        this.chatStatus = chatStatus;
+    }
+
+    public void updateStartedAt() {
+        this.startedAt = LocalDateTime.now();
+    }
+
+    public void updateCustomerReadId(Long id) {
+        this.customerReadId = id;
+    }
+
+    public void updateCounselorReadId(Long id) {
+        this.counselorReadId = id;
+    }
+
+    public static Chat newInstance() {
+        return new Chat();
+    }
 }
