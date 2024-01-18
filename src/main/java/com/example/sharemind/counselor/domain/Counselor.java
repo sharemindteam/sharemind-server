@@ -20,6 +20,7 @@ import lombok.*;
 @Entity
 public class Counselor extends BaseEntity {
     private static final Integer RETRY_EDUCATION_OFFSET = 1;
+    private static final Integer COUNSELOR_BASIC_LEVEL = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,7 +86,7 @@ public class Counselor extends BaseEntity {
         this.isEducated = isEducated;
 
         this.nickname = "판매자" + new Random().nextInt(999999);
-        this.level = 1;
+        this.level = 0;
         this.totalReview = 0L;
         this.ratingAverage = 0.0;
     }
@@ -102,6 +103,8 @@ public class Counselor extends BaseEntity {
 
         if (isEducated.equals(false)) {
             this.retryEducation = LocalDateTime.now().plusDays(RETRY_EDUCATION_OFFSET);
+        } else {
+            this.level = COUNSELOR_BASIC_LEVEL;
         }
     }
 }
