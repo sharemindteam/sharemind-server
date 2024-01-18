@@ -4,19 +4,23 @@ import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.domain.ChatUpdateStatusEvent;
+import com.example.sharemind.chat.repository.ChatRepository;
 import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional
 @RequiredArgsConstructor
 public class ChatTaskScheduler {
 
     private final TaskScheduler scheduler;
     private final ApplicationEventPublisher publisher;
+    private final ChatRepository chatRepository;
 
     private static final int TEN_MINUTE = 120000; //2분
     private static final int TWENTY_FIVE_MINUTE = 300000; //5분
@@ -32,6 +36,7 @@ public class ChatTaskScheduler {
 
             if (chat.getChatStatus() == ChatStatus.SEND_REQUEST) {
                 chat.updateChatStatus(ChatStatus.WAITING);
+                chatRepository.save(chat);
 
                 publisher.publishEvent(
                         ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_START_REQUEST_CANCEL));
@@ -44,6 +49,7 @@ public class ChatTaskScheduler {
         System.out.println("채팅 시작 지금 시간 : " + LocalDateTime.now());
         scheduler.schedule(() -> {
             chat.updateChatStatus(ChatStatus.FIVE_MINUTE_LEFT);
+            chatRepository.save(chat);
 
             publisher.publishEvent(
                     ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_LEFT_FIVE_MINUTE));
@@ -52,6 +58,7 @@ public class ChatTaskScheduler {
 
         scheduler.schedule(() -> {
             chat.updateChatStatus(ChatStatus.FINISH);
+            chatRepository.save(chat);
 
             publisher.publishEvent(
                     ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_TIME_OVER));
