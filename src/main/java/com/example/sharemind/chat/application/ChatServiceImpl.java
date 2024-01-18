@@ -9,7 +9,6 @@ import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.domain.ChatCreateEvent;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
-import com.example.sharemind.chat.dto.response.ChatInfoGetResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
@@ -20,6 +19,7 @@ import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.content.ConsultType;
+import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +85,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatInfoGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer) {
+    public List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer) {
         List<Consult> consults;
 
         if (isCustomer) {
@@ -202,7 +202,7 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private ChatInfoGetResponse createChatInfoGetResponse(Consult consult, Boolean isCustomer) {
+    private ChatLetterGetResponse createChatInfoGetResponse(Consult consult, Boolean isCustomer) {
 
         Chat chat = consult.getChat();
 
@@ -214,7 +214,7 @@ public class ChatServiceImpl implements ChatService {
         int unreadMessageCount = chatMessageRepository.countByChatAndMessageIdGreaterThanAndIsCustomer(
                 chat, lastReadMessageId, !isCustomer);
 
-        return ChatInfoGetResponse.of(nickname, unreadMessageCount, chat, latestChatMessage);
+        return ChatLetterGetResponse.of(nickname, unreadMessageCount, chat, consult.getCounselor(), latestChatMessage);
     }
 
     private void updateChatIdsRedis(Chat chat, Consult consult) {

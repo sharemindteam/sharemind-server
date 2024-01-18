@@ -2,9 +2,9 @@ package com.example.sharemind.chat.presentation;
 
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
-import com.example.sharemind.chat.dto.response.ChatInfoGetResponse;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.consult.exception.ConsultException;
+import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,9 +41,9 @@ public class ChatController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사 아이디로 요청됨")
     })
     @GetMapping()
-    public ResponseEntity<List<ChatInfoGetResponse>> getChatList(@RequestParam Boolean isCustomer,
+    public ResponseEntity<List<ChatLetterGetResponse>> getChatList(@RequestParam Boolean isCustomer,
                                                                  @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        List<ChatInfoGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
+        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
                 customUserDetails.getCustomer().getCustomerId(), isCustomer);
         return ResponseEntity.ok(chatInfoGetResponses);
         //todo: 메세지 읽지 않은 순, 완료/취소된 상담 포함한 것도 구현해야함ㅜㅜ
