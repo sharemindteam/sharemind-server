@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,14 +100,26 @@ public class LetterServiceImpl implements LetterService {
                     .collect(Collectors.toList());
         }
 
+        Comparator<Letter> comparator = (letter1, letter2) -> {
+            LetterMessage recentMessage1 = getRecentMessage(letter1);
+            LetterMessage recentMessage2 = getRecentMessage(letter2);
+
+            if (recentMessage1 == null) {
+                return (recentMessage2 == null) ? 0 : 1;
+            }
+            if (recentMessage2 == null) {
+                return -1;
+            }
+            return recentMessage2.getUpdatedAt().compareTo(recentMessage1.getUpdatedAt());
+        };
         switch (sortType) {
-            case LATEST -> letters.sort((letter1, letter2) -> letter2.getUpdatedAt().compareTo(letter1.getUpdatedAt()));
+            case LATEST -> letters.sort(comparator);
             case UNREAD -> letters.sort((letter1, letter2) -> {
                 Boolean checkLetter1 = checkLetterReadAll(letter1, isCustomer);
                 Boolean checkLetter2 = checkLetterReadAll(letter2, isCustomer);
 
                 if (checkLetter1.equals(checkLetter2)) {
-                    return letter2.getUpdatedAt().compareTo(letter1.getUpdatedAt());
+                    return comparator.compare(letter1, letter2);
                 } else {
                     if (checkLetter1) {
                         return 1;
@@ -135,7 +148,7 @@ public class LetterServiceImpl implements LetterService {
                     LetterMessage recentMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(letter, messageType, IS_COMPLETED)
                             .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
 
-                    readAllLetter = letter.getCounselorReadId().equals(recentMessage.getMessageId());
+                    readAllLetter = recentMessage.getMessageId().equals(letter.getCounselorReadId());
                 }
             }
             case FIRST_ANSWER -> {
@@ -144,7 +157,7 @@ public class LetterServiceImpl implements LetterService {
                     LetterMessage recentMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(letter, messageType, IS_COMPLETED)
                             .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
 
-                    readAllLetter = letter.getCustomerReadId().equals(recentMessage.getMessageId());
+                    readAllLetter = recentMessage.getMessageId().equals(letter.getCustomerReadId());
                 } else {
                     readAllLetter = true;
                 }
@@ -160,7 +173,7 @@ public class LetterServiceImpl implements LetterService {
                                 .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
                     }
 
-                    readAllLetter = letter.getCustomerReadId().equals(recentMessage.getMessageId());
+                    readAllLetter = recentMessage.getMessageId().equals(letter.getCustomerReadId());
                 } else {
                     readAllLetter = true;
                 }
