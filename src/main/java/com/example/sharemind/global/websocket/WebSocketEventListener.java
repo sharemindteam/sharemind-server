@@ -35,11 +35,13 @@ public class WebSocketEventListener {
 
     @EventListener
     public void handleChatCreateEvent(ChatCreateEvent chatCreateEvent) {
+        System.out.println("customerId : " + chatCreateEvent.getCustomerId() + "\ncounselorId: "
+                + chatCreateEvent.getCounselorId());
         messageSendingOperations.convertAndSend(
                 "/queue/chattings/notifications/customers/" + chatCreateEvent.getCustomerId(),
                 ChatCreateEventResponse.of(chatCreateEvent.getChatId()));
         messageSendingOperations.convertAndSend(
-                "/app/api/v1/notifications/counselors/" + chatCreateEvent.getCounselorId(),
+                "/queue/chattings/notifications/counselors/" + chatCreateEvent.getCounselorId(),
                 ChatCreateEventResponse.of(chatCreateEvent.getChatId()));
     }
 

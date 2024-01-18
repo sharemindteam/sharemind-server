@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
@@ -47,7 +47,6 @@ public class ChatServiceImpl implements ChatService {
     private final ChatTaskScheduler chatTaskScheduler;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @Transactional
     @Override
     public Chat createChat(Consult consult) {
         Chat chat = Chat.newInstance();
@@ -67,9 +66,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void validateChat(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer) {
+        Long userId = (Long) sessionAttributes.get("userId");
+        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId;
 
-        String userId = (String) sessionAttributes.get("userId");
-        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId : COUNSELOR_PREFIX + userId;
         List<Long> chatRoomIds = redisTemplate.opsForValue()
                 .get(redisKey);
         if (chatRoomIds == null || !chatRoomIds.contains(chatId)) {
@@ -80,6 +79,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<ChatInfoGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer) {
         List<Consult> consults;
+
         if (isCustomer) {
             consults = consultRepository.findByCustomerIdAndConsultTypeAndIsPaid(customerId, ConsultType.CHAT);
         } else {
@@ -95,11 +95,9 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
                                      Boolean isCustomer) {
-
         ChatGetStatusResponse chatGetStatusResponse = getChatStatus(chatId, chatStatusUpdateRequest, isCustomer);
 
         sendChatStatus(chatId, chatGetStatusResponse);
-
     }
 
     private ChatGetStatusResponse getChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
@@ -130,18 +128,27 @@ public class ChatServiceImpl implements ChatService {
         switch (chatWebsocketStatus) {
             case COUNSELOR_CHAT_START_REQUEST: { //counselor가 상담 요청을 보낸 상황
                 chat.updateChatStatus(ChatStatus.SEND_REQUEST);
+                chatRepository.save(chat);
 
                 chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
+
+                break;
             }
             case CUSTOMER_CHAT_START_RESPONSE: {
                 chat.updateChatStatus(ChatStatus.ONGOING);
                 chat.updateStartedAt();
+                chatRepository.save(chat);
 
                 chatTaskScheduler.checkChatDuration(chat);
+
+                break;
             }
 
             case CUSTOMER_CHAT_FINISH_REQUEST: { //구매자가 상담 종료를 누른 상황
                 chat.updateChatStatus(ChatStatus.FINISH);
+                chatRepository.save(chat);
+
+                break;
             }
             default:
                 throw new ChatException(ChatErrorCode.INVALID_CHAT_REQUEST, chatWebsocketStatus.toString());
@@ -166,13 +173,18 @@ public class ChatServiceImpl implements ChatService {
         ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
         switch (chatWebsocketStatus) {
             case COUNSELOR_CHAT_START_REQUEST: {
+                System.out.println("counselor_chat_Start_request here");
                 compareChatStatus(chat, ChatStatus.WAITING, chatWebsocketStatus);
+                break;
             }
             case CUSTOMER_CHAT_START_RESPONSE: {
+                System.out.println("customer_chat_Start");
                 compareChatStatus(chat, ChatStatus.SEND_REQUEST, chatWebsocketStatus);
+                break;
             }
             case CUSTOMER_CHAT_FINISH_REQUEST: {
                 compareChatStatus(chat, ChatStatus.TIME_OVER, chatWebsocketStatus);
+                break;
             }
             default:
                 throw new ChatException(ChatErrorCode.INVALID_CHAT_REQUEST, chatWebsocketStatus.toString());
@@ -181,6 +193,7 @@ public class ChatServiceImpl implements ChatService {
 
     private void compareChatStatus(Chat chat, ChatStatus expectedStatus,
                                    ChatWebsocketStatus chatWebsocketStatus) {
+        System.out.println("compareChatStatus : " + chat.getChatStatus() + "expectedStatus : " + expectedStatus);
         if (chat.getChatStatus() != expectedStatus) {
             throw new ChatException(ChatErrorCode.INVALID_CHAT_STATUS_REQUEST, chatWebsocketStatus.toString());
         }
