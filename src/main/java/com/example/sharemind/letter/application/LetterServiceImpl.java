@@ -2,6 +2,9 @@ package com.example.sharemind.letter.application;
 
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
+import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.counselor.exception.CounselorErrorCode;
+import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.letter.content.LetterSortType;
@@ -75,8 +78,13 @@ public class LetterServiceImpl implements LetterService {
             consults = consultService.getConsultsByCustomerIdAndConsultTypeAndIsPaid(
                     customer.getCustomerId(), ConsultType.LETTER);
         } else {
+            Counselor counselor = customer.getCounselor();
+            if (counselor == null) {
+                throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND, null);
+            }
+
             consults = consultService.getConsultsByCounselorIdAndConsultTypeAndIsPaid(
-                    customer.getCounselor().getCounselorId(), ConsultType.LETTER);
+                    counselor.getCounselorId(), ConsultType.LETTER);
         }
 
         List<Letter> letters;
