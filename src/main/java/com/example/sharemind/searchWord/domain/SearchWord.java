@@ -19,4 +19,14 @@ public class SearchWord extends BaseEntity {
 
     @Column(nullable = false)
     private Long count;
+
+    @Builder
+    public SearchWord(String word) {
+        this.word = word;
+        this.count = 0L;
+    }
+
+    public void increaseCount() {
+        this.count += 1;
+    }
 }
