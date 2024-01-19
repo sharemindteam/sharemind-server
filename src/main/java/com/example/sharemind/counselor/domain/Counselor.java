@@ -18,7 +18,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 public class Counselor extends BaseEntity {
@@ -99,9 +98,7 @@ public class Counselor extends BaseEntity {
     private Double ratingAverage;
 
     @Builder
-    public Counselor(Boolean isEducated) {
-        this.isEducated = isEducated;
-
+    public Counselor() {
         this.nickname = "판매자" + new Random().nextInt(999999);
         this.level = 0;
         this.totalReview = 0L;
