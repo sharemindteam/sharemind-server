@@ -1,6 +1,6 @@
 package com.example.sharemind.counselor.domain;
 
-import com.example.sharemind.counselor.content.ConsultCost;
+import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.global.common.BaseEntity;
@@ -36,11 +36,20 @@ public class Counselor extends BaseEntity {
     @Column(name = "retry_education")
     private LocalDateTime retryEducation;
 
+    @Column(name = "profile_status")
+    @Enumerated(EnumType.STRING)
+    private ProfileStatus profileStatus;
+
     @ElementCollection(targetClass = ConsultCost.class, fetch = FetchType.LAZY)
     @JoinTable(name = "costs", joinColumns = @JoinColumn(name = "counselor_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "consult_costs")
     private Set<ConsultCost> consultCosts;
+
+    @ElementCollection(targetClass = ConsultTime.class, fetch = FetchType.LAZY)
+    @JoinTable(name = "times", joinColumns = @JoinColumn(name = "counselor_id"))
+    @Column(name = "consult_times")
+    private Set<ConsultTime> consultTimes;
 
     @ElementCollection(targetClass = ConsultType.class, fetch = FetchType.LAZY)
     @JoinTable(name = "types", joinColumns = @JoinColumn(name = "counselor_id"))
