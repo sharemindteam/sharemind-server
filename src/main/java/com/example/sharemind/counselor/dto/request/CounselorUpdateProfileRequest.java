@@ -11,7 +11,7 @@ import java.util.Map;
 public class CounselorUpdateProfileRequest {
 
     @Schema(description = "닉네임")
-    @Size(max = 10, message = "닉네임은 최대 10자입니다.")
+    @Size(min = 1, max = 10, message = "닉네임은 최대 10자입니다.")
     @NotBlank(message = "닉네임은 공백일 수 없습니다.")
     private String nickname;
 

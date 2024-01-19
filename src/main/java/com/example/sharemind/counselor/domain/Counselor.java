@@ -30,7 +30,7 @@ public class Counselor extends BaseEntity {
     @Column(name = "counselor_id")
     private Long counselorId;
 
-    @Size(max = 10, message = "닉네임은 최대 10자입니다.")
+    @Size(min = 1, max = 10, message = "닉네임은 최대 10자입니다.")
     @Column(nullable = false)
     private String nickname;
 
