@@ -3,7 +3,10 @@ package com.example.sharemind.searchWord.application;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.response.CounselorGetResponse;
+import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.wishlist.application.WishListService;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,16 +21,22 @@ public class SearchWordServiceImpl implements SearchWordService {
     private static final String SEARCH_WORD_PREFIX = "searchWord: ";
 
     private final CounselorService counselorService;
+    private final WishListService wishListService;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public List<CounselorGetResponse> getSearchWordAndReturnResults(Long customerId, String word, int index) {
+    public List<CounselorGetResponse> getSearchWordAndReturnResults(Customer customer, String word, int index) {
         //todo: 우선은 최신순으로 구현, 추후 인기순, 별점순 개발
-        storeSearchWordInRedis(customerId, word);
+        storeSearchWordInRedis(customer.getCustomerId(), word);
 
         List<Counselor> counselors = counselorService.findCounselorByWordWithPagination(word, index);
 
+        Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
 
+        return counselors.stream()
+                .map(counselor -> CounselorGetResponse.of(counselor,
+                        wishListCounselorIds.contains(counselor.getCounselorId())))
+                .toList();
     }
 
     private void storeSearchWordInRedis(Long customerId, String word) {
