@@ -50,8 +50,9 @@ public class CounselorServiceImpl implements CounselorService {
     public void updateIsEducated(Boolean isEducated, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         if (customer.getCounselor() == null) {
-            Counselor counselor = counselorRepository.save(Counselor.builder().build());
+            Counselor counselor = counselorRepository.save(Counselor.builder().isEducated(isEducated).build());
             customer.setCounselor(counselor);
+            return;
         }
 
         Counselor counselor = customer.getCounselor();
