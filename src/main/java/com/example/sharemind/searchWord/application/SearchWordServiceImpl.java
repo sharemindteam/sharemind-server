@@ -23,17 +23,23 @@ public class SearchWordServiceImpl implements SearchWordService {
     @Override
     public List<CounselorGetResponse> getSearchWordAndReturnResults(Long customerId, String word, int index) {
         //todo: 우선은 최신순으로 구현, 추후 인기순, 별점순 개발
+        storeSearchWordInRedis(customerId, word);
 
         List<Counselor> counselors = counselorService.findCounselorByWordWithPagination(word, index);
+
 
     }
 
     private void storeSearchWordInRedis(Long customerId, String word) {
         ListOperations<String, String> listOps = redisTemplate.opsForList();
 
-        listOps.leftPush(SEARCH_WORD_PREFIX + customerId, word);
+        String redisKey = SEARCH_WORD_PREFIX + customerId;
 
-        listOps.trim(SEARCH_WORD_PREFIX + customerId, 0, 4);
+        listOps.remove(redisKey, 0, word);
+
+        listOps.leftPush(redisKey, word);
+
+        listOps.trim(redisKey, 0, 4);
     }
 
     @Override
