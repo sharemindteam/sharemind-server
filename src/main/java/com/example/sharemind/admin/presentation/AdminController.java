@@ -2,6 +2,7 @@ package com.example.sharemind.admin.presentation;
 
 import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.CounselorGetPendingResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +30,7 @@ public class AdminController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
-    @GetMapping
+    @GetMapping("/unpaid-consults")
     public ResponseEntity<List<ConsultsGetUnpaidResponse>> getUnpaidConsults() {
         return ResponseEntity.ok(adminService.getUnpaidConsults());
     }
@@ -49,9 +50,18 @@ public class AdminController {
     @Parameters({
             @Parameter(name = "consultId", description = "상담 아이디")
     })
-    @PatchMapping("/{consultId}")
+    @PatchMapping("/unpaid-consults/{consultId}")
     public ResponseEntity<Void> updateIsPaid(@PathVariable Long consultId) {
         adminService.updateIsPaid(consultId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "심사 대기 중인 상담사 프로필 조회", description = "심사 대기 중인 상담사 프로필 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/pending-profiles")
+    public ResponseEntity<List<CounselorGetPendingResponse>> getPendingCounselors() {
+        return ResponseEntity.ok(adminService.getPendingCounselors());
     }
 }
