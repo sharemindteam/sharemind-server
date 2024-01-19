@@ -14,6 +14,10 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,8 @@ import java.util.*;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CounselorServiceImpl implements CounselorService {
+
+    private static final int COUNSELOR_PAGE = 4;
 
     private final CounselorRepository counselorRepository;
     private final CustomerService customerService;
@@ -124,5 +130,13 @@ public class CounselorServiceImpl implements CounselorService {
         counselor.updateProfile(counselorUpdateProfileRequest.getNickname(), consultCategories, consultStyle,
                 consultTypes, consultTimes, consultCosts, counselorUpdateProfileRequest.getIntroduction(),
                 counselorUpdateProfileRequest.getExperience());
+    }
+
+    @Override
+    public List<Counselor> findCounselorByWordWithPagination(String word, int index) {
+        Pageable pageable = PageRequest.of(index, COUNSELOR_PAGE, Sort.by("updatedAt").descending());
+
+        Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(word, pageable);
+        return page.getContent();
     }
 }
