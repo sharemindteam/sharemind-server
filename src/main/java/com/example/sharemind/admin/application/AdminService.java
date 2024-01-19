@@ -11,4 +11,6 @@ public interface AdminService {
     void updateIsPaid(Long consultId);
 
     List<CounselorGetPendingResponse> getPendingCounselors();
+
+    void updateProfileStatus(Long counselorId, Boolean isPassed);
 }
