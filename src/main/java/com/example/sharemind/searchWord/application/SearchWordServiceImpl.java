@@ -4,6 +4,8 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.response.CounselorGetResponse;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.searchWord.domain.SearchWord;
+import com.example.sharemind.searchWord.repository.SearchWordRepository;
 import com.example.sharemind.wishlist.application.WishListService;
 import java.util.List;
 import java.util.Set;
@@ -22,12 +24,16 @@ public class SearchWordServiceImpl implements SearchWordService {
 
     private final CounselorService counselorService;
     private final WishListService wishListService;
+    private final SearchWordRepository searchWordRepository;
+
     private final RedisTemplate<String, String> redisTemplate;
 
+    @Transactional
     @Override
     public List<CounselorGetResponse> getSearchWordAndReturnResults(Customer customer, String word, int index) {
         //todo: 우선은 최신순으로 구현, 추후 인기순, 별점순 개발
         storeSearchWordInRedis(customer.getCustomerId(), word);
+        storeSearchWordInDB(word);
 
         List<Counselor> counselors = counselorService.findCounselorByWordWithPagination(word, index);
 
@@ -37,6 +43,14 @@ public class SearchWordServiceImpl implements SearchWordService {
                 .map(counselor -> CounselorGetResponse.of(counselor,
                         wishListCounselorIds.contains(counselor.getCounselorId())))
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    public void storeSearchWordInDB(String word) {
+        SearchWord searchWord = searchWordRepository.findByWordAndIsActivatedTrue(word)
+                .orElseGet(() -> SearchWord.builder().word(word).build());
+        searchWord.increaseCount(); //todo: 잘 저장되는지 보기
     }
 
     private void storeSearchWordInRedis(Long customerId, String word) {

@@ -10,4 +10,6 @@ public interface SearchWordService {
     List<String> getRecentSearchWords(Long customerId);
 
     void removeSearchWord(Long customerId, String word);
+
+    void storeSearchWordInDB(String word);
 }
