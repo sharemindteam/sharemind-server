@@ -13,6 +13,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.Set;
+
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,6 +30,7 @@ public class Counselor extends BaseEntity {
     @Column(name = "counselor_id")
     private Long counselorId;
 
+    @Size(max = 10, message = "닉네임은 최대 10자입니다.")
     @Column(nullable = false)
     private String nickname;
 
@@ -42,7 +46,6 @@ public class Counselor extends BaseEntity {
 
     @ElementCollection(targetClass = ConsultCost.class, fetch = FetchType.LAZY)
     @JoinTable(name = "costs", joinColumns = @JoinColumn(name = "counselor_id"))
-    @Enumerated(EnumType.STRING)
     @Column(name = "consult_costs")
     private Set<ConsultCost> consultCosts;
 
@@ -67,12 +70,15 @@ public class Counselor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConsultStyle consultStyle;
 
+    @Size(max = 20000, message = "경험 소개는 최대 20000자입니다.")
     @Column(columnDefinition = "TEXT")
     private String experience;
 
+    @Size(max = 50, message = "한줄 소개는 최대 50자입니다.")
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
+    @PositiveOrZero(message = "상담사 레벨은 0 이상입니다.")
     @Column(nullable = false)
     private Integer level;
 
@@ -84,9 +90,11 @@ public class Counselor extends BaseEntity {
     @Column(name = "account_holder")
     private String accountHolder;
 
+    @PositiveOrZero(message = "총 리뷰 수는 0 이상입니다.")
     @Column(name = "total_review", nullable = false)
     private Long totalReview;
 
+    @PositiveOrZero(message = "리뷰 평점은 0 이상입니다.")
     @Column(name = "rating_average", nullable = false)
     private Double ratingAverage;
 
@@ -105,6 +113,21 @@ public class Counselor extends BaseEntity {
                 .filter(consultCost -> consultCost.getConsultType().equals(consultType))
                 .findAny().orElseThrow(() -> new CounselorException(CounselorErrorCode.COST_NOT_FOUND))
                 .getCost();
+    }
+
+    public void updateProfile(String nickname, Set<ConsultCategory> consultCategories, ConsultStyle consultStyle,
+                              Set<ConsultType> consultTypes, Set<ConsultTime> consultTimes, Set<ConsultCost> consultCosts,
+                              String introduction, String experience) {
+        this.nickname = nickname;
+        this.consultCategories = consultCategories;
+        this.consultStyle = consultStyle;
+        this.consultTypes = consultTypes;
+        this.consultTimes = consultTimes;
+        this.consultCosts = consultCosts;
+        this.introduction = introduction;
+        this.experience = experience;
+
+        this.profileStatus = ProfileStatus.EVALUATION_PENDING;
     }
 
     public void updateIsEducated(Boolean isEducated) {
