@@ -40,4 +40,13 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
+    @Bean
+    public RedisTemplate<String, Integer> countRedisTemplate() {
+        RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
+
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+
+        return redisTemplate;
+    }
 }

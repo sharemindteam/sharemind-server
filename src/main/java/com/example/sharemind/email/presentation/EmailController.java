@@ -28,7 +28,7 @@ public class EmailController {
     @Operation(summary = "이메일 인증코드 발송", description = "회원가입 시 이메일 인증코드를 발송")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "해당 이메일로 인증 코드 발송 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 이미 회원으로 등록된 이메일\n 2. 유효기간이 만료되지 않은 코드가 남아있을 경우\n3. 올바르지 않은 이메일 형식")
+            @ApiResponse(responseCode = "400", description = "1. 이미 회원으로 등록된 이메일\n 2. 5분 내에 코드 전송 5회 횟수를 초과 했을 경우\n3. 올바르지 않은 이메일 형식")
     })
     @PostMapping
     public ResponseEntity<Void> sendVerificationCode(@Valid @RequestBody EmailPostRequest emailPostRequest) {

@@ -1,6 +1,6 @@
 package com.example.sharemind.global.jwt;
 
-import com.example.sharemind.global.repository.RedisRepository;
+import com.example.sharemind.auth.repository.RefreshTokenRepository;
 import com.example.sharemind.customer.content.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -26,7 +26,7 @@ public class TokenProvider implements InitializingBean {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    private final RedisRepository redisRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final String secret;
     private final Long accessExpirationTime;
@@ -34,12 +34,12 @@ public class TokenProvider implements InitializingBean {
     private Key key;
 
     public TokenProvider(CustomUserDetailsService customUserDetailsService,
-                         RedisRepository redisRepository,
+                         RefreshTokenRepository refreshTokenRepository,
                          @Value("${jwt.secret}") String secret,
                          @Value("${jwt.access-expiration-time}") Long accessExpirationTime,
                          @Value("${jwt.refresh-expiration-time}") Long refreshExpirationTime) {
         this.customUserDetailsService = customUserDetailsService;
-        this.redisRepository = redisRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.secret = secret;
         this.accessExpirationTime = accessExpirationTime;
         this.refreshExpirationTime = refreshExpirationTime;
@@ -86,7 +86,7 @@ public class TokenProvider implements InitializingBean {
                 .compact();
 
         Duration duration = Duration.between(Instant.now(), expirationTime.toInstant());
-        redisRepository.save(email, refreshToken, duration);
+        refreshTokenRepository.save(email, refreshToken, duration);
 
         return refreshToken;
     }
@@ -121,7 +121,7 @@ public class TokenProvider implements InitializingBean {
             Claims claims = parseClaims(refreshToken);
 
             String email = claims.getSubject();
-            String savedRefreshToken = redisRepository.findByKey(email);
+            String savedRefreshToken = refreshTokenRepository.findByKey(email);
 
             return refreshToken.equals(savedRefreshToken);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
