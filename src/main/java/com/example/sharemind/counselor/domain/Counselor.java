@@ -130,6 +130,10 @@ public class Counselor extends BaseEntity {
         this.profileStatus = ProfileStatus.EVALUATION_PENDING;
     }
 
+    public void updateProfileStatus(ProfileStatus profileStatus) {
+        this.profileStatus = profileStatus;
+    }
+
     public void updateIsEducated(Boolean isEducated) {
         validateIsEducated();
         this.isEducated = isEducated;
