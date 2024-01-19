@@ -1,6 +1,6 @@
 package com.example.sharemind.counselor.domain;
 
-import com.example.sharemind.counselor.content.ConsultCost;
+import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.global.common.BaseEntity;
@@ -13,6 +13,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.Set;
+
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,7 +30,8 @@ public class Counselor extends BaseEntity {
     @Column(name = "counselor_id")
     private Long counselorId;
 
-    @Column(nullable = false)
+    @Size(min = 1, max = 10, message = "닉네임은 최대 10자입니다.") // TODO 최대 8글자인지 10글자인지 확인 필요
+    @Column(nullable = false) // TODO unique 조건 추가할지 기획 파트와 상의 필요
     private String nickname;
 
     @Column(name = "is_educated", nullable = false)
@@ -36,11 +40,19 @@ public class Counselor extends BaseEntity {
     @Column(name = "retry_education")
     private LocalDateTime retryEducation;
 
+    @Column(name = "profile_status")
+    @Enumerated(EnumType.STRING)
+    private ProfileStatus profileStatus;
+
     @ElementCollection(targetClass = ConsultCost.class, fetch = FetchType.LAZY)
     @JoinTable(name = "costs", joinColumns = @JoinColumn(name = "counselor_id"))
-    @Enumerated(EnumType.STRING)
     @Column(name = "consult_costs")
     private Set<ConsultCost> consultCosts;
+
+    @ElementCollection(targetClass = ConsultTime.class, fetch = FetchType.LAZY)
+    @JoinTable(name = "times", joinColumns = @JoinColumn(name = "counselor_id"))
+    @Column(name = "consult_times")
+    private Set<ConsultTime> consultTimes;
 
     @ElementCollection(targetClass = ConsultType.class, fetch = FetchType.LAZY)
     @JoinTable(name = "types", joinColumns = @JoinColumn(name = "counselor_id"))
@@ -58,12 +70,15 @@ public class Counselor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConsultStyle consultStyle;
 
+    @Size(max = 20000, message = "경험 소개는 최대 20000자입니다.")
     @Column(columnDefinition = "TEXT")
     private String experience;
 
+    @Size(max = 50, message = "한줄 소개는 최대 50자입니다.")
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
+    @PositiveOrZero(message = "상담사 레벨은 0 이상입니다.")
     @Column(nullable = false)
     private Integer level;
 
@@ -75,9 +90,11 @@ public class Counselor extends BaseEntity {
     @Column(name = "account_holder")
     private String accountHolder;
 
+    @PositiveOrZero(message = "총 리뷰 수는 0 이상입니다.")
     @Column(name = "total_review", nullable = false)
     private Long totalReview;
 
+    @PositiveOrZero(message = "리뷰 평점은 0 이상입니다.")
     @Column(name = "rating_average", nullable = false)
     private Double ratingAverage;
 
@@ -96,6 +113,21 @@ public class Counselor extends BaseEntity {
                 .filter(consultCost -> consultCost.getConsultType().equals(consultType))
                 .findAny().orElseThrow(() -> new CounselorException(CounselorErrorCode.COST_NOT_FOUND))
                 .getCost();
+    }
+
+    public void updateProfile(String nickname, Set<ConsultCategory> consultCategories, ConsultStyle consultStyle,
+                              Set<ConsultType> consultTypes, Set<ConsultTime> consultTimes, Set<ConsultCost> consultCosts,
+                              String introduction, String experience) {
+        this.nickname = nickname;
+        this.consultCategories = consultCategories;
+        this.consultStyle = consultStyle;
+        this.consultTypes = consultTypes;
+        this.consultTimes = consultTimes;
+        this.consultCosts = consultCosts;
+        this.introduction = introduction;
+        this.experience = experience;
+
+        this.profileStatus = ProfileStatus.EVALUATION_PENDING;
     }
 
     public void updateIsEducated(Boolean isEducated) {
