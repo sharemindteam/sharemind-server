@@ -74,6 +74,10 @@ public class Customer extends BaseEntity {
         }};
     }
 
+    public void setCounselor(Counselor counselor) {
+        this.counselor = counselor;
+    }
+
     private void validateEmails(String email, String recoveryEmail) {
         if (email.equals(recoveryEmail)) {
             throw new AuthException(AuthErrorCode.INVALID_RECOVERY_EMAIL);
