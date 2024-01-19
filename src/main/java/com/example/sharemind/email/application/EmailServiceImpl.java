@@ -16,18 +16,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    private static final int EXPIRATION_TIME = 5 * 60; //5분
+    private static final int EXPIRATION_TIME = 5;
+    private static final int EMAIL_REQUEST_MAX_COUNT = 5;
     private static final String EMAIL_PREFIX = "email: ";
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Integer> countRedisTemplate;
     private final JavaMailSender mailSender;
 
     @Override
     public void sendVerificationCode(String email) {
-        checkExistingCode(email);
-        String code = createVerificationCode();
+        String code = checkExistingCode(email);
+        int count = 0;
+        if (code == null) {
+            code = createVerificationCode();
+        } else {
+            count = checkCodeCount(email);
+        }
         sendEmail(email, code);
-        storeCodeInRedis(email, code);
+        storeCodeInRedis(email, code, count);
     }
 
     @Override
@@ -38,15 +45,25 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    private void checkExistingCode(String email) {
-        String existingCode = redisTemplate.opsForValue().get(EMAIL_PREFIX + email);
-        if (existingCode != null) {
-            throw new EmailException(EmailErrorCode.CODE_ALREADY_EXISTS, email);
-        }
+    private String checkExistingCode(String email) {
+        return redisTemplate.opsForValue().get(EMAIL_PREFIX + email);
     }
 
-    private void storeCodeInRedis(String email, String code) {
-        redisTemplate.opsForValue().set(EMAIL_PREFIX + email, code, EXPIRATION_TIME, TimeUnit.SECONDS);
+    private int checkCodeCount(String email) {
+        Integer count = countRedisTemplate.opsForValue().get(EMAIL_PREFIX + email);
+        if ((count == null) || (count >= EMAIL_REQUEST_MAX_COUNT || count <= 0)) {
+            throw new EmailException(EmailErrorCode.CODE_REQUEST_COUNT_EXCEED, email);
+        }
+        return count;
+    }
+
+    private void storeCodeInRedis(String email, String code, int count) {
+        if (count == 0) {
+            redisTemplate.opsForValue().set(EMAIL_PREFIX + email, code, EXPIRATION_TIME, TimeUnit.MINUTES);
+            countRedisTemplate.opsForValue().set(EMAIL_PREFIX + email, 1, EXPIRATION_TIME, TimeUnit.MINUTES);
+        } else {
+            countRedisTemplate.opsForValue().set(EMAIL_PREFIX + email, count + 1);
+        }
     }
 
     private String createVerificationCode() {
