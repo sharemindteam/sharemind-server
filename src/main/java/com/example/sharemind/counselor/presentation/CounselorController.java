@@ -1,6 +1,7 @@
 package com.example.sharemind.counselor.presentation;
 
 import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,10 +47,48 @@ public class CounselorController {
 
     @Operation(summary = "퀴즈 재응시 가능 여부 조회", description = "퀴즈 통과 실패 후 24시간 경과 여부 조회")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공(이미 퀴즈 통과한 경우도 false 반환)")
+            @ApiResponse(responseCode = "200", description = "조회 성공(이미 퀴즈 통과한 경우도 false 반환)"),
+            @ApiResponse(responseCode = "404", description = "상담사 정보 존재하지 않음",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
     })
     @GetMapping("/quiz")
     public ResponseEntity<Boolean> getRetryPermission(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getRetryPermission(customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "프로필 편집",
+            description = "상담사 프로필 수정 신청(consultTimes, letterCost, chatCost 제외 null 불가)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 신청 성공"),
+            @ApiResponse(responseCode = "400", description = """
+                    1. request 값 잘못 들어감(ex. 닉네임이 공백, 한줄 소개가 50자 이상)
+                    2. 이미 프로필 심사 중인 상담사에 대한 요청
+                    3. 한 요일에 대한 상담 가능 시간이 2개 초과""",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "교육을 수료하지 않은 상담사에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = """
+                    1. 상담사 정보 존재하지 않음
+                     2. 올바르지 않은 상담 카테고리/스타일/방식/요일
+                     3. 선택한 상담 방식에 대한 상담료 입력되지 않음""",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "409", description = "한 요일에 대한 상담 가능 시간이 서로 겹침(ex. 13~15, 14~20)",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @PatchMapping("/profiles")
+    public ResponseEntity<Void> updateCounselorProfile(@Valid @RequestBody CounselorUpdateProfileRequest counselorUpdateProfileRequest,
+                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        counselorService.updateCounselorProfile(counselorUpdateProfileRequest, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
     }
 }
