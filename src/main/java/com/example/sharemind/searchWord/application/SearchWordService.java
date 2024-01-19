@@ -5,4 +5,8 @@ import java.util.List;
 
 public interface SearchWordService {
     List<CounselorGetResponse> getSearchWordAndReturnResults(Long customerId, String word, int index);
+
+    List<String> getRecentSearchWords(Long customerId);
+
+    void removeSearchWord(Long customerId, String word);
 }
