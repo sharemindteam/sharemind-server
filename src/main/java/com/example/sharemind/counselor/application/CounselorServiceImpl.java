@@ -125,4 +125,9 @@ public class CounselorServiceImpl implements CounselorService {
                 consultTypes, consultTimes, consultCosts, counselorUpdateProfileRequest.getIntroduction(),
                 counselorUpdateProfileRequest.getExperience());
     }
+
+    @Override
+    public List<Counselor> getEvaluationPendingConsults() {
+        return counselorRepository.findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
+    }
 }
