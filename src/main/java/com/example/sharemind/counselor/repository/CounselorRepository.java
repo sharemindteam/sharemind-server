@@ -10,6 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface CounselorRepository extends JpaRepository<Counselor, Long> {
+    Boolean existsByNickname(String nickname);
+
     Optional<Counselor> findByCounselorIdAndIsActivatedIsTrue(Long id);
 
     @Query("SELECT c FROM Counselor c WHERE  c.profileStatus = 'EVALUATION_PENDING' AND c.isActivated = true")
