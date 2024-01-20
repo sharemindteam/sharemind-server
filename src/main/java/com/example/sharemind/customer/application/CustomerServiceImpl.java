@@ -1,5 +1,6 @@
 package com.example.sharemind.customer.application;
 
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
 import com.example.sharemind.customer.exception.CustomerException;
@@ -20,5 +21,11 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
                 .orElseThrow(() -> new CustomerException(
                         CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
+    }
+
+    @Override
+    public Customer getCustomerByCounselor(Counselor counselor) {
+        return customerRepository.findByCounselorAndIsActivatedIsTrue(counselor)
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND));
     }
 }
