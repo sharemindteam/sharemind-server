@@ -18,7 +18,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 public class Counselor extends BaseEntity {
@@ -34,7 +33,7 @@ public class Counselor extends BaseEntity {
     @Column(nullable = false) // TODO unique 조건 추가할지 기획 파트와 상의 필요
     private String nickname;
 
-    @Column(name = "is_educated", nullable = false)
+    @Column(name = "is_educated")
     private Boolean isEducated;
 
     @Column(name = "retry_education")
@@ -99,9 +98,7 @@ public class Counselor extends BaseEntity {
     private Double ratingAverage;
 
     @Builder
-    public Counselor(Boolean isEducated) {
-        this.isEducated = isEducated;
-
+    public Counselor() {
         this.nickname = "판매자" + new Random().nextInt(999999);
         this.level = 0;
         this.totalReview = 0L;
@@ -146,7 +143,7 @@ public class Counselor extends BaseEntity {
     }
 
     private void validateIsEducated() {
-        if (this.isEducated.equals(true)) {
+        if ((this.isEducated != null) && (this.isEducated.equals(true))) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_ALREADY_EDUCATED);
         }
     }
