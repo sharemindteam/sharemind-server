@@ -14,11 +14,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "SearchWord Controller", description = "검색어 관련 컨트롤러")
 @RestController
@@ -38,7 +34,8 @@ public class SearchWordController {
     @GetMapping()
     public ResponseEntity<List<String>> getCustomerSearchWords(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(searchWordService.getRecentSearchWordsByCustomer(customUserDetails.getCustomer()));
+        return ResponseEntity.ok(
+                searchWordService.getRecentSearchWordsByCustomer(customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "검색 결과 반환", description = "현재 최근순만 구현,, 나머지 정렬 빠르게 업데이트 하겠습니다~..\n"
@@ -49,12 +46,12 @@ public class SearchWordController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님")
     })
-    @PatchMapping("results")
+    @PatchMapping("/results")
     public ResponseEntity<List<CounselorGetResponse>> getSearchWordResults(
             @Valid @RequestBody SearchWordFindRequest searchWordFindRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(
-                searchWordService.getSearchWordAndReturnResults(customUserDetails.getCustomer(),
+                searchWordService.storeSearchWordAndGetCounselors(customUserDetails.getCustomer().getCustomerId(),
                         searchWordFindRequest));
     }
 
@@ -63,11 +60,12 @@ public class SearchWordController {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님")
     })
-    @PatchMapping()
+    @DeleteMapping()
     public ResponseEntity<Void> deleteCustomerSearchWord(
             @Valid @RequestBody SearchWordDeleteRequest searchWordDeleteRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        searchWordService.removeSearchWordByCustomer(customUserDetails.getCustomer(), searchWordDeleteRequest);
+        searchWordService.removeSearchWordByCustomer(customUserDetails.getCustomer().getCustomerId(),
+                searchWordDeleteRequest);
 
         return ResponseEntity.ok().build();
     }

@@ -3,6 +3,7 @@ package com.example.sharemind.searchWord.application;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.response.CounselorGetResponse;
+import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.searchWord.domain.SearchWord;
 import com.example.sharemind.searchWord.dto.request.SearchWordDeleteRequest;
@@ -26,20 +27,22 @@ public class SearchWordServiceImpl implements SearchWordService {
 
     private final CounselorService counselorService;
     private final WishListService wishListService;
+    private final CustomerService customerService;
     private final SearchWordRepository searchWordRepository;
 
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     @Override
-    public List<CounselorGetResponse> getSearchWordAndReturnResults(Customer customer,
-                                                                    SearchWordFindRequest searchWordFindRequest) {
+    public List<CounselorGetResponse> storeSearchWordAndGetCounselors(Long customerId,
+                                                                      SearchWordFindRequest searchWordFindRequest) {
         //todo: 우선은 최신순으로 구현, 추후 인기순, 별점순 개발
-        storeSearchWordInRedis(customer.getCustomerId(), searchWordFindRequest.getWord());
+        storeSearchWordInRedis(customerId, searchWordFindRequest.getWord());
         storeSearchWordInDB(searchWordFindRequest.getWord());
 
-        List<Counselor> counselors = counselorService.findCounselorByWordWithPagination(searchWordFindRequest);
+        List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordFindRequest);
 
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
         Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
 
         return counselors.stream()
@@ -71,14 +74,14 @@ public class SearchWordServiceImpl implements SearchWordService {
     }
 
     @Override
-    public List<String> getRecentSearchWordsByCustomer(Customer customer) {
-        return redisTemplate.opsForList().range(SEARCH_WORD_PREFIX + customer.getCustomerId(), 0, -1);
+    public List<String> getRecentSearchWordsByCustomer(Long customerId) {
+        return redisTemplate.opsForList().range(SEARCH_WORD_PREFIX + customerId, 0, -1);
     }
 
     @Override
-    public void removeSearchWordByCustomer(Customer customer, SearchWordDeleteRequest searchWordDeleteRequest) {
+    public void removeSearchWordByCustomer(Long customerId, SearchWordDeleteRequest searchWordDeleteRequest) {
         ListOperations<String, String> listOps = redisTemplate.opsForList();
 
-        listOps.remove(SEARCH_WORD_PREFIX + customer.getCustomerId(), 0, searchWordDeleteRequest.getWord());
+        listOps.remove(SEARCH_WORD_PREFIX + customerId, 0, searchWordDeleteRequest.getWord());
     }
 }
