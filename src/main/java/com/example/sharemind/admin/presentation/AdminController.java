@@ -2,7 +2,7 @@ package com.example.sharemind.admin.presentation;
 
 import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
-import com.example.sharemind.admin.dto.response.CounselorGetPendingResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -61,7 +61,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping("/pending-profiles")
-    public ResponseEntity<List<CounselorGetPendingResponse>> getPendingCounselors() {
+    public ResponseEntity<List<CounselorGetProfileResponse>> getPendingCounselors() {
         return ResponseEntity.ok(adminService.getPendingCounselors());
     }
 
