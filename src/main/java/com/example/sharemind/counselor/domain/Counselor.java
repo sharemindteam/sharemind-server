@@ -97,6 +97,9 @@ public class Counselor extends BaseEntity {
     @Column(name = "rating_average", nullable = false)
     private Double ratingAverage;
 
+    @Column(name = "profile_updated_at", nullable = false)
+    private LocalDateTime profileUpdatedAt;
+
     @Builder
     public Counselor() {
         this.nickname = "판매자" + new Random().nextInt(99999);
@@ -114,7 +117,8 @@ public class Counselor extends BaseEntity {
     }
 
     public void updateProfile(String nickname, Set<ConsultCategory> consultCategories, ConsultStyle consultStyle,
-                              Set<ConsultType> consultTypes, Set<ConsultTime> consultTimes, Set<ConsultCost> consultCosts,
+                              Set<ConsultType> consultTypes, Set<ConsultTime> consultTimes,
+                              Set<ConsultCost> consultCosts,
                               String introduction, String experience) {
         this.nickname = nickname;
         this.consultCategories = consultCategories;
@@ -130,6 +134,10 @@ public class Counselor extends BaseEntity {
 
     public void updateProfileStatus(ProfileStatus profileStatus) {
         this.profileStatus = profileStatus;
+    }
+
+    public void updateProfileUpdatedAt() {
+        this.profileUpdatedAt = LocalDateTime.now();
     }
 
     public void updateIsEducated(Boolean isEducated) {

@@ -15,7 +15,12 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
+import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +31,8 @@ import java.util.*;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CounselorServiceImpl implements CounselorService {
+
+    private static final int COUNSELOR_PAGE = 4;
 
     private final CounselorRepository counselorRepository;
     private final CustomerService customerService;
@@ -141,6 +148,16 @@ public class CounselorServiceImpl implements CounselorService {
     @Override
     public List<Counselor> getEvaluationPendingConsults() {
         return counselorRepository.findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
+    }
+
+    @Override
+    public List<Counselor> getCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest) {
+        Pageable pageable = PageRequest.of(searchWordFindRequest.getIndex(), COUNSELOR_PAGE,
+                Sort.by("profileUpdatedAt").descending());
+
+        Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordFindRequest.getWord(),
+                pageable);
+        return page.getContent();
     }
 
     @Override
