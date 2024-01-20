@@ -53,7 +53,9 @@ public class SearchWordServiceImpl implements SearchWordService {
     public void storeSearchWordInDB(String word) {
         SearchWord searchWord = searchWordRepository.findByWordAndIsActivatedTrue(word)
                 .orElseGet(() -> SearchWord.builder().word(word).build());
-        searchWord.increaseCount(); //todo: 잘 저장되는지 보기
+        searchWord.increaseCount();
+
+        searchWordRepository.save(searchWord);
     }
 
     private void storeSearchWordInRedis(Long customerId, String word) {
