@@ -7,6 +7,7 @@ import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
@@ -125,6 +126,16 @@ public class CounselorServiceImpl implements CounselorService {
         counselor.updateProfile(counselorUpdateProfileRequest.getNickname(), consultCategories, consultStyle,
                 consultTypes, consultTimes, consultCosts, counselorUpdateProfileRequest.getIntroduction(),
                 counselorUpdateProfileRequest.getExperience());
+    }
+
+    @Override
+    public CounselorGetProfileResponse getCounselorProfile(Long customerId) {
+        Counselor counselor = getCounselorByCustomerId(customerId);
+        if ((counselor.getIsEducated() == null) || (counselor.getIsEducated().equals(false))) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_EDUCATED);
+        }
+
+        return CounselorGetProfileResponse.of(counselor);
     }
 
     @Override
