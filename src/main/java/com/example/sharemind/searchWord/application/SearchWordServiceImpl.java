@@ -66,12 +66,12 @@ public class SearchWordServiceImpl implements SearchWordService {
     }
 
     @Override
-    public List<String> getRecentSearchWords(Long customerId) { //최근 검색어 리턴해주는 거
-        return redisTemplate.opsForList().range(SEARCH_WORD_PREFIX + customerId, 0, -1);
+    public List<String> getRecentSearchWordsByCustomer(Customer customer) {
+        return redisTemplate.opsForList().range(SEARCH_WORD_PREFIX + customer.getCustomerId(), 0, -1);
     }
 
     @Override
-    public void removeSearchWord(Long customerId, String word) {
+    public void removeSearchWordByCustomer(Long customerId, String word) {
         ListOperations<String, String> listOps = redisTemplate.opsForList();
 
         listOps.remove(SEARCH_WORD_PREFIX + customerId, 0, word);

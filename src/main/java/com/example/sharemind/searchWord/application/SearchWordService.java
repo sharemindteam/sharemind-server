@@ -7,9 +7,9 @@ import java.util.List;
 public interface SearchWordService {
     List<CounselorGetResponse> getSearchWordAndReturnResults(Customer customer, String word, int index);
 
-    List<String> getRecentSearchWords(Long customerId);
+    List<String> getRecentSearchWordsByCustomer(Customer customer);
 
-    void removeSearchWord(Long customerId, String word);
+    void removeSearchWordByCustomer(Long customerId, String word);
 
     void storeSearchWordInDB(String word);
 }
