@@ -66,7 +66,10 @@ public class Letter extends BaseEntity {
                 updateCounselorReadId(messageId);
                 updateDeadline();
             }
-            case FINISH -> updateCounselorReadId(messageId);
+            case FINISH -> {
+                updateCounselorReadId(messageId);
+                this.consult.setReview();
+            }
         }
     }
 

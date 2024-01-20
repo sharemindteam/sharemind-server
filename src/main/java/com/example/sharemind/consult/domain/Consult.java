@@ -45,7 +45,7 @@ public class Consult extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConsultType consultType;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "review_id", unique = true)
     private Review review;
 
@@ -80,6 +80,10 @@ public class Consult extends BaseEntity {
 
         this.isPaid = true;
         setChat(chat);
+    }
+
+    public void setReview() {
+        this.review = Review.builder().consult(this).build();
     }
 
     private void validateConsultType(ConsultType consultType) {

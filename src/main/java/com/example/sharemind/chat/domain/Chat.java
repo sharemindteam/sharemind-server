@@ -35,6 +35,10 @@ public class Chat extends BaseEntity {
 
     public void updateChatStatus(ChatStatus chatStatus) {
         this.chatStatus = chatStatus;
+
+        if (this.chatStatus.equals(ChatStatus.FINISH)) {
+            this.consult.setReview();
+        }
     }
 
     public void updateStartedAt() {
