@@ -6,6 +6,7 @@ import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
+import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
@@ -128,5 +129,16 @@ public class CounselorServiceImpl implements CounselorService {
     @Override
     public List<Counselor> getEvaluationPendingConsults() {
         return counselorRepository.findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
+    }
+
+    @Override
+    public CounselorGetInfoResponse getCounselorMyInfo(Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Counselor counselor = customer.getCounselor();
+        if (counselor == null) {
+            return CounselorGetInfoResponse.of();
+        }
+
+        return CounselorGetInfoResponse.of(counselor);
     }
 }

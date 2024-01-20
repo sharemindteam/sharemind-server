@@ -2,6 +2,7 @@ package com.example.sharemind.counselor.application;
 
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
+import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface CounselorService {
     void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest, Long customerId);
 
     List<Counselor> getEvaluationPendingConsults();
+
+    CounselorGetInfoResponse getCounselorMyInfo(Long customerId);
 }
