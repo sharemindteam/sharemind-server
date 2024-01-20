@@ -95,5 +95,6 @@ public class Consult extends BaseEntity {
 
     private void setChat(Chat chat) {
         this.chat = chat;
+        chat.setConsult(this);
     }
 }

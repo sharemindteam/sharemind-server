@@ -1,5 +1,6 @@
 package com.example.sharemind.chat.domain;
 
+import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.chat.content.ChatStatus;
 import jakarta.persistence.*;
@@ -29,6 +30,9 @@ public class Chat extends BaseEntity {
     @Column(name = "counseolor_read_id", nullable = false)
     private Long counselorReadId = 0L;
 
+    @OneToOne(mappedBy = "chat")
+    private Consult consult;
+
     public void updateChatStatus(ChatStatus chatStatus) {
         this.chatStatus = chatStatus;
     }
@@ -43,6 +47,10 @@ public class Chat extends BaseEntity {
 
     public void updateCounselorReadId(Long id) {
         this.counselorReadId = id;
+    }
+
+    public void setConsult(Consult consult) {
+        this.consult = consult;
     }
 
     public static Chat newInstance() {
