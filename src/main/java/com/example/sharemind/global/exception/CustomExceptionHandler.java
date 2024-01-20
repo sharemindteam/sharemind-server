@@ -8,6 +8,7 @@ import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.email.exception.EmailException;
 import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
+import com.example.sharemind.review.exception.ReviewException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ChatException.class)
     public ResponseEntity<CustomExceptionResponse> catchChatException(ChatException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(ReviewException.class)
+    public ResponseEntity<CustomExceptionResponse> catchReviewException(ReviewException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));

@@ -2,6 +2,7 @@ package com.example.sharemind.letter.dto.response;
 
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.global.utils.TimeUtil;
+import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,6 +32,9 @@ public class LetterGetResponse {
     @Schema(description = "마지막 업데이트 내용", example = "안녕하세요, 어쩌구저쩌구~")
     private final String recentContent;
 
+    @Schema(description = "리뷰 작성 여부")
+    private final Boolean reviewCompleted;
+
     public static ChatLetterGetResponse of(Letter letter, LetterMessage recentMessage, Boolean isCustomer) {
         String letterStatus;
         String opponentName;
@@ -42,14 +46,19 @@ public class LetterGetResponse {
             opponentName = letter.getConsult().getCustomer().getNickname();
         }
 
+        Boolean reviewCompleted = null;
+        if (letter.getLetterStatus().equals(LetterStatus.FINISH)) {
+            reviewCompleted = letter.getConsult().getReview().getIsCompleted();
+        }
+
         if (recentMessage == null) {
             return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                     letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
-                    null, null));
+                    null, null, reviewCompleted));
         }
 
         return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                 letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
-                TimeUtil.getUpdatedAt((recentMessage.getUpdatedAt())), recentMessage.getContent()));
+                TimeUtil.getUpdatedAt((recentMessage.getUpdatedAt())), recentMessage.getContent(), reviewCompleted));
     }
 }

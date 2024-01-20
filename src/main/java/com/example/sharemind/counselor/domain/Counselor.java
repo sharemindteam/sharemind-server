@@ -30,7 +30,7 @@ public class Counselor extends BaseEntity {
     private Long counselorId;
 
     @Size(min = 1, max = 8, message = "닉네임은 최대 8자입니다.")
-    @Column(nullable = false) // TODO unique 조건 추가할지 기획 파트와 상의 필요
+    @Column(unique = true, nullable = false)
     private String nickname;
 
     @Column(name = "is_educated")

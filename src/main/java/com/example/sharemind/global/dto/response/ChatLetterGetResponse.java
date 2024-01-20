@@ -1,5 +1,6 @@
 package com.example.sharemind.global.dto.response;
 
+import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.counselor.domain.Counselor;
@@ -38,20 +39,30 @@ public class ChatLetterGetResponse {
     @Schema(description = "읽지 않은 메시지 수")
     private final Integer unreadMessageCount;
 
+    @Schema(description = "리뷰 작성 여부")
+    private final Boolean reviewCompleted;
+
     public static ChatLetterGetResponse of(LetterGetResponse letterGetResponse) {
         return new ChatLetterGetResponse(letterGetResponse.getLetterId(), letterGetResponse.getConsultStyle(),
                 letterGetResponse.getLetterStatus(), letterGetResponse.getOpponentName(),
-                letterGetResponse.getUpdatedAt(), letterGetResponse.getRecentContent(), null, null);
+                letterGetResponse.getUpdatedAt(), letterGetResponse.getRecentContent(), null,
+                null, letterGetResponse.getReviewCompleted());
     }
 
     public static ChatLetterGetResponse of(String nickname, int unreadMessageCount, Chat chat, Counselor counselor,
                                            ChatMessage chatMessage) {
+        Boolean reviewCompleted = null;
+        if (chat.getChatStatus().equals(ChatStatus.FINISH)) {
+            reviewCompleted = chat.getConsult().getReview().getIsCompleted();
+        }
+
         if (chatMessage == null) {
             return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
-                    chat.getChatStatus().getDisplayName(), nickname, null, null, null, null);
+                    chat.getChatStatus().getDisplayName(), nickname, null, null,
+                    null, null, reviewCompleted);
         }
         return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
                 chat.getChatStatus().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
-                chatMessage.getContent(), chatMessage.getIsCustomer(), unreadMessageCount);
+                chatMessage.getContent(), chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted);
     }
 }

@@ -45,7 +45,7 @@ public class Consult extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConsultType consultType;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "review_id", unique = true)
     private Review review;
 
@@ -82,6 +82,10 @@ public class Consult extends BaseEntity {
         setChat(chat);
     }
 
+    public void setReview() {
+        this.review = Review.builder().consult(this).build();
+    }
+
     private void validateConsultType(ConsultType consultType) {
         if (!this.consultType.equals(consultType)) {
             throw new ConsultException(ConsultErrorCode.CONSULT_TYPE_MISMATCH);
@@ -95,5 +99,6 @@ public class Consult extends BaseEntity {
 
     private void setChat(Chat chat) {
         this.chat = chat;
+        chat.setConsult(this);
     }
 }

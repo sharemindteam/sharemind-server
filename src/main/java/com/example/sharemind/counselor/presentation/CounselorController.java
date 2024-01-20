@@ -82,7 +82,8 @@ public class CounselorController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
-            @ApiResponse(responseCode = "409", description = "한 요일에 대한 상담 가능 시간이 서로 겹침(ex. 13~15, 14~20)",
+            @ApiResponse(responseCode = "409", description = "1. 한 요일에 대한 상담 가능 시간이 서로 겹침(ex. 13~15, 14~20)\n " +
+                    "2. 이미 존재하는 닉네임",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )

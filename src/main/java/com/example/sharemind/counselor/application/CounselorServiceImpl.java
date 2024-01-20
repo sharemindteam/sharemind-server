@@ -90,6 +90,8 @@ public class CounselorServiceImpl implements CounselorService {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_ALREADY_IN_EVALUATION);
         }
 
+        checkDuplicateNickname(counselorUpdateProfileRequest.getNickname());
+
         Set<ConsultCategory> consultCategories = new HashSet<>();
         for (String consultCategory : counselorUpdateProfileRequest.getConsultCategories()) {
             consultCategories.add(ConsultCategory.getConsultCategoryByName(consultCategory));
@@ -169,5 +171,11 @@ public class CounselorServiceImpl implements CounselorService {
         }
 
         return CounselorGetInfoResponse.of(counselor);
+    }
+
+    private void checkDuplicateNickname(String nickname) {
+        if (counselorRepository.existsByNickname(nickname)) {
+            throw new CounselorException(CounselorErrorCode.DUPLICATE_NICKNAME);
+        }
     }
 }
