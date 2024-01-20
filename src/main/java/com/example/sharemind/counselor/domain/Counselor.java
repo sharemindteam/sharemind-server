@@ -39,7 +39,7 @@ public class Counselor extends BaseEntity {
     @Column(name = "retry_education")
     private LocalDateTime retryEducation;
 
-    @Column(name = "profile_status")
+    @Column(name = "profile_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProfileStatus profileStatus;
 
@@ -103,6 +103,7 @@ public class Counselor extends BaseEntity {
         this.level = 0;
         this.totalReview = 0L;
         this.ratingAverage = 0.0;
+        this.profileStatus = ProfileStatus.NO_PROFILE;
     }
 
     public Long getConsultCost(ConsultType consultType) {
