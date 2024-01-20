@@ -38,21 +38,21 @@ VALUES (1, 0),
 -- customer role 설정
 INSERT INTO counselor (counselor_id, created_at, is_activated, updated_at, account, account_holder, bank, consult_style,
                        experience, introduction, is_educated, level, nickname, profile_status, rating_average,
-                       retry_education, total_review)
+                       retry_education, total_review, profile_updated_at)
 VALUES (1, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'SYMPATHY', '경험적는란1 aaa', '안녕하세요1', 1, 1,
-        'hello1', 'EVALUATION_COMPLETE', 0, NULL, 0),
+        'hello1', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14'),
        (2, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'ADVICE', '경험적는란2 bbb', '안녕하세요2', 1, 1,
-        'hello2', 'EVALUATION_COMPLETE', 0, NULL, 0),
+        'hello2', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
        (3, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'SYMPATHY', '경험적는란3 ccc', '안녕하세요3', 1, 1,
-        'hello3', 'EVALUATION_COMPLETE', 0, NULL, 0),
+        'hello3', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
        (4, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'FACT', '경험적는란4 ddd', '안녕하세요4', 1, 1,
-        'hello4', 'EVALUATION_COMPLETE', 0, NULL, 0),
+        'hello4', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
        (5, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'ADVICE', '경험적는란5 eee', '안녕하세요5', 1, 1,
-        'hello5', 'EVALUATION_COMPLETE', 0, NULL, 0),
+        'hello5', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
        (6, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'ADVICE', '경험적는란6 fff', '안녕하세요6', 1, 1,
-        'hello6', 'EVALUATION_COMPLETE', 0, NULL, 0),
+        'hello6', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
        (7, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'ADVICE', '경험적는란7 ggg', '안녕하세요7', 1, 1,
-        'hello7', 'EVALUATION_COMPLETE', 0, NULL, 0);
+        'hello7', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14');
 -- counselor 7개 설정
 UPDATE customer
 SET counselor_id = 1
