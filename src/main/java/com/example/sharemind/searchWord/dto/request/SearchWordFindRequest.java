@@ -6,13 +6,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class searchWordFindRequest {
+public class SearchWordFindRequest {
 
-    @Schema(description = "닉네임")
-    @Size(min = 2, max = 10, message = "검색어는 2-20글자 사이에서 입력 가능합니다.")
+    @Schema(description = "검색어")
+    @Size(min = 2, max = 20, message = "검색어는 2-20글자 사이에서 입력 가능합니다.")
     private String word;
 
     @Schema(description = "받은 메세지 개수", example = "0")
     @NotNull
-    private Long index;
+    private int index;
 }
