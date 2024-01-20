@@ -18,7 +18,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 public class Counselor extends BaseEntity {
@@ -30,17 +29,17 @@ public class Counselor extends BaseEntity {
     @Column(name = "counselor_id")
     private Long counselorId;
 
-    @Size(min = 1, max = 10, message = "닉네임은 최대 10자입니다.") // TODO 최대 8글자인지 10글자인지 확인 필요
+    @Size(min = 1, max = 8, message = "닉네임은 최대 8자입니다.")
     @Column(nullable = false) // TODO unique 조건 추가할지 기획 파트와 상의 필요
     private String nickname;
 
-    @Column(name = "is_educated", nullable = false)
+    @Column(name = "is_educated")
     private Boolean isEducated;
 
     @Column(name = "retry_education")
     private LocalDateTime retryEducation;
 
-    @Column(name = "profile_status")
+    @Column(name = "profile_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProfileStatus profileStatus;
 
@@ -99,13 +98,12 @@ public class Counselor extends BaseEntity {
     private Double ratingAverage;
 
     @Builder
-    public Counselor(Boolean isEducated) {
-        this.isEducated = isEducated;
-
-        this.nickname = "판매자" + new Random().nextInt(999999);
+    public Counselor() {
+        this.nickname = "판매자" + new Random().nextInt(99999);
         this.level = 0;
         this.totalReview = 0L;
         this.ratingAverage = 0.0;
+        this.profileStatus = ProfileStatus.NO_PROFILE;
     }
 
     public Long getConsultCost(ConsultType consultType) {
@@ -146,7 +144,7 @@ public class Counselor extends BaseEntity {
     }
 
     private void validateIsEducated() {
-        if (this.isEducated.equals(true)) {
+        if ((this.isEducated != null) && (this.isEducated.equals(true))) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_ALREADY_EDUCATED);
         }
     }
