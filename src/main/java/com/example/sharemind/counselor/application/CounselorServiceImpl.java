@@ -6,6 +6,8 @@ import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
+import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
@@ -57,9 +59,8 @@ public class CounselorServiceImpl implements CounselorService {
     public void updateIsEducated(Boolean isEducated, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         if (customer.getCounselor() == null) {
-            Counselor counselor = counselorRepository.save(Counselor.builder().isEducated(isEducated).build());
+            Counselor counselor = counselorRepository.save(Counselor.builder().build());
             customer.setCounselor(counselor);
-            return;
         }
 
         Counselor counselor = customer.getCounselor();
@@ -68,9 +69,10 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public Boolean getRetryPermission(Long customerId) {
-        Counselor counselor = getCounselorByCustomerId(customerId);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Counselor counselor = customer.getCounselor();
 
-        if (counselor.getRetryEducation() == null) {
+        if ((counselor == null) || (counselor.getRetryEducation() == null)) {
             return true;
         } else if (counselor.getIsEducated()) {
             return false;
@@ -134,6 +136,16 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
+    public CounselorGetProfileResponse getCounselorProfile(Long customerId) {
+        Counselor counselor = getCounselorByCustomerId(customerId);
+        if ((counselor.getIsEducated() == null) || (counselor.getIsEducated().equals(false))) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_EDUCATED);
+        }
+
+        return CounselorGetProfileResponse.of(counselor);
+    }
+
+    @Override
     public List<Counselor> getEvaluationPendingConsults() {
         return counselorRepository.findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
     }
@@ -146,5 +158,16 @@ public class CounselorServiceImpl implements CounselorService {
         Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordFindRequest.getWord(),
                 pageable);
         return page.getContent();
+    }
+
+    @Override
+    public CounselorGetInfoResponse getCounselorMyInfo(Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Counselor counselor = customer.getCounselor();
+        if (counselor == null) {
+            return CounselorGetInfoResponse.of();
+        }
+
+        return CounselorGetInfoResponse.of(counselor);
     }
 }

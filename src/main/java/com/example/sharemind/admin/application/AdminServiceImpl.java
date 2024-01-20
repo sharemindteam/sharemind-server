@@ -1,7 +1,6 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
-import com.example.sharemind.admin.dto.response.CounselorGetPendingResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
@@ -11,6 +10,7 @@ import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.application.CustomerService;
@@ -65,9 +65,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<CounselorGetPendingResponse> getPendingCounselors() {
+    public List<CounselorGetProfileResponse> getPendingCounselors() {
         return counselorService.getEvaluationPendingConsults().stream()
-                .map(CounselorGetPendingResponse::of)
+                .map(CounselorGetProfileResponse::of)
                 .toList();
     }
 

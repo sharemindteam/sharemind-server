@@ -1,4 +1,4 @@
-package com.example.sharemind.admin.dto.response;
+package com.example.sharemind.counselor.dto.response;
 
 import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class CounselorGetPendingResponse {
+public class CounselorGetProfileResponse {
 
     @Schema(description = "상담사 아이디")
     private final Long counselorId;
@@ -45,7 +45,7 @@ public class CounselorGetPendingResponse {
     @Schema(description = "경험 소개")
     private final String experience;
 
-    public static CounselorGetPendingResponse of(Counselor counselor) {
+    public static CounselorGetProfileResponse of(Counselor counselor) {
         List<String> consultCategories = counselor.getConsultCategories().stream()
                 .map(ConsultCategory::getDisplayName)
                 .toList();
@@ -61,7 +61,7 @@ public class CounselorGetPendingResponse {
             consultCosts.put(consultCost.getConsultType().getDisplayName(), consultCost.getCost());
         }
 
-        return new CounselorGetPendingResponse(counselor.getCounselorId(), counselor.getNickname(), consultCategories,
+        return new CounselorGetProfileResponse(counselor.getCounselorId(), counselor.getNickname(), consultCategories,
                 counselor.getConsultStyle().getDisplayName(), consultTypes, consultTimes, consultCosts,
                 counselor.getIntroduction(), counselor.getExperience());
     }
