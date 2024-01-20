@@ -1,5 +1,6 @@
 package com.example.sharemind.email.application;
 
+import com.example.sharemind.email.dto.response.EmailGetSendCountResponse;
 import com.example.sharemind.email.exception.EmailErrorCode;
 import com.example.sharemind.email.exception.EmailException;
 import java.security.SecureRandom;
@@ -25,7 +26,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
 
     @Override
-    public void sendVerificationCode(String email) {
+    public EmailGetSendCountResponse sendVerificationCode(String email) {
         String code = checkExistingCode(email);
         int count = 0;
         if (code == null) {
@@ -35,6 +36,8 @@ public class EmailServiceImpl implements EmailService {
         }
         sendEmail(email, code);
         storeCodeInRedis(email, code, count);
+
+        return EmailGetSendCountResponse.of(count + 1);
     }
 
     @Override
