@@ -153,7 +153,7 @@ public class CounselorServiceImpl implements CounselorService {
     @Override
     public List<Counselor> getCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest) {
         Pageable pageable = PageRequest.of(searchWordFindRequest.getIndex(), COUNSELOR_PAGE,
-                Sort.by("updatedAt").descending());
+                Sort.by("profileUpdatedAt").descending());
 
         Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordFindRequest.getWord(),
                 pageable);
