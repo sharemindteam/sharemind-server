@@ -99,7 +99,7 @@ public class Counselor extends BaseEntity {
 
     @Builder
     public Counselor() {
-        this.nickname = "판매자" + new Random().nextInt(999999);
+        this.nickname = "판매자" + new Random().nextInt(99999);
         this.level = 0;
         this.totalReview = 0L;
         this.ratingAverage = 0.0;
