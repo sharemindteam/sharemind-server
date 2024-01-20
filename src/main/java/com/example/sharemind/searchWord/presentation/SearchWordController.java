@@ -22,6 +22,12 @@ public class SearchWordController {
     private final SearchWordService searchWordService;
 
     @GetMapping()
+    public ResponseEntity<List<String>> getCustomerSearchWords(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(searchWordService.getRecentSearchWordsByCustomer(customUserDetails.getCustomer()));
+    }
+
+    @GetMapping("results")
     public ResponseEntity<List<CounselorGetResponse>> getCounselorCategories(@RequestParam String word,
                                                                              @RequestParam int index,
                                                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
