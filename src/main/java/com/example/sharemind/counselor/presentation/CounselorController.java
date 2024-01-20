@@ -3,6 +3,7 @@ package com.example.sharemind.counselor.presentation;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -91,6 +92,23 @@ public class CounselorController {
                                               @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         counselorService.updateCounselorProfile(counselorUpdateProfileRequest, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "상담사 프로필 정보 조회", description = "판매 정보 페이지에 필요한 상담사 프로필 정보 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "403", description = "교육을 수료하지 않은 상담사에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "회원 정보 존재하지 않음",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @GetMapping("/profiles")
+    public ResponseEntity<CounselorGetProfileResponse> getCounselorProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(counselorService.getCounselorProfile(customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "상담사 내 정보 조회", description = "내 정보 페이지에 필요한 상담사 정보 조회")
