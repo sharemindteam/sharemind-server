@@ -61,9 +61,10 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public Boolean getRetryPermission(Long customerId) {
-        Counselor counselor = getCounselorByCustomerId(customerId);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Counselor counselor = customer.getCounselor();
 
-        if (counselor.getRetryEducation() == null) {
+        if ((counselor == null) || (counselor.getRetryEducation() == null)) {
             return true;
         } else if (counselor.getIsEducated()) {
             return false;

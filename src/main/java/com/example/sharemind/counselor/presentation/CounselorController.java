@@ -49,7 +49,7 @@ public class CounselorController {
     @Operation(summary = "퀴즈 재응시 가능 여부 조회", description = "퀴즈 통과 실패 후 24시간 경과 여부 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공(이미 퀴즈 통과한 경우도 false 반환)"),
-            @ApiResponse(responseCode = "404", description = "상담사 정보 존재하지 않음",
+            @ApiResponse(responseCode = "404", description = "회원 정보 존재하지 않음",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
