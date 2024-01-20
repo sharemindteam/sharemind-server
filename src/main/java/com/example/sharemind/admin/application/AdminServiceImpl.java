@@ -75,8 +75,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateProfileStatus(Long counselorId, Boolean isPassed) {
         Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
-        if ((counselor.getProfileStatus() == null) || (!counselor.getProfileStatus()
-                .equals(ProfileStatus.EVALUATION_PENDING))) {
+        if ((counselor.getProfileStatus() == null) ||
+                (!counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_PENDING))) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_IN_EVALUATION, counselorId.toString());
         }
 
