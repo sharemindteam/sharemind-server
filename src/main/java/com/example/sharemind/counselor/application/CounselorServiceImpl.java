@@ -133,6 +133,11 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
+    public List<Counselor> getEvaluationPendingConsults() {
+        return counselorRepository.findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
+    }
+
+    @Override
     public List<Counselor> findCounselorByWordWithPagination(String word, int index) {
         Pageable pageable = PageRequest.of(index, COUNSELOR_PAGE, Sort.by("updatedAt").descending());
 

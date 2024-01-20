@@ -15,5 +15,7 @@ public interface CounselorService {
 
     void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest, Long customerId);
 
+    List<Counselor> getEvaluationPendingConsults();
+
     List<Counselor> findCounselorByWordWithPagination(String word, int index);
 }

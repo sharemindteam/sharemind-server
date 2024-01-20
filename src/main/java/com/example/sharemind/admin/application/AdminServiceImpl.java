@@ -1,12 +1,21 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.CounselorGetPendingResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.exception.ConsultErrorCode;
 import com.example.sharemind.consult.exception.ConsultException;
+import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.content.ProfileStatus;
+import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.counselor.exception.CounselorErrorCode;
+import com.example.sharemind.counselor.exception.CounselorException;
+import com.example.sharemind.customer.application.CustomerService;
+import com.example.sharemind.customer.content.Role;
+import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +32,8 @@ public class AdminServiceImpl implements AdminService {
     private final ConsultService consultService;
     private final LetterService letterService;
     private final ChatService chatService;
+    private final CounselorService counselorService;
+    private final CustomerService customerService;
 
     @Override
     public List<ConsultsGetUnpaidResponse> getUnpaidConsults() {
@@ -49,6 +60,37 @@ public class AdminServiceImpl implements AdminService {
                 Chat chat = chatService.createChat(consult);
 
                 consult.updateIsPaidAndChat(chat);
+            }
+        }
+    }
+
+    @Override
+    public List<CounselorGetPendingResponse> getPendingCounselors() {
+        return counselorService.getEvaluationPendingConsults().stream()
+                .map(CounselorGetPendingResponse::of)
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updateProfileStatus(Long counselorId, Boolean isPassed) {
+        Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
+        if ((counselor.getProfileStatus() == null) || (!counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_PENDING))) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_IN_EVALUATION, counselorId.toString());
+        }
+
+        ProfileStatus profileStatus;
+        if (isPassed) {
+            profileStatus = ProfileStatus.EVALUATION_COMPLETE;
+        } else {
+            profileStatus = ProfileStatus.EVALUATION_FAIL;
+        }
+        counselor.updateProfileStatus(profileStatus);
+
+        if (counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_COMPLETE)) {
+            Customer customer = customerService.getCustomerByCounselor(counselor);
+            if (!customer.getRoles().contains(Role.ROLE_COUNSELOR)) {
+                customer.addRole(Role.ROLE_COUNSELOR);
             }
         }
     }
