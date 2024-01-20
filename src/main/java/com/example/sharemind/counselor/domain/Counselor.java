@@ -107,6 +107,7 @@ public class Counselor extends BaseEntity {
         this.totalReview = 0L;
         this.ratingAverage = 0.0;
         this.profileStatus = ProfileStatus.NO_PROFILE;
+        this.profileUpdatedAt = LocalDateTime.now();
     }
 
     public Long getConsultCost(ConsultType consultType) {
