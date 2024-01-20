@@ -2,6 +2,7 @@ package com.example.sharemind.counselor.application;
 
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
+import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import java.util.List;
 
 public interface CounselorService {
@@ -17,5 +18,5 @@ public interface CounselorService {
 
     List<Counselor> getEvaluationPendingConsults();
 
-    List<Counselor> findCounselorByWordWithPagination(String word, int index);
+    List<Counselor> findCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest);
 }

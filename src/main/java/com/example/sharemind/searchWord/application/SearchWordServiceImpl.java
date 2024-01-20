@@ -5,6 +5,8 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.response.CounselorGetResponse;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.searchWord.domain.SearchWord;
+import com.example.sharemind.searchWord.dto.request.SearchWordDeleteRequest;
+import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import com.example.sharemind.searchWord.repository.SearchWordRepository;
 import com.example.sharemind.wishlist.application.WishListService;
 import java.util.List;
@@ -30,12 +32,13 @@ public class SearchWordServiceImpl implements SearchWordService {
 
     @Transactional
     @Override
-    public List<CounselorGetResponse> getSearchWordAndReturnResults(Customer customer, String word, int index) {
+    public List<CounselorGetResponse> getSearchWordAndReturnResults(Customer customer,
+                                                                    SearchWordFindRequest searchWordFindRequest) {
         //todo: 우선은 최신순으로 구현, 추후 인기순, 별점순 개발
-        storeSearchWordInRedis(customer.getCustomerId(), word);
-        storeSearchWordInDB(word);
+        storeSearchWordInRedis(customer.getCustomerId(), searchWordFindRequest.getWord());
+        storeSearchWordInDB(searchWordFindRequest.getWord());
 
-        List<Counselor> counselors = counselorService.findCounselorByWordWithPagination(word, index);
+        List<Counselor> counselors = counselorService.findCounselorByWordWithPagination(searchWordFindRequest);
 
         Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
 
@@ -71,9 +74,9 @@ public class SearchWordServiceImpl implements SearchWordService {
     }
 
     @Override
-    public void removeSearchWordByCustomer(Long customerId, String word) {
+    public void removeSearchWordByCustomer(Customer customer, SearchWordDeleteRequest searchWordDeleteRequest) {
         ListOperations<String, String> listOps = redisTemplate.opsForList();
 
-        listOps.remove(SEARCH_WORD_PREFIX + customerId, 0, word);
+        listOps.remove(SEARCH_WORD_PREFIX + customer.getCustomerId(), 0, searchWordDeleteRequest.getWord());
     }
 }

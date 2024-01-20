@@ -13,6 +13,7 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
+import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -138,10 +139,12 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public List<Counselor> findCounselorByWordWithPagination(String word, int index) {
-        Pageable pageable = PageRequest.of(index, COUNSELOR_PAGE, Sort.by("updatedAt").descending());
+    public List<Counselor> findCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest) {
+        Pageable pageable = PageRequest.of(searchWordFindRequest.getIndex(), COUNSELOR_PAGE,
+                Sort.by("updatedAt").descending());
 
-        Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(word, pageable);
+        Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordFindRequest.getWord(),
+                pageable);
         return page.getContent();
     }
 }
