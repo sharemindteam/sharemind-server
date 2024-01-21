@@ -55,7 +55,7 @@ public class ReviewController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "구매자 리뷰 조회", description = "- 구매자 페이지에서 리뷰 조회\n " +
+    @Operation(summary = "구매자 리뷰 조회", description = "- 구매자 리뷰 관리 탭에서 리뷰 작성/남긴 리뷰에 해당하는 리뷰 리스트 조회\n " +
             "- 주소 형식: /api/v1/reviews/customers?isCompleted=true&pageNumber=0")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공(필요하지 않은 값은 null로 반환)"),
@@ -74,6 +74,30 @@ public class ReviewController {
                                                                         @RequestParam int pageNumber,
                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(reviewService.getReviewsByCustomer(isCompleted, pageNumber,
+                customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "상담사 리뷰 조회", description = "- 상담사 받은 리뷰 탭에 해당하는 리뷰 리스트 조회\n " +
+            "- 주소 형식: /api/v1/reviews/counselors?pageNumber=0")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(필요하지 않은 값은 null로 반환)"),
+            @ApiResponse(responseCode = "403", description = "아직 프로필 심사가 완료되지 않은 상담사",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "pageNumber", description = "조회 결과는 3개씩 반환하며, 페이지 번호로 구분" +
+                    "(ex. pageNumber 0: 가장 앞 3개 반환, pageNumber 1: 그다음 3개 반환)")
+    })
+    @GetMapping("/counselors")
+    public ResponseEntity<List<ReviewGetResponse>> getReviewsByCounselor(@RequestParam int pageNumber,
+                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(reviewService.getReviewsByCounselor(pageNumber,
                 customUserDetails.getCustomer().getCustomerId()));
     }
 }
