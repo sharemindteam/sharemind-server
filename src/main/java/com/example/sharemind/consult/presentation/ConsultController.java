@@ -29,6 +29,11 @@ public class ConsultController {
     @Operation(summary = "상담 신청", description = "consult 생성")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "신청 성공"),
+            @ApiResponse(responseCode = "400",
+                    description = "프로필 심사가 완료되지 않은 상담사 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
             @ApiResponse(responseCode = "404",
                     description = "1. 존재하지 않는 상담사 아이디로 요청됨\n 2. 존재하지 않는 상담 종류로 요청됨\n 3. 상담 종류에 대한 상담료 존재하지 않음",
                     content = @Content(mediaType = "application/json",

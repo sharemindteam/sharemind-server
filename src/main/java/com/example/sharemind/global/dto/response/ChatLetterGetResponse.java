@@ -4,7 +4,7 @@ import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.counselor.domain.Counselor;
-import com.example.sharemind.global.utils.TimeUtil;
+import com.example.sharemind.global.utils.*;
 import com.example.sharemind.letter.dto.response.LetterGetResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
