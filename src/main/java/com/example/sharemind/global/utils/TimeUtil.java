@@ -25,4 +25,14 @@ public class TimeUtil {
             return "방금";
         }
     }
+
+    public static String getUpdatedAtForReview(LocalDateTime updatedAt) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (ChronoUnit.YEARS.between(updatedAt, now) > 0) {
+            return updatedAt.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+        } else {
+            return updatedAt.format(DateTimeFormatter.ofPattern("MM월 dd일"));
+        }
+    }
 }
