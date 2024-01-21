@@ -125,7 +125,6 @@ public class ChatServiceImpl implements ChatService {
         return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
     }
 
-
     private void sendChatStatus(Long chatId, ChatGetStatusResponse chatGetStatusResponse) {
         simpMessagingTemplate.convertAndSend("/queue/chattings/counselors/" + chatId, chatGetStatusResponse);
         simpMessagingTemplate.convertAndSend("/queue/chattings/customers/" + chatId, chatGetStatusResponse);
