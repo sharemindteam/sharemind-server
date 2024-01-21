@@ -15,9 +15,30 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findByReviewIdAndIsActivatedIsTrue(Long reviewId);
 
-    @Query("SELECT r FROM Review r JOIN FETCH r.consult c WHERE c.customer = :customer AND r.isCompleted = :isCompleted AND r.isActivated = true")
+    @Query("SELECT r FROM Review r JOIN FETCH r.consult c " +
+            "WHERE c.customer = :customer AND r.isCompleted = :isCompleted AND r.isActivated = true " +
+            "ORDER BY r.reviewId DESC")
     Page<Review> findAllByCustomerAndIsCompleted(Customer customer, Boolean isCompleted, Pageable pageable);
 
-    @Query("SELECT r FROM Review r JOIN FETCH r.consult c WHERE c.counselor = :counselor AND r.isCompleted = true AND r.isActivated = true")
+    @Query("SELECT r FROM Review r JOIN FETCH r.consult c " +
+            "WHERE r.reviewId < :reviewId AND c.customer = :customer AND r.isCompleted = :isCompleted AND r.isActivated = true " +
+            "ORDER BY r.reviewId DESC")
+    Page<Review> findAllByReviewIdLessThanAndCustomerAndIsCompleted(Long reviewId, Customer customer,
+                                                                    Boolean isCompleted, Pageable pageable);
+
+    @Query("SELECT r FROM Review r JOIN FETCH r.consult c " +
+            "WHERE c.counselor = :counselor AND r.isCompleted = true AND r.isActivated = true " +
+            "ORDER BY r.reviewId DESC")
     Page<Review> findAllByCounselorAndIsCompletedIsTrue(Counselor counselor, Pageable pageable);
+
+    @Query("SELECT r FROM Review r JOIN FETCH r.consult c " +
+            "WHERE r.reviewId < :reviewId AND c.counselor = :counselor AND r.isCompleted = true AND r.isActivated = true " +
+            "ORDER BY r.reviewId DESC")
+    Page<Review> findAllByReviewIdLessThanAndCounselorAndIsCompletedIsTrue(Long reviewId, Counselor counselor,
+                                                                           Pageable pageable);
+
+    @Query("SELECT r FROM Review r JOIN FETCH r.consult c " +
+            "WHERE c.counselor = :counselor AND r.isCompleted = true AND r.isActivated = true " +
+            "ORDER BY r.updatedAt DESC")
+    Page<Review> findAllByCounselorAndIsCompletedIsTrueOrderByUpdatedAtDesc(Counselor counselor, Pageable pageable);
 }

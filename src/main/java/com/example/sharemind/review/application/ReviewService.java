@@ -9,9 +9,11 @@ import java.util.List;
 public interface ReviewService {
     void saveReview(ReviewSaveRequest reviewSaveRequest, Long customerId);
 
-    List<ReviewGetResponse> getReviewsByCustomer(Boolean isCompleted, int pageNumber, Long customerId);
+    List<ReviewGetResponse> getReviewsByCustomer(Boolean isCompleted, Long cursorId, Long customerId);
 
-    List<ReviewGetResponse> getReviewsByCounselor(int pageNumber, Long customerId);
+    List<ReviewGetResponse> getReviewsByCounselor(Long cursorId, Long customerId);
 
-    List<ReviewGetShortResponse> getShortReviews(int pageNumber, int pageSize, Long counselorId);
+    List<ReviewGetShortResponse> getShortReviewsForCounselorHome(Long customerId);
+
+    List<ReviewGetShortResponse> getShortReviewsForCounselorProfile(Long cursorId, Long counselorId);
 }

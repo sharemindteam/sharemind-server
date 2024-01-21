@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +24,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
+    private static final int DEFAULT_PAGE_NUMBER = 0;
+    private static final int COUNSELOR_HOME_PAGE_SIZE = 2;
     private static final int REVIEW_PAGE_SIZE = 3;
     private static final Boolean IS_CUSTOMER = true;
     private static final Boolean IS_COUNSELOR = false;
@@ -47,34 +48,58 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewGetResponse> getReviewsByCustomer(Boolean isCompleted, int pageNumber, Long customerId) {
+    public List<ReviewGetResponse> getReviewsByCustomer(Boolean isCompleted, Long cursorId, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
-        Pageable pageable = PageRequest.of(pageNumber, REVIEW_PAGE_SIZE);
-        Page<ReviewGetResponse> page = reviewRepository.findAllByCustomerAndIsCompleted(customer, isCompleted, pageable)
-                .map(review -> ReviewGetResponse.of(review, IS_CUSTOMER));
+        Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, REVIEW_PAGE_SIZE);
+        Page<ReviewGetResponse> page =
+                (cursorId == 0 ?
+                        reviewRepository.findAllByCustomerAndIsCompleted(customer, isCompleted, pageable) :
+                        reviewRepository.findAllByReviewIdLessThanAndCustomerAndIsCompleted(
+                                cursorId, customer, isCompleted, pageable))
+                        .map(review -> ReviewGetResponse.of(review, IS_CUSTOMER));
 
         return page.getContent();
     }
 
     @Override
-    public List<ReviewGetResponse> getReviewsByCounselor(int pageNumber, Long customerId) {
+    public List<ReviewGetResponse> getReviewsByCounselor(Long cursorId, Long customerId) {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
-        Pageable pageable = PageRequest.of(pageNumber, REVIEW_PAGE_SIZE);
-        Page<ReviewGetResponse> page = reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable)
-                .map(review -> ReviewGetResponse.of(review, IS_COUNSELOR));
+        Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, REVIEW_PAGE_SIZE);
+        Page<ReviewGetResponse> page =
+                (cursorId == 0 ?
+                        reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable) :
+                        reviewRepository.findAllByReviewIdLessThanAndCounselorAndIsCompletedIsTrue(
+                                cursorId, counselor, pageable))
+                        .map(review -> ReviewGetResponse.of(review, IS_COUNSELOR));
 
         return page.getContent();
     }
 
     @Override
-    public List<ReviewGetShortResponse> getShortReviews(int pageNumber, int pageSize, Long counselorId) {
+    public List<ReviewGetShortResponse> getShortReviewsForCounselorHome(Long customerId) {
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+
+        Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, COUNSELOR_HOME_PAGE_SIZE);
+        Page<ReviewGetShortResponse> page = reviewRepository.findAllByCounselorAndIsCompletedIsTrueOrderByUpdatedAtDesc(
+                counselor, pageable)
+                .map(ReviewGetShortResponse::of);
+
+        return page.getContent();
+    }
+
+    @Override
+    public List<ReviewGetShortResponse> getShortReviewsForCounselorProfile(Long cursorId, Long counselorId) {
         Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("updatedAt").descending());
-        Page<ReviewGetShortResponse> page = reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable)
-                .map(ReviewGetShortResponse::of);
+        Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, REVIEW_PAGE_SIZE);
+        Page<ReviewGetShortResponse> page =
+                (cursorId == 0 ?
+                        reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable) :
+                        reviewRepository.findAllByReviewIdLessThanAndCounselorAndIsCompletedIsTrue(
+                                cursorId, counselor, pageable))
+                        .map(ReviewGetShortResponse::of);
 
         return page.getContent();
     }

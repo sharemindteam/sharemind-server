@@ -27,9 +27,6 @@ import java.util.List;
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
-    private static final int COUNSELOR_HOME_PAGE_NUMBER = 0;
-    private static final int COUNSELOR_HOME_PAGE_SIZE = 2;
-    private static final int COUNSELOR_PROFILE_PAGE_SIZE = 3;
 
     private final ReviewService reviewService;
 
@@ -60,7 +57,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "구매자 리뷰 조회", description = "- 구매자 페이지 리뷰 관리 탭에서 리뷰 작성/남긴 리뷰에 해당하는 리뷰 리스트 조회\n " +
-            "- 주소 형식: /api/v1/reviews/customers?isCompleted=true&pageNumber=0")
+            "- 주소 형식: /api/v1/reviews/customers?isCompleted=true&cursorId=0")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공(필요하지 않은 값은 null로 반환)"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원",
@@ -70,19 +67,21 @@ public class ReviewController {
     })
     @Parameters({
             @Parameter(name = "isCompleted", description = "조회하려는 리뷰가 작성 완료된 리뷰인지, 작성 전인 리뷰인지"),
-            @Parameter(name = "pageNumber", description = "조회 결과는 3개씩 반환하며, 페이지 번호로 구분" +
-                    "(ex. pageNumber 0: 가장 앞 3개 반환, pageNumber 1: 그다음 3개 반환)")
+            @Parameter(name = "cursorId", description = """
+                    - 조회 결과는 3개씩 반환하며, cursorId로 구분
+                    1. 최초 조회 요청이면 cursorId는 0
+                    2. 2번째 요청부터 cursorId는 직전 요청의 조회 결과 3개 중 마지막 리뷰 아이디""")
     })
     @GetMapping("/customers")
     public ResponseEntity<List<ReviewGetResponse>> getReviewsByCustomer(@RequestParam Boolean isCompleted,
-                                                                        @RequestParam int pageNumber,
+                                                                        @RequestParam Long cursorId,
                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(reviewService.getReviewsByCustomer(isCompleted, pageNumber,
+        return ResponseEntity.ok(reviewService.getReviewsByCustomer(isCompleted, cursorId,
                 customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "상담사 리뷰 조회", description = "- 상담사 페이지 받은 리뷰 탭에 해당하는 리뷰 리스트 조회\n " +
-            "- 주소 형식: /api/v1/reviews/counselors?pageNumber=0")
+            "- 주소 형식: /api/v1/reviews/counselors?cursorId=0")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공(필요하지 않은 값은 null로 반환)"),
             @ApiResponse(responseCode = "403", description = "아직 프로필 심사가 완료되지 않은 상담사",
@@ -95,13 +94,15 @@ public class ReviewController {
             )
     })
     @Parameters({
-            @Parameter(name = "pageNumber", description = "조회 결과는 3개씩 반환하며, 페이지 번호로 구분" +
-                    "(ex. pageNumber 0: 가장 앞 3개 반환, pageNumber 1: 그다음 3개 반환)")
+            @Parameter(name = "cursorId", description = """
+                    - 조회 결과는 3개씩 반환하며, cursorId로 구분
+                    1. 최초 조회 요청이면 cursorId는 0
+                    2. 2번째 요청부터 cursorId는 직전 요청의 조회 결과 3개 중 마지막 리뷰 아이디""")
     })
     @GetMapping("/counselors")
-    public ResponseEntity<List<ReviewGetResponse>> getReviewsByCounselor(@RequestParam int pageNumber,
+    public ResponseEntity<List<ReviewGetResponse>> getReviewsByCounselor(@RequestParam Long cursorId,
                                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(reviewService.getReviewsByCounselor(pageNumber,
+        return ResponseEntity.ok(reviewService.getReviewsByCounselor(cursorId,
                 customUserDetails.getCustomer().getCustomerId()));
     }
 
@@ -120,12 +121,12 @@ public class ReviewController {
     @GetMapping("/counselors/home")
     public ResponseEntity<List<ReviewGetShortResponse>> getReviewsForCounselorHome(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(reviewService.getShortReviews(COUNSELOR_HOME_PAGE_NUMBER, COUNSELOR_HOME_PAGE_SIZE,
-                customUserDetails.getCustomer().getCounselor().getCounselorId()));
+        return ResponseEntity.ok(reviewService.getShortReviewsForCounselorHome(
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "상담사 프로필 후기 탭 리뷰 조회", description = "- 구매자 페이지 상담사 프로필 후기 탭에 해당하는 리뷰 리스트 조회\n " +
-            "- 주소 형식: /api/v1/reviews/{counselorId}?pageNumber=0")
+            "- 주소 형식: /api/v1/reviews/{counselorId}?cursorId=0")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사",
@@ -135,12 +136,14 @@ public class ReviewController {
     })
     @Parameters({
             @Parameter(name = "counselorId", description = "상담사 아이디"),
-            @Parameter(name = "pageNumber", description = "조회 결과는 3개씩 반환하며, 페이지 번호로 구분" +
-                    "(ex. pageNumber 0: 가장 앞 3개 반환, pageNumber 1: 그다음 3개 반환)")
+            @Parameter(name = "cursorId", description = """
+                    - 조회 결과는 3개씩 반환하며, cursorId로 구분
+                    1. 최초 조회 요청이면 cursorId는 0
+                    2. 2번째 요청부터 cursorId는 직전 요청의 조회 결과 3개 중 마지막 리뷰 아이디""")
     })
     @GetMapping("/{counselorId}")
     public ResponseEntity<List<ReviewGetShortResponse>> getReviewsForCounselorProfile(@PathVariable Long counselorId,
-                                                                                      @RequestParam int pageNumber) {
-        return ResponseEntity.ok(reviewService.getShortReviews(pageNumber, COUNSELOR_PROFILE_PAGE_SIZE, counselorId));
+                                                                                      @RequestParam Long cursorId) {
+        return ResponseEntity.ok(reviewService.getShortReviewsForCounselorProfile(cursorId, counselorId));
     }
 }
