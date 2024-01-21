@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SearchWordService {
 
-    List<CounselorGetResponse> storeSearchWordAndGetCounselors(Long customerId,
+    List<CounselorGetResponse> storeSearchWordAndGetCounselors(Long customerId, String sortType,
                                                                SearchWordFindRequest searchWordFindRequest);
 
     List<String> getRecentSearchWordsByCustomer(Long customerId);

@@ -28,7 +28,7 @@ public class SearchWordController {
 
     private final SearchWordService searchWordService;
 
-    @Operation(summary = "유저 검색어 반환", description = "유저의 이전 검색어 목록을 반환\n"
+    @Operation(summary = "유저의 이전 검색 기록 반환", description = "유저의 이전 검색어 목록을 반환\n"
             + "왼쪽이 가장 최근 검색어이고 시간순으로 정렬되어있습니다.\n"
             + "검색어가 없을 시 빈 배열 ([ ]) 전달합니다.")
     @ApiResponses({
@@ -41,7 +41,8 @@ public class SearchWordController {
                 searchWordService.getRecentSearchWordsByCustomer(customUserDetails.getCustomer().getCustomerId()));
     }
 
-    @Operation(summary = "검색 결과 반환", description = "현재 최근순만 구현,, 나머지 정렬 빠르게 업데이트 하겠습니다~..\n"
+    @Operation(summary = "검색 결과 반환", description = "sortType(LATEST: 최근순, POPULARITY: 인기순, STAR_RATING: 별점 평균 순\n"
+            + "주소 형식 예시 : /api/v1/searchWords/results?sortType=STAR_RATING"
             + "검색어 결과를 상담사 닉네임, 소개 제목, 소개 내용에서 찾아서 반환. 정확하게 일치하는 정보만 반환\n"
             + "만약 이전에 검색했던 검색어의 경우(ex) 연애, 갈등)에서 갈등이 다시 검색된다면 (갈등, 연애)순서로 다시 서버에 저장합니다.(중복 저장x)"
             + "검색 결관느 4개씩 반환하며, index는 페이지 번호 입니다(ex index 0 : id 0~3에 해당하는 값 반환 index 1: 4~7에 해당하는 값 반환"
@@ -53,14 +54,14 @@ public class SearchWordController {
     })
     @PatchMapping("/results")
     public ResponseEntity<List<CounselorGetResponse>> getSearchWordResults(
-            @Valid @RequestBody SearchWordFindRequest searchWordFindRequest,
+            @Valid @RequestBody SearchWordFindRequest searchWordFindRequest, @RequestParam String sortType,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (searchWordFindRequest.getIndex() < 0) {
             return ResponseEntity.ok(Collections.emptyList());
         }
         return ResponseEntity.ok(
                 searchWordService.storeSearchWordAndGetCounselors(customUserDetails.getCustomer().getCustomerId(),
-                        searchWordFindRequest));
+                        sortType, searchWordFindRequest));
     }
 
     @Operation(summary = "검색어 삭제", description = "검색어를 삭제하는 api\n"

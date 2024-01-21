@@ -100,6 +100,9 @@ public class Counselor extends BaseEntity {
     @Column(name = "profile_updated_at", nullable = false)
     private LocalDateTime profileUpdatedAt;
 
+    @Column(name = "total_consult", nullable = false)
+    private Long totalConsult;
+
     @Builder
     public Counselor() {
         this.nickname = "판매자" + new Random().nextInt(99999);
@@ -108,6 +111,7 @@ public class Counselor extends BaseEntity {
         this.ratingAverage = 0.0;
         this.profileStatus = ProfileStatus.NO_PROFILE;
         this.profileUpdatedAt = LocalDateTime.now();
+        this.totalConsult = 0L;
     }
 
     public Long getConsultCost(ConsultType consultType) {
@@ -139,6 +143,10 @@ public class Counselor extends BaseEntity {
 
     public void updateProfileUpdatedAt() {
         this.profileUpdatedAt = LocalDateTime.now();
+    }
+
+    public void increaseTotalConsult() {
+        this.totalConsult += 1;
     }
 
     public void updateIsEducated(Boolean isEducated) {

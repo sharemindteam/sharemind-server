@@ -34,13 +34,12 @@ public class SearchWordServiceImpl implements SearchWordService {
 
     @Transactional
     @Override
-    public List<CounselorGetResponse> storeSearchWordAndGetCounselors(Long customerId,
+    public List<CounselorGetResponse> storeSearchWordAndGetCounselors(Long customerId, String sortType,
                                                                       SearchWordFindRequest searchWordFindRequest) {
-        //todo: 우선은 최신순으로 구현, 추후 인기순, 별점순 개발
         storeSearchWordInRedis(customerId, searchWordFindRequest.getWord());
         storeSearchWordInDB(searchWordFindRequest.getWord());
 
-        List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordFindRequest);
+        List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordFindRequest, sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
