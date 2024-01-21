@@ -137,11 +137,8 @@ public class Counselor extends BaseEntity {
         this.profileStatus = ProfileStatus.EVALUATION_PENDING;
     }
 
-    public void updateProfileStatus(ProfileStatus profileStatus) {
+    public void updateProfileStatusAndProfileUpdatedAt(ProfileStatus profileStatus) {
         this.profileStatus = profileStatus;
-    }
-
-    public void updateProfileUpdatedAt() {
         this.profileUpdatedAt = LocalDateTime.now();
     }
 
