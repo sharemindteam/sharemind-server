@@ -1,6 +1,7 @@
 package com.example.sharemind.counselor.application;
 
 import com.example.sharemind.counselor.content.ConsultStyle;
+import com.example.sharemind.counselor.content.CounselorListSortType;
 import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
@@ -153,13 +154,19 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public List<Counselor> getCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest) {
+    public List<Counselor> getCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest,
+                                                            String sortType) {
+        String sortColumn = getCounselorSortColumn(sortType);
         Pageable pageable = PageRequest.of(searchWordFindRequest.getIndex(), COUNSELOR_PAGE,
-                Sort.by("profileUpdatedAt").descending());
-
+                Sort.by(sortColumn).descending());
         Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordFindRequest.getWord(),
                 pageable);
         return page.getContent();
+    }
+
+    private String getCounselorSortColumn(String sortType) {
+        CounselorListSortType counselorListSortType = CounselorListSortType.getSortTypeByName(sortType);
+        return counselorListSortType.getSortColumn();
     }
 
     @Override

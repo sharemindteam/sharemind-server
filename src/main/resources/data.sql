@@ -38,21 +38,21 @@ VALUES (1, 0),
 -- customer role 설정
 INSERT INTO counselor (counselor_id, created_at, is_activated, updated_at, account, account_holder, bank, consult_style,
                        experience, introduction, is_educated, level, nickname, profile_status, rating_average,
-                       retry_education, total_review, profile_updated_at)
+                       retry_education, total_review, profile_updated_at, total_consult)
 VALUES (1, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'SYMPATHY', '경험적는란1 aaa', '안녕하세요1', 1, 1,
-        'hello1', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14'),
+        'hello1', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14', 0),
        (2, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'ADVICE', '경험적는란2 bbb', '안녕하세요2', 1, 1,
-        'hello2', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
+        'hello2', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14', 0),
        (3, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'SYMPATHY', '경험적는란3 ccc', '안녕하세요3', 1, 1,
-        'hello3', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
+        'hello3', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14', 0),
        (4, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'FACT', '경험적는란4 ddd', '안녕하세요4', 1, 1,
-        'hello4', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
+        'hello4', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14', 0),
        (5, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'ADVICE', '경험적는란5 eee', '안녕하세요5', 1, 1,
-        'hello5', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
+        'hello5', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14', 0),
        (6, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'ADVICE', '경험적는란6 fff', '안녕하세요6', 1, 1,
-        'hello6', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14'),
+        'hello6', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14', 0),
        (7, '2024-01-20 15:23:39', 1, '2024-01-20 15:40:14', NULL, NULL, NULL, 'ADVICE', '경험적는란7 ggg', '안녕하세요7', 1, 1,
-        'hello7', 'EVALUATION_COMPLETE', 0, NULL, 0,'2024-01-20 15:40:14');
+        'hello7', 'EVALUATION_COMPLETE', 0, NULL, 0, '2024-01-20 15:40:14', 0);
 -- counselor 7개 설정
 UPDATE customer
 SET counselor_id = 1
@@ -104,6 +104,21 @@ VALUES (1, 1, 6000),
        (6, 0, 16000),
        (7, 1, 17000),
        (7, 0, 18000);
+INSERT INTO types(counselor_id, consult_types)
+VALUE (1,'CHAT'),
+    (1,'LETTER'),
+    (2,'CHAT'),
+    (2,'LETTER'),
+    (3,'CHAT'),
+    (3,'LETTER'),
+    (4,'CHAT'),
+    (4,'LETTER'),
+    (5,'CHAT'),
+    (5,'LETTER'),
+    (6,'CHAT'),
+    (6,'LETTER'),
+    (7,'CHAT'),
+    (7,'LETTER');
 
 -- INSERT INTO times (counselor_id, day, times)
 -- VALUES (1, 2,

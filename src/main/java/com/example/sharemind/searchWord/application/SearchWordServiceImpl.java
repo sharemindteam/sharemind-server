@@ -2,7 +2,7 @@ package com.example.sharemind.searchWord.application;
 
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
-import com.example.sharemind.counselor.dto.response.CounselorGetResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.searchWord.domain.SearchWord;
@@ -34,19 +34,18 @@ public class SearchWordServiceImpl implements SearchWordService {
 
     @Transactional
     @Override
-    public List<CounselorGetResponse> storeSearchWordAndGetCounselors(Long customerId,
-                                                                      SearchWordFindRequest searchWordFindRequest) {
-        //todo: 우선은 최신순으로 구현, 추후 인기순, 별점순 개발
+    public List<CounselorGetListResponse> storeSearchWordAndGetCounselors(Long customerId, String sortType,
+                                                                          SearchWordFindRequest searchWordFindRequest) {
         storeSearchWordInRedis(customerId, searchWordFindRequest.getWord());
         storeSearchWordInDB(searchWordFindRequest.getWord());
 
-        List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordFindRequest);
+        List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordFindRequest, sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
 
         return counselors.stream()
-                .map(counselor -> CounselorGetResponse.of(counselor,
+                .map(counselor -> CounselorGetListResponse.of(counselor,
                         wishListCounselorIds.contains(counselor.getCounselorId())))
                 .toList();
     }
