@@ -1,11 +1,14 @@
 package com.example.sharemind.searchWord.presentation;
 
 import com.example.sharemind.counselor.dto.response.CounselorGetResponse;
+import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.searchWord.application.SearchWordService;
 import com.example.sharemind.searchWord.dto.request.SearchWordDeleteRequest;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,8 +32,7 @@ public class SearchWordController {
             + "왼쪽이 가장 최근 검색어이고 시간순으로 정렬되어있습니다.\n"
             + "검색어가 없을 시 빈 배열 ([ ]) 전달합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 편지 아이디로 요청됨")
+            @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping()
     public ResponseEntity<List<String>> getCustomerSearchWords(
@@ -46,7 +48,8 @@ public class SearchWordController {
             + "해당하는 검색 결과가 없을 때(범위를 벗어난 인덱스 혹은 음수 인덱스는 빈배열을 리턴합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님")
+            @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomExceptionResponse.class)))
     })
     @PatchMapping("/results")
     public ResponseEntity<List<CounselorGetResponse>> getSearchWordResults(
@@ -60,10 +63,12 @@ public class SearchWordController {
                         searchWordFindRequest));
     }
 
-    @Operation(summary = "검색어 삭제", description = "검색어를 삭제하는 api\n 없는 검색어 삭제해도 그냥 아무 동작 안하게 만들었습니다.")
+    @Operation(summary = "검색어 삭제", description = "검색어를 삭제하는 api\n"
+            + "없는 검색어 삭제해도 그냥 아무 동작 안하게 만들었습니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님")
+            @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomExceptionResponse.class)))
     })
     @DeleteMapping()
     public ResponseEntity<Void> deleteCustomerSearchWord(
