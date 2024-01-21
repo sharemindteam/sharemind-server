@@ -7,6 +7,7 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.review.domain.Review;
 import com.example.sharemind.review.dto.request.ReviewSaveRequest;
 import com.example.sharemind.review.dto.response.ReviewGetResponse;
+import com.example.sharemind.review.dto.response.ReviewGetShortResponse;
 import com.example.sharemind.review.exception.ReviewErrorCode;
 import com.example.sharemind.review.exception.ReviewException;
 import com.example.sharemind.review.repository.ReviewRepository;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +64,17 @@ public class ReviewServiceImpl implements ReviewService {
         Pageable pageable = PageRequest.of(pageNumber, REVIEW_PAGE_SIZE);
         Page<ReviewGetResponse> page = reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable)
                 .map(review -> ReviewGetResponse.of(review, IS_COUNSELOR));
+
+        return page.getContent();
+    }
+
+    @Override
+    public List<ReviewGetShortResponse> getShortReviews(int pageNumber, int pageSize, Long counselorId) {
+        Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("updatedAt").descending());
+        Page<ReviewGetShortResponse> page = reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable)
+                .map(ReviewGetShortResponse::of);
 
         return page.getContent();
     }
