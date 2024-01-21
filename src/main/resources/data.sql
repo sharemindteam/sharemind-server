@@ -104,6 +104,21 @@ VALUES (1, 1, 6000),
        (6, 0, 16000),
        (7, 1, 17000),
        (7, 0, 18000);
+INSERT INTO types(counselor_id, consult_types)
+VALUE (1,'CHAT'),
+    (1,'LETTER'),
+    (2,'CHAT'),
+    (2,'LETTER'),
+    (3,'CHAT'),
+    (3,'LETTER'),
+    (4,'CHAT'),
+    (4,'LETTER'),
+    (5,'CHAT'),
+    (5,'LETTER'),
+    (6,'CHAT'),
+    (6,'LETTER'),
+    (7,'CHAT'),
+    (7,'LETTER');
 
 -- INSERT INTO times (counselor_id, day, times)
 -- VALUES (1, 2,
