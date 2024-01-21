@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface CounselorRepository extends JpaRepository<Counselor, Long> {
-    Boolean existsByNickname(String nickname);
+    Boolean existsByNicknameAndCounselorIdNot(String nickname, Long counselorId);
 
     Optional<Counselor> findByCounselorIdAndIsActivatedIsTrue(Long id);
 
