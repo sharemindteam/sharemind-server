@@ -38,6 +38,7 @@ public class Chat extends BaseEntity {
 
         if (this.chatStatus.equals(ChatStatus.FINISH)) {
             this.consult.setReview();
+            this.consult.getCounselor().increaseTotalConsult();
         }
     }
 

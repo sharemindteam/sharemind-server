@@ -118,10 +118,7 @@ public class ChatServiceImpl implements ChatService {
         validateChatStatusRequest(chat, chatStatusUpdateRequest, isCustomer);
 
         handleStatusRequest(chat, chatStatusUpdateRequest);
-
-        if (chat.getChatStatus() == ChatStatus.FINISH) {
-            consult.getCounselor().increaseTotalConsult();
-        }
+        
         return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
     }
 
