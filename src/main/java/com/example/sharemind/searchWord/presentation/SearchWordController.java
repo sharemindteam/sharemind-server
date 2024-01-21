@@ -1,6 +1,6 @@
 package com.example.sharemind.searchWord.presentation;
 
-import com.example.sharemind.counselor.dto.response.CounselorGetResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.searchWord.application.SearchWordService;
@@ -53,7 +53,7 @@ public class SearchWordController {
                     schema = @Schema(implementation = CustomExceptionResponse.class)))
     })
     @PatchMapping("/results")
-    public ResponseEntity<List<CounselorGetResponse>> getSearchWordResults(
+    public ResponseEntity<List<CounselorGetListResponse>> getSearchWordResults(
             @Valid @RequestBody SearchWordFindRequest searchWordFindRequest, @RequestParam String sortType,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (searchWordFindRequest.getIndex() < 0) {
