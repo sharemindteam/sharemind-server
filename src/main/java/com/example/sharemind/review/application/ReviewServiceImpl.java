@@ -1,5 +1,7 @@
 package com.example.sharemind.review.application;
 
+import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.review.domain.Review;
@@ -22,8 +24,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
     private static final int REVIEW_PAGE_SIZE = 3;
+    private static final Boolean IS_CUSTOMER = true;
+    private static final Boolean IS_COUNSELOR = false;
 
     private final CustomerService customerService;
+    private final CounselorService counselorService;
     private final ReviewRepository reviewRepository;
 
     @Transactional
@@ -45,7 +50,18 @@ public class ReviewServiceImpl implements ReviewService {
 
         Pageable pageable = PageRequest.of(pageNumber, REVIEW_PAGE_SIZE);
         Page<ReviewGetResponse> page = reviewRepository.findAllByCustomerAndIsCompleted(customer, isCompleted, pageable)
-                .map(review -> ReviewGetResponse.of(review, true));
+                .map(review -> ReviewGetResponse.of(review, IS_CUSTOMER));
+
+        return page.getContent();
+    }
+
+    @Override
+    public List<ReviewGetResponse> getReviewsByCounselor(int pageNumber, Long customerId) {
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+
+        Pageable pageable = PageRequest.of(pageNumber, REVIEW_PAGE_SIZE);
+        Page<ReviewGetResponse> page = reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable)
+                .map(review -> ReviewGetResponse.of(review, IS_COUNSELOR));
 
         return page.getContent();
     }

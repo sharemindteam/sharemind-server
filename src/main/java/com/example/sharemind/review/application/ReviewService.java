@@ -9,4 +9,6 @@ public interface ReviewService {
     void saveReview(ReviewSaveRequest reviewSaveRequest, Long customerId);
 
     List<ReviewGetResponse> getReviewsByCustomer(Boolean isCompleted, int pageNumber, Long customerId);
+
+    List<ReviewGetResponse> getReviewsByCounselor(int pageNumber, Long customerId);
 }

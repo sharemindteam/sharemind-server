@@ -1,5 +1,6 @@
 package com.example.sharemind.review.repository;
 
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.review.domain.Review;
 import org.springframework.data.domain.Page;
@@ -16,4 +17,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r FROM Review r JOIN FETCH r.consult c WHERE c.customer = :customer AND r.isCompleted = :isCompleted AND r.isActivated = true")
     Page<Review> findAllByCustomerAndIsCompleted(Customer customer, Boolean isCompleted, Pageable pageable);
+
+    @Query("SELECT r FROM Review r JOIN FETCH r.consult c WHERE c.counselor = :counselor AND r.isCompleted = true AND r.isActivated = true")
+    Page<Review> findAllByCounselorAndIsCompletedIsTrue(Counselor counselor, Pageable pageable);
 }
