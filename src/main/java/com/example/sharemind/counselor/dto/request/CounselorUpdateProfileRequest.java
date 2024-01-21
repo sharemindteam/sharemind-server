@@ -15,7 +15,7 @@ public class CounselorUpdateProfileRequest {
     @NotBlank(message = "닉네임은 공백일 수 없습니다.")
     private String nickname;
 
-    @Schema(description = "상담 카테고리", example = "DATING, male_psychology, one_SiDed")
+    @Schema(description = "상담 카테고리", example = "[\"DATING\", \"One-SiDed\", \"male-psychology\"]")
     @NotEmpty(message = "상담 카테고리는 공백일 수 없습니다.")
     private List<String> consultCategories;
 
@@ -23,11 +23,11 @@ public class CounselorUpdateProfileRequest {
     @NotBlank(message = "상담 스타일은 공백일 수 없습니다.")
     private String consultStyle;
 
-    @Schema(description = "상담 방식", example = "letter, chat")
+    @Schema(description = "상담 방식", example = "[\"letter\", \"chat\"]")
     @NotEmpty(message = "상담 방식은 공백일 수 없습니다.")
     private List<String> consultTypes;
 
-    @Schema(description = "상담 가능시간", example = "Mon : [11~13, 13~16], WED : [14~20], THU : [9~10, 15~20]")
+    @Schema(description = "상담 가능시간", example = "{\"MON\": [\"14~15\", \"15~20\"], \"WED\": [\"11~13\"]}")
     private Map<String, List<String>> consultTimes;
 
     @Schema(description = "편지 상담료")
