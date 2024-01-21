@@ -86,8 +86,7 @@ public class AdminServiceImpl implements AdminService {
         } else {
             profileStatus = ProfileStatus.EVALUATION_FAIL;
         }
-        counselor.updateProfileStatus(profileStatus);
-        counselor.updateProfileUpdatedAt();
+        counselor.updateProfileStatusAndProfileUpdatedAt(profileStatus);
 
         if (counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_COMPLETE)) {
             Customer customer = customerService.getCustomerByCounselor(counselor);

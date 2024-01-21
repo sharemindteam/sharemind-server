@@ -69,6 +69,7 @@ public class Letter extends BaseEntity {
             case FINISH -> {
                 updateCounselorReadId(messageId);
                 this.consult.setReview();
+                this.consult.getCounselor().increaseTotalConsult();
             }
         }
     }
@@ -99,7 +100,8 @@ public class Letter extends BaseEntity {
                 }
             }
             case FIRST_REPLY, SECOND_REPLY -> {
-                if ((customer.getCounselor() == null) || (!this.consult.getCounselor().getCounselorId().equals(customer.getCounselor().getCounselorId()))) {
+                if ((customer.getCounselor() == null) || (!this.consult.getCounselor().getCounselorId()
+                        .equals(customer.getCounselor().getCounselorId()))) {
                     throw new LetterMessageException(LetterMessageErrorCode.MESSAGE_MODIFY_DENIED);
                 }
             }
@@ -109,7 +111,8 @@ public class Letter extends BaseEntity {
     public Boolean checkReadAuthority(Customer customer) {
         if (this.consult.getCustomer().getCustomerId().equals(customer.getCustomerId())) {
             return true;
-        } else if ((customer.getCounselor() != null) && (this.consult.getCounselor().getCounselorId().equals(customer.getCounselor().getCounselorId()))) {
+        } else if ((customer.getCounselor() != null) && (this.consult.getCounselor().getCounselorId()
+                .equals(customer.getCounselor().getCounselorId()))) {
             return false;
         } else {
             throw new LetterMessageException(LetterMessageErrorCode.MESSAGE_ACCESS_DENIED);

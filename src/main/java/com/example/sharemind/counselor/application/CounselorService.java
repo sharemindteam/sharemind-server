@@ -24,7 +24,8 @@ public interface CounselorService {
 
     List<Counselor> getEvaluationPendingConsults();
 
-    List<Counselor> getCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest);
+    List<Counselor> getCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest,
+                                                     String sortType);
 
     CounselorGetInfoResponse getCounselorMyInfo(Long customerId);
 }
