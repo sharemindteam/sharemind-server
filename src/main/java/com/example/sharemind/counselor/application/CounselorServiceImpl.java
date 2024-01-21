@@ -166,11 +166,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     private String getCounselorSortColumn(String sortType) {
         CounselorListSortType counselorListSortType = CounselorListSortType.getSortTypeByName(sortType);
-        return switch (counselorListSortType) {
-            case LATEST -> "profileUpdatedAt";
-            case POPULARITY -> "totalConsult";
-            case STAR_RATING -> "ratingAverage";
-        };
+        return counselorListSortType.getSortColumn();
     }
 
     @Override

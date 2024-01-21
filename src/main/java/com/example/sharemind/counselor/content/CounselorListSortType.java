@@ -8,9 +8,15 @@ import lombok.Getter;
 @Getter
 public enum CounselorListSortType {
 
-    LATEST,
-    POPULARITY,
-    STAR_RATING;
+    LATEST("profileUpdatedAt"),
+    POPULARITY("totalConsult"),
+    STAR_RATING("ratingAverage");
+
+    private final String sortColumn;
+
+    CounselorListSortType(String sortColumn) {
+        this.sortColumn = sortColumn;
+    }
 
     public static CounselorListSortType getSortTypeByName(String name) {
         return Arrays.stream(CounselorListSortType.values())
