@@ -15,7 +15,7 @@ public class CounselorUpdateProfileRequest {
     @NotBlank(message = "닉네임은 공백일 수 없습니다.")
     private String nickname;
 
-    @Schema(description = "상담 카테고리", example = "[\"DATING\", \"One-SiDed\", \"male-psychology\"]")
+    @Schema(description = "상담 카테고리", example = "[\"DATING\", \"One_SiDed\", \"male_psychology\"]")
     @NotEmpty(message = "상담 카테고리는 공백일 수 없습니다.")
     private List<String> consultCategories;
 
