@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -39,6 +40,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r FROM Review r JOIN FETCH r.consult c " +
             "WHERE c.counselor = :counselor AND r.isCompleted = true AND r.isActivated = true " +
-            "ORDER BY r.updatedAt DESC")
-    Page<Review> findAllByCounselorAndIsCompletedIsTrueOrderByUpdatedAtDesc(Counselor counselor, Pageable pageable);
+            "ORDER BY r.updatedAt DESC LIMIT 2")
+    List<Review> findTop2ByCounselorAndIsCompletedIsTrueOrderByUpdatedAtDesc(Counselor counselor);
 }

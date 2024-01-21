@@ -25,7 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
     private static final int DEFAULT_PAGE_NUMBER = 0;
-    private static final int COUNSELOR_HOME_PAGE_SIZE = 2;
     private static final int REVIEW_PAGE_SIZE = 3;
     private static final Boolean IS_CUSTOMER = true;
     private static final Boolean IS_COUNSELOR = false;
@@ -81,12 +80,9 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewGetShortResponse> getShortReviewsForCounselorHome(Long customerId) {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
-        Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, COUNSELOR_HOME_PAGE_SIZE);
-        Page<ReviewGetShortResponse> page = reviewRepository.findAllByCounselorAndIsCompletedIsTrueOrderByUpdatedAtDesc(
-                counselor, pageable)
-                .map(ReviewGetShortResponse::of);
-
-        return page.getContent();
+        return reviewRepository.findTop2ByCounselorAndIsCompletedIsTrueOrderByUpdatedAtDesc(counselor).stream()
+                .map(ReviewGetShortResponse::of)
+                .toList();
     }
 
     @Override
