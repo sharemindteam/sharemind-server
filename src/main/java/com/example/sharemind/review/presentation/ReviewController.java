@@ -4,7 +4,10 @@ import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.review.application.ReviewService;
 import com.example.sharemind.review.dto.request.ReviewSaveRequest;
+import com.example.sharemind.review.dto.response.ReviewGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,10 +17,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Review Controller", description = "리뷰 컨트롤러")
 @RestController
@@ -51,5 +53,27 @@ public class ReviewController {
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         reviewService.saveReview(reviewSaveRequest, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "구매자 리뷰 조회", description = "- 구매자 페이지에서 리뷰 조회\n " +
+            "- 주소 형식: /api/v1/reviews/customers?isCompleted=true&pageNumber=0")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(필요하지 않은 값은 null로 반환)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "isCompleted", description = "조회하려는 리뷰가 작성 완료된 리뷰인지, 작성 전인 리뷰인지"),
+            @Parameter(name = "pageNumber", description = "조회 결과는 3개씩 반환하며, 페이지 번호로 구분" +
+                    "(ex. pageNumber 0: 가장 앞 3개 반환, pageNumber 1: 그다음 3개 반환)")
+    })
+    @GetMapping("/customers")
+    public ResponseEntity<List<ReviewGetResponse>> getReviewsByCustomer(@RequestParam Boolean isCompleted,
+                                                                        @RequestParam int pageNumber,
+                                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(reviewService.getReviewsByCustomer(isCompleted, pageNumber,
+                customUserDetails.getCustomer().getCustomerId()));
     }
 }
