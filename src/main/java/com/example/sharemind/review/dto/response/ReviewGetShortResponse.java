@@ -23,7 +23,7 @@ public class ReviewGetShortResponse {
     @Schema(description = "리뷰 내용")
     private final String comment;
 
-    @Schema(description = "작성 일시", example = "2024년 1월 23일")
+    @Schema(description = "작성 일시", example = "2023년 1월 23일")
     private final String updatedAt;
 
     public static ReviewGetShortResponse of(Review review) {

@@ -30,7 +30,7 @@ public class ConsultCreateResponse {
     @Schema(description = "총 리뷰 수", example = "123")
     private final Long totalReview;
 
-    @Schema(description = "상담 카테고리", example = "권태기, 짝사랑, 이별/재회")
+    @Schema(description = "상담 카테고리", example = "[\"연애갈등\", \"짝사랑\", \"남자심리\"]")
     private final Set<String> consultCategories;
 
     @Schema(description = "상담 스타일", example = "팩폭")
