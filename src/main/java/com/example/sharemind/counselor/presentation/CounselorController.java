@@ -4,6 +4,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,9 +90,11 @@ public class CounselorController {
             )
     })
     @PatchMapping("/profiles")
-    public ResponseEntity<Void> updateCounselorProfile(@Valid @RequestBody CounselorUpdateProfileRequest counselorUpdateProfileRequest,
-                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        counselorService.updateCounselorProfile(counselorUpdateProfileRequest, customUserDetails.getCustomer().getCustomerId());
+    public ResponseEntity<Void> updateCounselorProfile(
+            @Valid @RequestBody CounselorUpdateProfileRequest counselorUpdateProfileRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        counselorService.updateCounselorProfile(counselorUpdateProfileRequest,
+                customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
     }
 
@@ -108,7 +111,8 @@ public class CounselorController {
             )
     })
     @GetMapping("/profiles")
-    public ResponseEntity<CounselorGetProfileResponse> getCounselorProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<CounselorGetProfileResponse> getCounselorProfile(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getCounselorProfile(customUserDetails.getCustomer().getCustomerId()));
     }
 
@@ -123,5 +127,14 @@ public class CounselorController {
     @GetMapping("/my-info")
     public ResponseEntity<CounselorGetInfoResponse> getCounselorMyInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getCounselorMyInfo(customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @GetMapping("/{chatId}")
+    public ResponseEntity<CounselorGetBannerResponse> getCounselorChatBanner(@PathVariable Long chatId,
+                                                                             @RequestParam Boolean isCustomer,
+                                                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                counselorService.getCounselorChatBanner(chatId, isCustomer, customUserDetails.getCustomer()
+                        .getCustomerId()));
     }
 }
