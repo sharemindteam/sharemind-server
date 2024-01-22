@@ -9,6 +9,7 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetSimpleResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
@@ -184,5 +185,11 @@ public class CounselorServiceImpl implements CounselorService {
         if (counselorRepository.existsByNicknameAndCounselorIdNot(nickname, counselorId)) {
             throw new CounselorException(CounselorErrorCode.DUPLICATE_NICKNAME);
         }
+    }
+
+    @Override
+    public CounselorGetSimpleResponse getCounselorSimpleInfo(Long counselorId) {
+        Counselor counselor = getCounselorByCounselorId(counselorId);
+        return CounselorGetSimpleResponse.of(counselor);
     }
 }
