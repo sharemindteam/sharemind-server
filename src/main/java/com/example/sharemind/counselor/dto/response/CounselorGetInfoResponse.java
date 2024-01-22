@@ -17,7 +17,7 @@ public class CounselorGetInfoResponse {
     @Schema(description = "레벨")
     private final Integer level;
     
-    @Schema(description = "상담 스타일")
+    @Schema(description = "상담 스타일", example = "공감")
     private final String consultStyle;
 
     @Schema(description = "교육 수료 여부")

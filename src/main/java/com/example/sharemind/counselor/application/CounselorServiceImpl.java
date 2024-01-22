@@ -62,6 +62,11 @@ public class CounselorServiceImpl implements CounselorService {
     public void updateIsEducated(Boolean isEducated, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         if (customer.getCounselor() == null) {
+            String nickname = "마인더" + new Random().nextInt(99999);
+            while (counselorRepository.existsByNickname(nickname)) {
+                nickname = "마인더" + new Random().nextInt(99999);
+            }
+
             Counselor counselor = counselorRepository.save(Counselor.builder().build());
             customer.setCounselor(counselor);
         }
