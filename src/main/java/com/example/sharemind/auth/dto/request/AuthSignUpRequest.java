@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
-import java.util.Random;
-
 @Getter
 public class AuthSignUpRequest {
 
@@ -31,7 +29,6 @@ public class AuthSignUpRequest {
 
     public Customer toEntity(String password) {
         return Customer.builder()
-                .nickname("사용자" + new Random().nextInt(999999))
                 .email(email)
                 .password(password)
                 .phoneNumber(phoneNumber)

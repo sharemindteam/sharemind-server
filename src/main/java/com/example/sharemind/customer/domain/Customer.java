@@ -13,6 +13,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -60,10 +61,10 @@ public class Customer extends BaseEntity {
     private Counselor counselor;
 
     @Builder
-    public Customer(String nickname, String email, String password, String phoneNumber, String recoveryEmail) {
+    public Customer(String email, String password, String phoneNumber, String recoveryEmail) {
         validateEmails(email, recoveryEmail);
 
-        this.nickname = nickname;
+        this.nickname = "셰어" + new Random().nextInt(999999);
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
