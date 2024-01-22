@@ -157,6 +157,14 @@ public class Counselor extends BaseEntity {
         }
     }
 
+    public void updateTotalReviewAndRatingAverage(Integer rating) {
+        double preTotalRating = this.ratingAverage * this.totalReview;
+        this.totalReview += 1;
+
+        double newTotalRating = (preTotalRating + rating) / this.totalReview;
+        this.ratingAverage = Math.round(newTotalRating * 10) / 10.0;
+    }
+
     private void validateIsEducated() {
         if ((this.isEducated != null) && (this.isEducated.equals(true))) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_ALREADY_EDUCATED);

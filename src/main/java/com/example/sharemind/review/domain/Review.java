@@ -46,6 +46,8 @@ public class Review extends BaseEntity {
         this.rating = rating;
         this.comment = comment;
         this.isCompleted = true;
+
+        this.consult.getCounselor().updateTotalReviewAndRatingAverage(this.rating);
     }
 
     private void validateReview() {
