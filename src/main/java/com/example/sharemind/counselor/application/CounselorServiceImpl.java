@@ -1,6 +1,5 @@
 package com.example.sharemind.counselor.application;
 
-import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.counselor.content.CounselorListSortType;
@@ -40,7 +39,6 @@ public class CounselorServiceImpl implements CounselorService {
 
     private final CounselorRepository counselorRepository;
     private final CustomerService customerService;
-    private final ChatService chatService;
 
     @Override
     public Counselor getCounselorByCounselorId(Long counselorId) {
@@ -191,11 +189,7 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public CounselorGetBannerResponse getCounselorChatBanner(Long chatId, Boolean isCustomer, Long customerId) {
-        Chat chat = chatService.getChatByChatId(chatId);
-
-        chatService.validateChat(chat, isCustomer, customerId);
-
+    public CounselorGetBannerResponse getCounselorChatBanner(Chat chat) {
         Counselor counselor = getCounselorByCounselorId(chat.getConsult().getCounselor().getCounselorId());
         return CounselorGetBannerResponse.of(counselor);
     }

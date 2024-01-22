@@ -1,5 +1,7 @@
 package com.example.sharemind.counselor.presentation;
 
+import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class CounselorController {
 
     private final CounselorService counselorService;
+    private final ChatService chatService;
 
     @Operation(summary = "퀴즈 통과 여부 수정",
             description = "상담사 인증 퀴즈 통과 여부 수정, 첫 퀴즈 응시일 경우 상담사 데이터 생성, 주소 형식: /api/v1/counselors/quiz?isEducated=true")
@@ -125,7 +128,8 @@ public class CounselorController {
             )
     })
     @GetMapping("/my-info")
-    public ResponseEntity<CounselorGetInfoResponse> getCounselorMyInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<CounselorGetInfoResponse> getCounselorMyInfo(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getCounselorMyInfo(customUserDetails.getCustomer().getCustomerId()));
     }
 
@@ -133,8 +137,8 @@ public class CounselorController {
     public ResponseEntity<CounselorGetBannerResponse> getCounselorChatBanner(@PathVariable Long chatId,
                                                                              @RequestParam Boolean isCustomer,
                                                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Chat chat = chatService.getAndValidateChat(chatId, isCustomer, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok(
-                counselorService.getCounselorChatBanner(chatId, isCustomer, customUserDetails.getCustomer()
-                        .getCustomerId()));
+                counselorService.getCounselorChatBanner(chat));
     }
 }

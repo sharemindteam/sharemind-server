@@ -64,7 +64,7 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.findByChatIdAndIsActivatedIsTrue(chatId).orElseThrow(() -> new ChatException(
                 ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
     }
-    
+
     @Override
     public void updateReadId(Long chatId, Long customerId, Boolean isCustomer) {
         Chat chat = getChatByChatId(chatId);
@@ -99,6 +99,14 @@ public class ChatServiceImpl implements ChatService {
         } else if ((chat.getConsult().getCounselor() != customer.getCounselor())) {
             throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
         }
+    }
+
+    @Override
+    public Chat getAndValidateChat(Long chatId, Boolean isCustomer, Long customerId) {
+        Chat chat = getChatByChatId(chatId);
+        validateChat(chat, isCustomer, customerId);
+
+        return chat;
     }
 
     @Override
