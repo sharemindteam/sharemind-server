@@ -8,6 +8,9 @@ import lombok.*;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CounselorGetListResponse extends CounselorGetBaseResponse {
 
+    @Schema(description = "상담사 아이디")
+    private final Long counselorId;
+
     @Schema(description = "레벨", example = "1")
     private final Integer level;
 
@@ -22,6 +25,7 @@ public class CounselorGetListResponse extends CounselorGetBaseResponse {
 
     private CounselorGetListResponse(Counselor counselor, Boolean isWishList) {
         super(counselor);
+        this.counselorId = counselor.getCounselorId();
         this.level = counselor.getLevel();
         this.totalReview = counselor.getTotalReview();
         this.ratingAverage = counselor.getRatingAverage();
