@@ -4,8 +4,11 @@ import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chatMessage.application.ChatMessageService;
 import com.example.sharemind.chatMessage.dto.request.ChatMessageCreateRequest;
+import com.example.sharemind.chatMessage.dto.response.ChatMessageGetResponse;
 import com.example.sharemind.consult.exception.ConsultException;
+import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -15,16 +18,32 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "ChatMessage Controller", description = "채팅 메세지(실시간) 컨트롤러")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/chatMessages")
 @RestController
 public class ChatMessageController {
 
     private final ChatService chatService;
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    @GetMapping("/{chatId}")
+    public ResponseEntity<List<ChatMessageGetResponse>> getChatMessage(@PathVariable Long chatId,
+                                                                       @RequestParam Long messageId,
+                                                                       @RequestParam Boolean isCustomer,
+                                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                chatMessageService.getChatMessage(chatId, messageId, customUserDetails.getCustomer().getCustomerId(),
+                        isCustomer));
+    }
+
 
     @MessageMapping("/api/v1/chatMessages/customers/{chatId}")
     public ResponseEntity<Void> getCustomerChatMessage(@DestinationVariable Long chatId,
