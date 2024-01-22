@@ -1,5 +1,7 @@
 package com.example.sharemind.counselor.application;
 
+import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.counselor.content.CounselorListSortType;
 import com.example.sharemind.counselor.content.ProfileStatus;
@@ -9,7 +11,7 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetSimpleResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
@@ -38,6 +40,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     private final CounselorRepository counselorRepository;
     private final CustomerService customerService;
+    private final ChatService chatService;
 
     @Override
     public Counselor getCounselorByCounselorId(Long counselorId) {
@@ -188,8 +191,12 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public CounselorGetSimpleResponse getCounselorSimpleInfo(Long counselorId) {
-        Counselor counselor = getCounselorByCounselorId(counselorId);
-        return CounselorGetSimpleResponse.of(counselor);
+    public CounselorGetBannerResponse getCounselorChatBanner(Long chatId, Boolean isCustomer, Long customerId) {
+        Chat chat = chatService.getChatByChatId(chatId);
+
+        chatService.validateChat(chat, isCustomer, customerId);
+
+        Counselor counselor = getCounselorByCounselorId(chat.getConsult().getCounselor().getCounselorId());
+        return CounselorGetBannerResponse.of(counselor);
     }
 }
