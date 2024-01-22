@@ -11,13 +11,13 @@ import com.example.sharemind.global.content.ConsultType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 import java.util.Set;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 public class Counselor extends BaseEntity {
@@ -104,8 +104,8 @@ public class Counselor extends BaseEntity {
     private Long totalConsult;
 
     @Builder
-    public Counselor() {
-        this.nickname = "판매자" + new Random().nextInt(99999);
+    public Counselor(String nickname) {
+        this.nickname = nickname;
         this.level = 0;
         this.totalReview = 0L;
         this.ratingAverage = 0.0;
