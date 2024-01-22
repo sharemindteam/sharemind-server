@@ -7,8 +7,6 @@ import com.example.sharemind.chatMessage.dto.request.ChatMessageCreateRequest;
 import com.example.sharemind.chatMessage.dto.response.ChatMessageGetResponse;
 import com.example.sharemind.chatMessage.dto.response.ChatMessageWebSocketResponse;
 import com.example.sharemind.chatMessage.repository.ChatMessageRepository;
-import com.example.sharemind.customer.application.CustomerService;
-import com.example.sharemind.customer.domain.Customer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +27,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private static final int CHAT_MESSAGE_PAGE = 11;
 
     private final ChatService chatService;
-    private final CustomerService customerService;
     private final ChatMessageRepository chatMessageRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
 

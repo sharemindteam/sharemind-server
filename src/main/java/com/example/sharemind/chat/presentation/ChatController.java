@@ -21,10 +21,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Chat Controller", description = "채팅(실시간) 컨트롤러")
 @RestController
@@ -42,11 +39,18 @@ public class ChatController {
     })
     @GetMapping()
     public ResponseEntity<List<ChatLetterGetResponse>> getChatList(@RequestParam Boolean isCustomer,
-                                                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
                 customUserDetails.getCustomer().getCustomerId(), isCustomer);
         return ResponseEntity.ok(chatInfoGetResponses);
         //todo: 메세지 읽지 않은 순, 완료/취소된 상담 포함한 것도 구현해야함ㅜㅜ
+    }
+
+    @GetMapping("/{chatId}")
+    public ResponseEntity<Void> updateReadId(@PathVariable Long chatId, @RequestParam Boolean isCustomer,
+                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        chatService.updateReadId(chatId, customUserDetails.getCustomer().getCustomerId(), isCustomer);
+        return ResponseEntity.ok().build();
     }
 
     @MessageMapping("/api/v1/chat/customers/{chatId}")
