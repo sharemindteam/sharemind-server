@@ -8,7 +8,10 @@ import com.example.sharemind.consult.exception.ConsultErrorCode;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.consult.repository.ConsultRepository;
 import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.counselor.exception.CounselorErrorCode;
+import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultType;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +31,10 @@ public class ConsultServiceImpl implements ConsultService {
     @Transactional
     @Override
     public ConsultCreateResponse createConsult(ConsultCreateRequest consultCreateRequest, Customer customer) {
-
-        // TODO 프로필 수정 심사 중인지도 확인해야할 것 같음
         Counselor counselor = counselorService.getCounselorByCounselorId(consultCreateRequest.getCounselorId());
+        if (!counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_COMPLETE)) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_COMPLETE_EVALUATION);
+        }
 
         ConsultType consultType = ConsultType.getConsultTypeByName(consultCreateRequest.getConsultTypeName());
         Long cost = counselor.getConsultCost(consultType);

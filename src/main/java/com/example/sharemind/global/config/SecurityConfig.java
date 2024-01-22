@@ -26,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private static final String ROLE_CUSTOMER = "CUSTOMER";
+    private static final String ROLE_COUNSELOR = "COUNSELOR";
     private static final String ROLE_ADMIN = "ADMIN";
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -49,7 +50,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**",
                                         "/api/v1/auth/**", "/api/v1/emails/**").permitAll()
-                                .requestMatchers("/api/v1/consults/**").hasRole(ROLE_CUSTOMER)
+                                .requestMatchers("/api/v1/reviews/counselors**").hasRole(ROLE_COUNSELOR)
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
                                 .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html",
                                         "/counselor.html").permitAll()

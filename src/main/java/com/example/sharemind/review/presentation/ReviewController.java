@@ -4,7 +4,11 @@ import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.review.application.ReviewService;
 import com.example.sharemind.review.dto.request.ReviewSaveRequest;
+import com.example.sharemind.review.dto.response.ReviewGetResponse;
+import com.example.sharemind.review.dto.response.ReviewGetShortResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,10 +18,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Review Controller", description = "리뷰 컨트롤러")
 @RestController
@@ -51,5 +54,96 @@ public class ReviewController {
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         reviewService.saveReview(reviewSaveRequest, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "구매자 리뷰 조회", description = "- 구매자 페이지 리뷰 관리 탭에서 리뷰 작성/남긴 리뷰에 해당하는 리뷰 리스트 조회\n " +
+            "- 주소 형식: /api/v1/reviews/customers?isCompleted=true&cursorId=0")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(필요하지 않은 값은 null로 반환)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "isCompleted", description = "조회하려는 리뷰가 작성 완료된 리뷰인지, 작성 전인 리뷰인지"),
+            @Parameter(name = "cursorId", description = """
+                    - 조회 결과는 3개씩 반환하며, cursorId로 구분
+                    1. 최초 조회 요청이면 cursorId는 0
+                    2. 2번째 요청부터 cursorId는 직전 요청의 조회 결과 3개 중 마지막 리뷰 아이디""")
+    })
+    @GetMapping("/customers")
+    public ResponseEntity<List<ReviewGetResponse>> getReviewsByCustomer(@RequestParam Boolean isCompleted,
+                                                                        @RequestParam Long cursorId,
+                                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(reviewService.getReviewsByCustomer(isCompleted, cursorId,
+                customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "상담사 리뷰 조회", description = "- 상담사 페이지 받은 리뷰 탭에 해당하는 리뷰 리스트 조회\n " +
+            "- 주소 형식: /api/v1/reviews/counselors?cursorId=0")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공(필요하지 않은 값은 null로 반환)"),
+            @ApiResponse(responseCode = "403", description = "아직 프로필 심사가 완료되지 않은 상담사",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "cursorId", description = """
+                    - 조회 결과는 3개씩 반환하며, cursorId로 구분
+                    1. 최초 조회 요청이면 cursorId는 0
+                    2. 2번째 요청부터 cursorId는 직전 요청의 조회 결과 3개 중 마지막 리뷰 아이디""")
+    })
+    @GetMapping("/counselors")
+    public ResponseEntity<List<ReviewGetResponse>> getReviewsByCounselor(@RequestParam Long cursorId,
+                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(reviewService.getReviewsByCounselor(cursorId,
+                customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "상담사 홈화면 받은 리뷰 조회", description = "상담사 페이지 홈화면에 필요한 최신 리뷰 2개 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "403", description = "아직 프로필 심사가 완료되지 않은 상담사",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @GetMapping("/counselors/home")
+    public ResponseEntity<List<ReviewGetShortResponse>> getReviewsForCounselorHome(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(reviewService.getShortReviewsForCounselorHome(
+                customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "상담사 프로필 후기 탭 리뷰 조회", description = "- 구매자 페이지 상담사 프로필 후기 탭에 해당하는 리뷰 리스트 조회\n " +
+            "- 주소 형식: /api/v1/reviews/{counselorId}?cursorId=0")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "counselorId", description = "상담사 아이디"),
+            @Parameter(name = "cursorId", description = """
+                    - 조회 결과는 3개씩 반환하며, cursorId로 구분
+                    1. 최초 조회 요청이면 cursorId는 0
+                    2. 2번째 요청부터 cursorId는 직전 요청의 조회 결과 3개 중 마지막 리뷰 아이디""")
+    })
+    @GetMapping("/{counselorId}")
+    public ResponseEntity<List<ReviewGetShortResponse>> getReviewsForCounselorProfile(@PathVariable Long counselorId,
+                                                                                      @RequestParam Long cursorId) {
+        return ResponseEntity.ok(reviewService.getShortReviewsForCounselorProfile(cursorId, counselorId));
     }
 }
