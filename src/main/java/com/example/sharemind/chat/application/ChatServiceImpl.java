@@ -69,7 +69,8 @@ public class ChatServiceImpl implements ChatService {
     public void updateReadId(Long chatId, Long customerId, Boolean isCustomer) {
         Chat chat = getChatByChatId(chatId);
         validateChat(chat, isCustomer, customerId);
-        ChatMessage chatMessage = chatMessageRepository.findByChatLatestActiveMessageId(chat, isCustomer);
+        ChatMessage chatMessage = chatMessageRepository.findTopByChatAndIsCustomerAndIsActivatedTrueOrderByMessageIdDesc(
+                chat, !isCustomer); //customer면 counselor의 가장 위 메세지 아이디를 가져오는거
         Long chatMessageId = (chatMessage != null) ? chatMessage.getMessageId() : 0L;
         if (isCustomer) {
             chat.updateCustomerReadId(chatMessageId);
