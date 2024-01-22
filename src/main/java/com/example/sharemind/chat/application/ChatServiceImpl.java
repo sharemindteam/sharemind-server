@@ -18,6 +18,7 @@ import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
@@ -41,6 +42,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final CounselorService counselorService;
     private final ConsultService consultService;
+    private final CustomerService customerService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
@@ -59,8 +61,21 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Chat getChatByChatId(Long chatId) {
-            return chatRepository.findByChatIdAndIsActivatedIsTrue(chatId).orElseThrow(() -> new ChatException(
-                    ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
+        return chatRepository.findByChatIdAndIsActivatedIsTrue(chatId).orElseThrow(() -> new ChatException(
+                ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
+    }
+    
+    @Override
+    public void updateReadId(Long chatId, Long customerId, Boolean isCustomer) {
+        Chat chat = getChatByChatId(chatId);
+        validateChat(chat, isCustomer, customerId);
+        ChatMessage chatMessage = chatMessageRepository.findByChatLatestActiveMessageId(chat, isCustomer);
+        Long chatMessageId = (chatMessage != null) ? chatMessage.getMessageId() : 0L;
+        if (isCustomer) {
+            chat.updateCustomerReadId(chatMessageId);
+        } else {
+            chat.updateCounselorReadId(chatMessageId);
+        }
     }
 
     @Override
@@ -76,7 +91,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void validateChat(Chat chat, Boolean isCustomer, Customer customer) {
+    public void validateChat(Chat chat, Boolean isCustomer, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+
         if (isCustomer && (chat.getConsult().getCustomer() != customer)) {
             throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
         } else if ((chat.getConsult().getCounselor() != customer.getCounselor())) {

@@ -68,9 +68,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     public List<ChatMessageGetResponse> getChatMessage(Long chatId, Long messageId, Long customerId,
                                                        Boolean isCustomer) {
         Chat chat = chatService.getChatByChatId(chatId);
-        Customer customer = customerService.getCustomerByCustomerId(customerId);
 
-        chatService.validateChat(chat, isCustomer, customer);
+        chatService.validateChat(chat, isCustomer, customerId);
 
         List<ChatMessage> chatMessages = getChatMessageByPagination(chat, messageId);
         return chatMessages.stream()

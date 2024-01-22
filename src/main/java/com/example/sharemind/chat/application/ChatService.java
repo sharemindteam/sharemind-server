@@ -21,5 +21,7 @@ public interface ChatService {
 
     void validateNotFinishChat(Long chatId);
 
-    void validateChat(Chat chat, Boolean isCustomer, Customer customer);
+    void validateChat(Chat chat, Boolean isCustomer, Long customerId);
+
+    void updateReadId(Long chatId, Long customerId, Boolean isCustomer);
 }

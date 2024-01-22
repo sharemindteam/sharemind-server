@@ -34,6 +34,7 @@ public class ChatMessageController {
     private final ChatService chatService;
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+
     @GetMapping("/{chatId}")
     public ResponseEntity<List<ChatMessageGetResponse>> getChatMessage(@PathVariable Long chatId,
                                                                        @RequestParam Long messageId,
@@ -43,7 +44,6 @@ public class ChatMessageController {
                 chatMessageService.getChatMessage(chatId, messageId, customUserDetails.getCustomer().getCustomerId(),
                         isCustomer));
     }
-
 
     @MessageMapping("/api/v1/chatMessages/customers/{chatId}")
     public ResponseEntity<Void> getCustomerChatMessage(@DestinationVariable Long chatId,
