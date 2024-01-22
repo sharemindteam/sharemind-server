@@ -46,7 +46,7 @@ public class AdminServiceImpl implements AdminService {
     public void updateIsPaid(Long consultId) {
 
         Consult consult = consultService.getConsultByConsultId(consultId);
-        if (consult.getIsPaid()) {
+        if (consult.getPayment().getIsPaid()) {
             throw new ConsultException(ConsultErrorCode.CONSULT_ALREADY_PAID, consultId.toString());
         }
 
