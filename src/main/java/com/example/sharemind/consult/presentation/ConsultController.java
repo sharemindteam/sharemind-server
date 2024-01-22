@@ -2,7 +2,6 @@ package com.example.sharemind.consult.presentation;
 
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.dto.request.ConsultCreateRequest;
-import com.example.sharemind.consult.dto.response.ConsultCreateResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +29,7 @@ public class ConsultController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "신청 성공"),
             @ApiResponse(responseCode = "400",
-                    description = "프로필 심사가 완료되지 않은 상담사 아이디로 요청됨",
+                    description = "1. 프로필 심사가 완료되지 않은 상담사 아이디로 요청됨\n 2. 상담사가 제공하지 않는 상담 유형",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
@@ -41,9 +40,9 @@ public class ConsultController {
             )
     })
     @PostMapping
-    public ResponseEntity<ConsultCreateResponse> createConsult(@Valid @RequestBody ConsultCreateRequest consultCreateRequest,
+    public ResponseEntity<Void> createConsult(@Valid @RequestBody ConsultCreateRequest consultCreateRequest,
                                                                @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(consultService.createConsult(consultCreateRequest, customUserDetails.getCustomer()));
+        consultService.createConsult(consultCreateRequest, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
