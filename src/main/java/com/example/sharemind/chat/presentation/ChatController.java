@@ -56,7 +56,7 @@ public class ChatController {
         try {
             Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
-            chatService.validateChat(chatId, sessionAttributes, true);
+            chatService.validateChatWithWebSocket(chatId, sessionAttributes, true);
 
             chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, true);
         } catch (ChatException | ConsultException e) {
@@ -73,7 +73,7 @@ public class ChatController {
         try {
             Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
-            chatService.validateChat(chatId, sessionAttributes, false);
+            chatService.validateChatWithWebSocket(chatId, sessionAttributes, false);
 
             chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, false);
         } catch (ChatException | ConsultException e) {

@@ -56,7 +56,7 @@ public class ChatMessageController {
                                    SimpMessageHeaderAccessor headerAccessor, boolean isCustomer) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
-        chatService.validateChat(chatId, sessionAttributes, isCustomer);
+        chatService.validateChatWithWebSocket(chatId, sessionAttributes, isCustomer);
 
         String nickName = (String) sessionAttributes.get("userNickname");
         chatMessageService.createAndSendChatMessage(request, chatId, isCustomer, nickName);

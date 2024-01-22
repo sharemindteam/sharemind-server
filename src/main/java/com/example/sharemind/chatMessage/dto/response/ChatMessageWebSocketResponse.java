@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ChatMessageResponse {
+public class ChatMessageWebSocketResponse {
 
     private final String senderName;
 
@@ -18,7 +18,8 @@ public class ChatMessageResponse {
 
     private final Boolean isCustomer;
 
-    public static ChatMessageResponse of(String senderName, String content, Boolean isCustomer) {
-        return new ChatMessageResponse(senderName, content, TimeUtil.getUpdatedAt(LocalDateTime.now()), isCustomer);
+    public static ChatMessageWebSocketResponse of(String senderName, String content, Boolean isCustomer) {
+        return new ChatMessageWebSocketResponse(senderName, content, TimeUtil.getUpdatedAt(LocalDateTime.now()),
+                isCustomer);
     }
 }

@@ -18,6 +18,7 @@ import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import java.util.List;
@@ -58,12 +59,12 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Chat getChatByChatId(Long chatId) {
-        return chatRepository.findByChatIdAndIsActivatedIsTrue(chatId).orElseThrow(() -> new ChatException(
-                ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
+            return chatRepository.findByChatIdAndIsActivatedIsTrue(chatId).orElseThrow(() -> new ChatException(
+                    ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
     }
 
     @Override
-    public void validateChat(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer) {
+    public void validateChatWithWebSocket(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer) {
         Long userId = (Long) sessionAttributes.get("userId");
         String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId;
 
@@ -71,6 +72,15 @@ public class ChatServiceImpl implements ChatService {
                 .get(redisKey);
         if (chatRoomIds == null || !chatRoomIds.contains(chatId)) {
             throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chatId.toString());
+        }
+    }
+
+    @Override
+    public void validateChat(Chat chat, Boolean isCustomer, Customer customer) {
+        if (isCustomer && (chat.getConsult().getCustomer() != customer)) {
+            throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
+        } else if ((chat.getConsult().getCounselor() != customer.getCounselor())) {
+            throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
         }
     }
 
@@ -118,7 +128,7 @@ public class ChatServiceImpl implements ChatService {
         validateChatStatusRequest(chat, chatStatusUpdateRequest, isCustomer);
 
         handleStatusRequest(chat, chatStatusUpdateRequest);
-        
+
         return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
     }
 
@@ -229,7 +239,7 @@ public class ChatServiceImpl implements ChatService {
         if (customerChatIds != null) {
             customerChatIds.add(chat.getChatId()); //todo: 혹시나 모르니 이미 레디스에 해당 방이 있는 상황 검토..
             redisTemplate.opsForValue().set(customerKey, customerChatIds);
-            log.info("Updated chat IDs for user {} in Redis: {}", customerKey, customerChatIds); //todo: 테스트 후 삭제
+            log.info("Updated chat IDs for user {} in Redis: {}", customerKey, customerChatIds);
         }
     }
 
