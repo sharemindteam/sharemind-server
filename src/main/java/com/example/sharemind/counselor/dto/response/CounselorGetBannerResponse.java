@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class CounselorGetSimpleResponse {
+public class CounselorGetBannerResponse {
 
     @Schema(description = "상담사 아이디")
     private final Long counselorId;
@@ -36,8 +36,8 @@ public class CounselorGetSimpleResponse {
     @Schema(description = "리뷰 평균", example = "4.5")
     private final Double ratingAverage;
 
-    public static CounselorGetSimpleResponse of(Counselor counselor) {
-        return new CounselorGetSimpleResponse(counselor.getCounselorId(), counselor.getNickname(),
+    public static CounselorGetBannerResponse of(Counselor counselor) {
+        return new CounselorGetBannerResponse(counselor.getCounselorId(), counselor.getNickname(),
                 CounselorUtil.convertConsultCategories(counselor), counselor.getConsultStyle().getDisplayName(),
                 counselor.getIntroduction(),
                 counselor.getLevel(), counselor.getTotalReview(), counselor.getRatingAverage());
