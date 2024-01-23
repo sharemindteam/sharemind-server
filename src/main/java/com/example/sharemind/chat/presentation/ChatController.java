@@ -37,7 +37,8 @@ public class ChatController {
     @Operation(summary = "채팅 목록 반환", description = "속해 있는 채팅 목록을 전부 가져오는 api, 메세지 정렬 읽지 않은 순, 완료/취소된 상담 포함이 아직 구현되지 않아, 개선이 되어야하는 api")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "채팅 목록 반환 성공"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사 아이디로 요청됨")
+            @ApiResponse(responseCode = "404", description = "1. 상담사 role을 가지지 않은 사람이 isCustomer=false로 api를 요청할 때"
+                    + "2. sortType이 존재하지 않을 때")
     })
     @Parameters({
             @Parameter(name = "filter", description = "완료/취소된 상담 제외 여부"),
@@ -52,9 +53,19 @@ public class ChatController {
         List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
                 customUserDetails.getCustomer().getCustomerId(), isCustomer, filter, sortType);
         return ResponseEntity.ok(chatInfoGetResponses);
-        //todo: 메세지 읽지 않은 순, 완료/취소된 상담 포함한 것도 구현해야함ㅜㅜ
     }
 
+    @Operation(summary = "채팅 readId 갱신해주는 api", description = "처음 채팅방에 들어갔을 때, 호출해주시면 됩니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "채팅 목록 반환 성공"),
+            @ApiResponse(responseCode = "404", description = "1. 상담사 role을 가지지 않은 사람이 isCustomer=false로 api를 요청할 때"
+                    + "2. 채팅방이 존재하지 않을 때")
+    })
+    @Parameters({
+            @Parameter(name = "chatId", description = "채팅방 id"),
+            @Parameter(name = "isCustomer", description = "요청 주체가 구매자인지 판매자인지 여부"),
+            @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
+    })
     @GetMapping("/{chatId}")
     public ResponseEntity<Void> updateReadId(@PathVariable Long chatId, @RequestParam Boolean isCustomer,
                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
