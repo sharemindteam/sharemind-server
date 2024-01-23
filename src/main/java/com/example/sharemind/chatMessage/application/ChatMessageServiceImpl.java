@@ -8,7 +8,6 @@ import com.example.sharemind.chatMessage.dto.response.ChatMessageGetResponse;
 import com.example.sharemind.chatMessage.dto.response.ChatMessageWebSocketResponse;
 import com.example.sharemind.chatMessage.repository.ChatMessageRepository;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

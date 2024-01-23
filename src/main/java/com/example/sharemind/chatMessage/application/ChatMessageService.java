@@ -1,6 +1,5 @@
 package com.example.sharemind.chatMessage.application;
 
-import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chatMessage.dto.request.ChatMessageCreateRequest;
 import com.example.sharemind.chatMessage.dto.response.ChatMessageGetResponse;
 import java.util.List;
