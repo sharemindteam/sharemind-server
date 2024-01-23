@@ -12,7 +12,8 @@ public enum ChatStatus {
     SEND_REQUEST("상담 시작 요청"),
     FIVE_MINUTE_LEFT("상담 종료 5분 전"),
     TIME_OVER("시간 종료"),
-    FINISH("상담 종료");
+    FINISH("상담 종료"),
+    CANCEL("상담 취소");
 
     private final String displayName;
 
