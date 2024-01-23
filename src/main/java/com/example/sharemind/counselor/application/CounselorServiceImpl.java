@@ -68,7 +68,7 @@ public class CounselorServiceImpl implements CounselorService {
                 nickname = "마인더" + new Random().nextInt(99999);
             }
 
-            Counselor counselor = counselorRepository.save(Counselor.builder().build());
+            Counselor counselor = counselorRepository.save(Counselor.builder().nickname(nickname).build());
             customer.setCounselor(counselor);
         }
 
