@@ -76,8 +76,9 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private List<ChatMessage> getChatMessageByPagination(Chat chat, Long messageId) {
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, CHAT_MESSAGE_PAGE);
-        Page<ChatMessage> page = chatMessageRepository.findByChatAndMessageIdLessThanOrderByMessageIdDesc(chat,
-                messageId, pageable);
+        Page<ChatMessage> page = (messageId == 0)
+                ? chatMessageRepository.findByChatOrderByMessageIdDesc(chat, pageable)
+                : chatMessageRepository.findByChatAndMessageIdLessThanOrderByMessageIdDesc(chat, messageId, pageable);
         return page.getContent();
     }
 }

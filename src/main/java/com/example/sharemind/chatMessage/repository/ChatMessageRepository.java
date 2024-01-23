@@ -13,5 +13,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     Page<ChatMessage> findByChatAndMessageIdLessThanOrderByMessageIdDesc(Chat chat, Long messageId, Pageable pageable);
 
+    Page<ChatMessage> findByChatOrderByMessageIdDesc(Chat chat, Pageable pageable);
+
+
     ChatMessage findTopByChatAndIsCustomerAndIsActivatedTrueOrderByMessageIdDesc(Chat chat, Boolean isCustomer);
 }

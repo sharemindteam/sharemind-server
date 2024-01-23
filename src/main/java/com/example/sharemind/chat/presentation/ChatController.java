@@ -34,7 +34,7 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @Operation(summary = "채팅 목록 반환", description = "속해 있는 채팅 목록을 전부 가져오는 api, 메세지 정렬 읽지 않은 순, 완료/취소된 상담 포함이 아직 구현되지 않아, 개선이 되어야하는 api")
+    @Operation(summary = "채팅 목록 반환", description = "유저가 속해 있는 채팅 목록을 전부 가져오는 api")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "채팅 목록 반환 성공"),
             @ApiResponse(responseCode = "404", description = "1. 상담사 role을 가지지 않은 사람이 isCustomer=false로 api를 요청할 때"

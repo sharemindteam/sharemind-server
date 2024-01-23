@@ -106,13 +106,7 @@ public class ChatServiceImpl implements ChatService {
     public void validateChat(Chat chat, Boolean isCustomer, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
-        if (isCustomer) {
-            if (chat.getConsult().getCustomer() != customer) {
-                throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
-            }
-        } else if ((chat.getConsult().getCounselor() != customer.getCounselor())) {
-            throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
-        }
+        chat.checkChatAuthority(chat, isCustomer, customer);
     }
 
     @Override
@@ -153,7 +147,7 @@ public class ChatServiceImpl implements ChatService {
 
         List<Chat> filterChats = getFilterChats(consults, filter);
 
-        List<Chat> finalChats;
+        List<Chat> finalChats = null;
 
         switch (sortType) {
             case LATEST: {
@@ -164,10 +158,6 @@ public class ChatServiceImpl implements ChatService {
                 finalChats = sortChatsByUnread(filterChats, isCustomer);
                 break;
             }
-            default: {
-                throw new ChatException(ChatErrorCode.INVALID_CHAT_SORT_TYPE, chatSortType);
-            }
-
         }
         return finalChats.stream()
                 .map(chat -> createChatInfoGetResponse(chat, isCustomer))
@@ -183,7 +173,7 @@ public class ChatServiceImpl implements ChatService {
 
         return chats.stream()
                 .sorted(Comparator.comparing((Chat chat) -> latestMessageTime.get(chat)).reversed())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<Chat> sortChatsByUnread(List<Chat> filterChats, Boolean isCustomer) {
@@ -219,11 +209,11 @@ public class ChatServiceImpl implements ChatService {
                     .map(Consult::getChat)
                     .filter(chat -> (chat.getChatStatus() != ChatStatus.FINISH) && (chat.getChatStatus()
                             != ChatStatus.CANCEL))
-                    .collect(Collectors.toList());
+                    .toList();
         }
         return consults.stream()
                 .map(Consult::getChat)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

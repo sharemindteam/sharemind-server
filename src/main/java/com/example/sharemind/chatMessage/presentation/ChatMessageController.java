@@ -43,8 +43,8 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @Operation(summary = "채팅 메세지 조회", description = "구매자 첫번째 질문 시 선택하는 상담 카테고리 리스트 조회"
-            + "- 주소 형식 : /api/v1/chatMessages/{chatId}?isCustomer=true&messageId=1201920193"
+    @Operation(summary = "채팅 메세지 조회", description = "채팅방에 해당하는 채팅메세지 리턴해주는 함수"
+            + "- 주소 형식 : /api/v1/chatMessages/{chatId}?isCustomer=true&messageId=0"
             + "해당하는 메세지가 없을 경우 빈배열 리턴")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -57,7 +57,7 @@ public class ChatMessageController {
             @Parameter(name = "isCustomer", description = "구매자이면 true"),
             @Parameter(name = "messageId", description = """
                     1. messageId를 기준으로 그보다 index가 작은 것에서 11개 리턴
-                    2. 처음 요청을 할 때, 즉 messageId를 모를 때는 Long Max값으로 요청부탁드립니다.""")
+                    2. 처음 요청을 할 때, 즉 messageId를 모를 때는 0으로 요청부탁드립니다.""")
     })
     @GetMapping("/{chatId}")
     public ResponseEntity<List<ChatMessageGetResponse>> getChatMessage(@PathVariable Long chatId,
