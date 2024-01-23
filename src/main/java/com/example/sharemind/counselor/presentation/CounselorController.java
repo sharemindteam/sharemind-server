@@ -134,6 +134,21 @@ public class CounselorController {
         return ResponseEntity.ok(counselorService.getCounselorMyInfo(customUserDetails.getCustomer().getCustomerId()));
     }
 
+    @Operation(summary = "구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것",
+            description = "- 구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것\n " +
+                    "- 주소 형식: /api/v1/counselors/consults/{chatId}?isCustomer=true")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 chat 2. 채팅방에 해당 유저가 없을 때"
+                    + "3. 상담사 정보가 존재하지 않을 때",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "chatId", description = "채팅 id"),
+            @Parameter(name = "isCustomer", description = "구매자일 때 true")
+    })
     @GetMapping("/{chatId}")
     public ResponseEntity<CounselorGetBannerResponse> getCounselorChatBanner(@PathVariable Long chatId,
                                                                              @RequestParam Boolean isCustomer,
