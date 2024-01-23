@@ -4,6 +4,7 @@ import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
@@ -30,6 +31,8 @@ public interface CounselorService {
                                                      String sortType);
 
     CounselorGetInfoResponse getCounselorMyInfo(Long customerId);
+
+    CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId, String consultType);
 
     CounselorGetBannerResponse getCounselorChatBanner(Chat chat);
 }

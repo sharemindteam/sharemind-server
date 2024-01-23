@@ -4,6 +4,7 @@ import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
+import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
@@ -140,5 +141,29 @@ public class CounselorController {
         Chat chat = chatService.getAndValidateChat(chatId, isCustomer, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok(
                 counselorService.getCounselorChatBanner(chat));
+    }
+
+    @Operation(summary = "상담 신청 시 필요한 상담사 정보 조회",
+            description = "- 상담 신청하기 페이지에서 필요한 상담사 정보 조회\n " +
+                    "- 주소 형식: /api/v1/counselors/consults/{counselorId}?consultType=letter")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "상담사가 제공하지 앟는 상담 유형",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사 아이디/상담 유형/상담료",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "counselorId", description = "상담사 아이디"),
+            @Parameter(name = "consultType", description = "상담 유형(LETTER, CHAT)")
+    })
+    @GetMapping("/consults/{counselorId}")
+    public ResponseEntity<CounselorGetForConsultResponse> getCounselorForConsultCreation(@PathVariable Long counselorId,
+                                                                                         @RequestParam String consultType) {
+        return ResponseEntity.ok(counselorService.getCounselorForConsultCreation(counselorId, consultType));
     }
 }

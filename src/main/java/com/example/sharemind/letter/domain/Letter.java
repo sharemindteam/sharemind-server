@@ -58,7 +58,12 @@ public class Letter extends BaseEntity {
         this.letterStatus = letterStatus;
 
         switch (this.letterStatus) {
-            case FIRST_ASKING, SECOND_ASKING -> {
+            case FIRST_ASKING -> {
+                updateCustomerReadId(messageId);
+                updateDeadline();
+                this.consult.updateConsultStatusOnGoing();
+            }
+            case SECOND_ASKING -> {
                 updateCustomerReadId(messageId);
                 updateDeadline();
             }
@@ -68,8 +73,7 @@ public class Letter extends BaseEntity {
             }
             case FINISH -> {
                 updateCounselorReadId(messageId);
-                this.consult.setReview();
-                this.consult.getCounselor().increaseTotalConsult();
+                this.consult.updateConsultStatusFinish();
             }
         }
     }

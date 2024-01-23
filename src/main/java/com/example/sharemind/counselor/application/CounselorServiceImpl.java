@@ -8,6 +8,7 @@ import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
+import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
@@ -185,6 +186,17 @@ public class CounselorServiceImpl implements CounselorService {
         }
 
         return CounselorGetInfoResponse.of(counselor);
+    }
+
+    @Override
+    public CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId, String type) {
+        Counselor counselor = getCounselorByCounselorId(counselorId);
+        ConsultType consultType = ConsultType.getConsultTypeByName(type);
+        if (!counselor.getConsultTypes().contains(consultType)) {
+            throw new CounselorException(CounselorErrorCode.INVALID_CONSULT_TYPE);
+        }
+
+        return CounselorGetForConsultResponse.of(counselor, consultType);
     }
 
     private void checkDuplicateNickname(String nickname, Long counselorId) {
