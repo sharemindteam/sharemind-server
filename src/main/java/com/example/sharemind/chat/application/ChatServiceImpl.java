@@ -99,15 +99,17 @@ public class ChatServiceImpl implements ChatService {
 
     private Long getLatestMessageIdForChat(Chat chat) { //todo: ChatMessageService로 빼고싶었는데 순환참조 문제때문에 못뺌.. 구조 고민해보기
         ChatMessage latestMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
-        return Optional.ofNullable(latestMessage).map(ChatMessage::getMessageId).orElse(null);
+        return Optional.ofNullable(latestMessage).map(ChatMessage::getMessageId).orElse(0L);
     }
 
     @Override
     public void validateChat(Chat chat, Boolean isCustomer, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
-        if (isCustomer && (chat.getConsult().getCustomer() != customer)) {
-            throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
+        if (isCustomer) {
+            if (chat.getConsult().getCustomer() != customer) {
+                throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
+            }
         } else if ((chat.getConsult().getCounselor() != customer.getCounselor())) {
             throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
         }
@@ -144,9 +146,15 @@ public class ChatServiceImpl implements ChatService {
             consults = consultService.getConsultsByCounselorIdAndConsultTypeAndIsPaid(counselor.getCounselorId(),
                     ConsultType.CHAT);
         }
+
+        if (consults == null) {
+            return null;
+        }
+
         List<Chat> filterChats = getFilterChats(consults, filter);
 
         List<Chat> finalChats;
+
         switch (sortType) {
             case LATEST: {
                 finalChats = sortChatsByLatestMessage(filterChats);
