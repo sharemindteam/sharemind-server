@@ -7,6 +7,8 @@ import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,11 +39,18 @@ public class ChatController {
             @ApiResponse(responseCode = "200", description = "채팅 목록 반환 성공"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사 아이디로 요청됨")
     })
+    @Parameters({
+            @Parameter(name = "filter", description = "완료/취소된 상담 제외 여부"),
+            @Parameter(name = "isCustomer", description = "요청 주체가 구매자인지 판매자인지 여부"),
+            @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
+    })
     @GetMapping()
     public ResponseEntity<List<ChatLetterGetResponse>> getChatList(@RequestParam Boolean isCustomer,
+                                                                   @RequestParam Boolean filter,
+                                                                   @RequestParam String sortType,
                                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
-                customUserDetails.getCustomer().getCustomerId(), isCustomer);
+                customUserDetails.getCustomer().getCustomerId(), isCustomer, filter, sortType);
         return ResponseEntity.ok(chatInfoGetResponses);
         //todo: 메세지 읽지 않은 순, 완료/취소된 상담 포함한 것도 구현해야함ㅜㅜ
     }

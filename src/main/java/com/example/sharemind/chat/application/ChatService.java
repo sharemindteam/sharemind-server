@@ -14,7 +14,8 @@ public interface ChatService {
 
     void validateChatWithWebSocket(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer);
 
-    List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer);
+    List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer, Boolean filter,
+                                                        String sortType);
 
     void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest, Boolean isCustomer);
 
