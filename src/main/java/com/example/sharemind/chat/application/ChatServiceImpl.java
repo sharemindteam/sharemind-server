@@ -161,7 +161,7 @@ public class ChatServiceImpl implements ChatService {
         }
         return finalChats.stream()
                 .map(chat -> createChatInfoGetResponse(chat, isCustomer))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private List<Chat> sortChatsByLatestMessage(List<Chat> chats) {
@@ -173,7 +173,7 @@ public class ChatServiceImpl implements ChatService {
 
         return chats.stream()
                 .sorted(Comparator.comparing((Chat chat) -> latestMessageTime.get(chat)).reversed())
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private List<Chat> sortChatsByUnread(List<Chat> filterChats, Boolean isCustomer) {
@@ -209,11 +209,11 @@ public class ChatServiceImpl implements ChatService {
                     .map(Consult::getChat)
                     .filter(chat -> (chat.getChatStatus() != ChatStatus.FINISH) && (chat.getChatStatus()
                             != ChatStatus.CANCEL))
-                    .toList();
+                    .collect(Collectors.toList());
         }
         return consults.stream()
                 .map(Consult::getChat)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
