@@ -1,12 +1,8 @@
 package com.example.sharemind.counselor.dto.response;
 
-import com.example.sharemind.counselor.domain.ConsultCost;
-import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
-import com.example.sharemind.global.content.ConsultCategory;
-import com.example.sharemind.global.content.ConsultType;
+import com.example.sharemind.counselor.utils.CounselorUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.*;
@@ -38,39 +34,11 @@ public abstract class CounselorGetBaseResponse {
 
     protected CounselorGetBaseResponse(Counselor counselor) {
         this.nickname = counselor.getNickname();
-        this.consultCategories = convertConsultCategories(counselor);
-        this.consultTimes = convertConsultTimes(counselor);
-        this.consultTypes = convertConsultTypes(counselor);
-        this.consultCosts = convertConsultCosts(counselor);
+        this.consultCategories = CounselorUtil.convertConsultCategories(counselor);
+        this.consultTimes = CounselorUtil.convertConsultTimes(counselor);
+        this.consultTypes = CounselorUtil.convertConsultTypes(counselor);
+        this.consultCosts = CounselorUtil.convertConsultCosts(counselor);
         this.introduction = counselor.getIntroduction();
         this.consultStyle = counselor.getConsultStyle().getDisplayName();
-    }
-
-    protected static List<String> convertConsultCategories(Counselor counselor) {
-        return counselor.getConsultCategories().stream()
-                .map(ConsultCategory::getDisplayName)
-                .toList();
-    }
-
-    protected static List<String> convertConsultTypes(Counselor counselor) {
-        return counselor.getConsultTypes().stream()
-                .map(ConsultType::getDisplayName)
-                .toList();
-    }
-
-    protected static Map<String, List<String>> convertConsultTimes(Counselor counselor) {
-        Map<String, List<String>> consultTimes = new HashMap<>();
-        for (ConsultTime consultTime : counselor.getConsultTimes()) {
-            consultTimes.put(consultTime.getDay().name(), consultTime.getTimes().stream().toList());
-        }
-        return consultTimes;
-    }
-
-    protected static Map<String, Long> convertConsultCosts(Counselor counselor) {
-        Map<String, Long> consultCosts = new HashMap<>();
-        for (ConsultCost consultCost : counselor.getConsultCosts()) {
-            consultCosts.put(consultCost.getConsultType().getDisplayName(), consultCost.getCost());
-        }
-        return consultCosts;
     }
 }

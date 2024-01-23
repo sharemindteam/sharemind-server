@@ -12,12 +12,18 @@ public interface ChatService {
 
     Chat getChatByChatId(Long chatId);
 
-    void validateChat(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer);
+    void validateChatWithWebSocket(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer);
 
-    List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer);
+    List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer, Boolean filter,
+                                                        String sortType);
 
-    void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
-                              Boolean isCustomer);
+    void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest, Boolean isCustomer);
 
     void validateNotFinishChat(Long chatId);
+
+    void validateChat(Chat chat, Boolean isCustomer, Long customerId);
+
+    void updateReadId(Long chatId, Long customerId, Boolean isCustomer);
+
+    Chat getAndValidateChat(Long chatId, Boolean isCustomer, Long customerId);
 }

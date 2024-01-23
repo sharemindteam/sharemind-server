@@ -1,5 +1,6 @@
 package com.example.sharemind.counselor.application;
 
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.counselor.content.CounselorListSortType;
 import com.example.sharemind.counselor.content.ProfileStatus;
@@ -10,6 +11,7 @@ import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest
 import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
@@ -201,5 +203,11 @@ public class CounselorServiceImpl implements CounselorService {
         if (counselorRepository.existsByNicknameAndCounselorIdNot(nickname, counselorId)) {
             throw new CounselorException(CounselorErrorCode.DUPLICATE_NICKNAME);
         }
+    }
+
+    @Override
+    public CounselorGetBannerResponse getCounselorChatBanner(Chat chat) {
+        Counselor counselor = getCounselorByCounselorId(chat.getConsult().getCounselor().getCounselorId());
+        return CounselorGetBannerResponse.of(counselor);
     }
 }

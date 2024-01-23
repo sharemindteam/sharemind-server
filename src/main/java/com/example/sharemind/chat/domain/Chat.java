@@ -1,6 +1,9 @@
 package com.example.sharemind.chat.domain;
 
+import com.example.sharemind.chat.exception.ChatErrorCode;
+import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.consult.domain.Consult;
+import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.chat.content.ChatStatus;
 import jakarta.persistence.*;
@@ -38,6 +41,21 @@ public class Chat extends BaseEntity {
 
         if (this.chatStatus.equals(ChatStatus.FINISH)) {
             this.consult.updateConsultStatusFinish();
+        }
+        if (this.chatStatus.equals(ChatStatus.ONGOING)) {
+            this.updateStartedAt();
+
+            this.consult.updateConsultStatusOnGoing();
+        }
+    }
+
+    public void checkChatAuthority(Chat chat, Boolean isCustomer, Customer customer) {
+        if (isCustomer) {
+            if (chat.getConsult().getCustomer() != customer) {
+                throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
+            }
+        } else if ((chat.getConsult().getCounselor() != customer.getCounselor())) {
+            throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chat.getChatId().toString());
         }
     }
 

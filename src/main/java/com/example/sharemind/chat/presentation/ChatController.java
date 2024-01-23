@@ -7,6 +7,8 @@ import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,10 +23,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Chat Controller", description = "채팅(실시간) 컨트롤러")
 @RestController
@@ -35,18 +34,43 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @Operation(summary = "채팅 목록 반환", description = "속해 있는 채팅 목록을 전부 가져오는 api, 메세지 정렬 읽지 않은 순, 완료/취소된 상담 포함이 아직 구현되지 않아, 개선이 되어야하는 api")
+    @Operation(summary = "채팅 목록 반환", description = "유저가 속해 있는 채팅 목록을 전부 가져오는 api")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "채팅 목록 반환 성공"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사 아이디로 요청됨")
+            @ApiResponse(responseCode = "404", description = "1. 상담사 role을 가지지 않은 사람이 isCustomer=false로 api를 요청할 때"
+                    + "2. sortType이 존재하지 않을 때")
+    })
+    @Parameters({
+            @Parameter(name = "filter", description = "완료/취소된 상담 제외 여부"),
+            @Parameter(name = "isCustomer", description = "요청 주체가 구매자인지 판매자인지 여부"),
+            @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
     })
     @GetMapping()
     public ResponseEntity<List<ChatLetterGetResponse>> getChatList(@RequestParam Boolean isCustomer,
-                                                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                                   @RequestParam Boolean filter,
+                                                                   @RequestParam String sortType,
+                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
-                customUserDetails.getCustomer().getCustomerId(), isCustomer);
+                customUserDetails.getCustomer().getCustomerId(), isCustomer, filter, sortType);
         return ResponseEntity.ok(chatInfoGetResponses);
-        //todo: 메세지 읽지 않은 순, 완료/취소된 상담 포함한 것도 구현해야함ㅜㅜ
+    }
+
+    @Operation(summary = "채팅 readId 갱신해주는 api", description = "처음 채팅방에 들어갔을 때, 호출해주시면 됩니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "채팅 목록 반환 성공"),
+            @ApiResponse(responseCode = "404", description = "1. 상담사 role을 가지지 않은 사람이 isCustomer=false로 api를 요청할 때"
+                    + "2. 채팅방이 존재하지 않을 때")
+    })
+    @Parameters({
+            @Parameter(name = "chatId", description = "채팅방 id"),
+            @Parameter(name = "isCustomer", description = "요청 주체가 구매자인지 판매자인지 여부"),
+            @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
+    })
+    @GetMapping("/{chatId}")
+    public ResponseEntity<Void> updateReadId(@PathVariable Long chatId, @RequestParam Boolean isCustomer,
+                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        chatService.updateReadId(chatId, customUserDetails.getCustomer().getCustomerId(), isCustomer);
+        return ResponseEntity.ok().build();
     }
 
     @MessageMapping("/api/v1/chat/customers/{chatId}")
@@ -56,7 +80,7 @@ public class ChatController {
         try {
             Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
-            chatService.validateChat(chatId, sessionAttributes, true);
+            chatService.validateChatWithWebSocket(chatId, sessionAttributes, true);
 
             chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, true);
         } catch (ChatException | ConsultException e) {
@@ -73,7 +97,7 @@ public class ChatController {
         try {
             Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
 
-            chatService.validateChat(chatId, sessionAttributes, false);
+            chatService.validateChatWithWebSocket(chatId, sessionAttributes, false);
 
             chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, false);
         } catch (ChatException | ConsultException e) {

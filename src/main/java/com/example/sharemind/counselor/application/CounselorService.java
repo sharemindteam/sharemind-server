@@ -1,7 +1,9 @@
 package com.example.sharemind.counselor.application;
 
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
+import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
@@ -31,4 +33,6 @@ public interface CounselorService {
     CounselorGetInfoResponse getCounselorMyInfo(Long customerId);
 
     CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId, String consultType);
+
+    CounselorGetBannerResponse getCounselorChatBanner(Chat chat);
 }

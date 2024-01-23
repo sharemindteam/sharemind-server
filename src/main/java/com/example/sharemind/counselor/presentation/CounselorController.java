@@ -1,10 +1,13 @@
 package com.example.sharemind.counselor.presentation;
 
+import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class CounselorController {
 
     private final CounselorService counselorService;
+    private final ChatService chatService;
 
     @Operation(summary = "퀴즈 통과 여부 수정",
             description = "상담사 인증 퀴즈 통과 여부 수정, 첫 퀴즈 응시일 경우 상담사 데이터 생성, 주소 형식: /api/v1/counselors/quiz?isEducated=true")
@@ -90,9 +94,11 @@ public class CounselorController {
             )
     })
     @PatchMapping("/profiles")
-    public ResponseEntity<Void> updateCounselorProfile(@Valid @RequestBody CounselorUpdateProfileRequest counselorUpdateProfileRequest,
-                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        counselorService.updateCounselorProfile(counselorUpdateProfileRequest, customUserDetails.getCustomer().getCustomerId());
+    public ResponseEntity<Void> updateCounselorProfile(
+            @Valid @RequestBody CounselorUpdateProfileRequest counselorUpdateProfileRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        counselorService.updateCounselorProfile(counselorUpdateProfileRequest,
+                customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
     }
 
@@ -109,7 +115,8 @@ public class CounselorController {
             )
     })
     @GetMapping("/profiles")
-    public ResponseEntity<CounselorGetProfileResponse> getCounselorProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<CounselorGetProfileResponse> getCounselorProfile(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getCounselorProfile(customUserDetails.getCustomer().getCustomerId()));
     }
 
@@ -122,8 +129,33 @@ public class CounselorController {
             )
     })
     @GetMapping("/my-info")
-    public ResponseEntity<CounselorGetInfoResponse> getCounselorMyInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<CounselorGetInfoResponse> getCounselorMyInfo(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getCounselorMyInfo(customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것",
+            description = "- 구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것\n " +
+                    "- 주소 형식: /api/v1/counselors/consults/{chatId}?isCustomer=true")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 chat 2. 채팅방에 해당 유저가 없을 때"
+                    + "3. 상담사 정보가 존재하지 않을 때",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "chatId", description = "채팅 id"),
+            @Parameter(name = "isCustomer", description = "구매자일 때 true")
+    })
+    @GetMapping("/{chatId}")
+    public ResponseEntity<CounselorGetBannerResponse> getCounselorChatBanner(@PathVariable Long chatId,
+                                                                             @RequestParam Boolean isCustomer,
+                                                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Chat chat = chatService.getAndValidateChat(chatId, isCustomer, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok(
+                counselorService.getCounselorChatBanner(chat));
     }
 
     @Operation(summary = "상담 신청 시 필요한 상담사 정보 조회",

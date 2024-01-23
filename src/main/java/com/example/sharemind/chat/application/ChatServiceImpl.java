@@ -18,10 +18,18 @@ import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.customer.application.CustomerService;
+import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.global.content.ChatLetterSortType;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,6 +48,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final CounselorService counselorService;
     private final ConsultService consultService;
+    private final CustomerService customerService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
@@ -63,7 +72,21 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void validateChat(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer) {
+    public void updateReadId(Long chatId, Long customerId, Boolean isCustomer) {
+        Chat chat = getChatByChatId(chatId);
+        validateChat(chat, isCustomer, customerId);
+        ChatMessage chatMessage = chatMessageRepository.findTopByChatAndIsCustomerAndIsActivatedTrueOrderByMessageIdDesc(
+                chat, !isCustomer); //customer면 counselor의 가장 위 메세지 아이디를 가져오는거
+        Long chatMessageId = (chatMessage != null) ? chatMessage.getMessageId() : 0L;
+        if (isCustomer) {
+            chat.updateCustomerReadId(chatMessageId);
+        } else {
+            chat.updateCounselorReadId(chatMessageId);
+        }
+    }
+
+    @Override
+    public void validateChatWithWebSocket(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer) {
         Long userId = (Long) sessionAttributes.get("userId");
         String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId;
 
@@ -72,6 +95,26 @@ public class ChatServiceImpl implements ChatService {
         if (chatRoomIds == null || !chatRoomIds.contains(chatId)) {
             throw new ChatException(ChatErrorCode.USER_NOT_IN_CHAT, chatId.toString());
         }
+    }
+
+    private Long getLatestMessageIdForChat(Chat chat) { //todo: ChatMessageService로 빼고싶었는데 순환참조 문제때문에 못뺌.. 구조 고민해보기
+        ChatMessage latestMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
+        return Optional.ofNullable(latestMessage).map(ChatMessage::getMessageId).orElse(0L);
+    }
+
+    @Override
+    public void validateChat(Chat chat, Boolean isCustomer, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+        chat.checkChatAuthority(chat, isCustomer, customer);
+    }
+
+    @Override
+    public Chat getAndValidateChat(Long chatId, Boolean isCustomer, Long customerId) {
+        Chat chat = getChatByChatId(chatId);
+        validateChat(chat, isCustomer, customerId);
+
+        return chat;
     }
 
     @Override
@@ -85,7 +128,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer) {
+    public List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer, Boolean filter,
+                                                               String chatSortType) {
+        ChatLetterSortType sortType = ChatLetterSortType.getSortTypeByName(chatSortType);
         List<Consult> consults;
 
         if (isCustomer) {
@@ -95,10 +140,80 @@ public class ChatServiceImpl implements ChatService {
             consults = consultService.getConsultsByCounselorIdAndConsultTypeAndIsPaid(counselor.getCounselorId(),
                     ConsultType.CHAT);
         }
+
+        if (consults == null) {
+            return null;
+        }
+
+        List<Chat> filterChats = getFilterChats(consults, filter);
+
+        List<Chat> finalChats = null;
+
+        switch (sortType) {
+            case LATEST: {
+                finalChats = sortChatsByLatestMessage(filterChats);
+                break;
+            }
+            case UNREAD: {
+                finalChats = sortChatsByUnread(filterChats, isCustomer);
+                break;
+            }
+        }
+        return finalChats.stream()
+                .map(chat -> createChatInfoGetResponse(chat, isCustomer))
+                .collect(Collectors.toList());
+    }
+
+    private List<Chat> sortChatsByLatestMessage(List<Chat> chats) {
+        Map<Chat, LocalDateTime> latestMessageTime = new HashMap<>();
+        for (Chat chat : chats) {
+            ChatMessage latestMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
+            latestMessageTime.put(chat, latestMessage != null ? latestMessage.getUpdatedAt() : LocalDateTime.MIN);
+        }
+
+        return chats.stream()
+                .sorted(Comparator.comparing((Chat chat) -> latestMessageTime.get(chat)).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private List<Chat> sortChatsByUnread(List<Chat> filterChats, Boolean isCustomer) {
+        Map<Chat, Long> latestMessageIds = filterChats.stream()
+                .collect(Collectors.toMap(chat -> chat, this::getLatestMessageIdForChat));
+        filterChats.sort((chat1, chat2) -> {
+            Long latestMessageId1 = latestMessageIds.get(chat1);
+            Long latestMessageId2 = latestMessageIds.get(chat2);
+            boolean isUnread1;
+            boolean isUnread2;
+
+            if (isCustomer) {
+                isUnread1 = chat1.getCustomerReadId() < latestMessageId1;
+                isUnread2 = chat2.getCustomerReadId() < latestMessageId2;
+            } else {
+                isUnread1 = chat1.getCounselorReadId() < latestMessageId1;
+                isUnread2 = chat2.getCounselorReadId() < latestMessageId2;
+            }
+            if (isUnread1 && !isUnread2) {
+                return -1;
+            }
+            if (!isUnread1 && isUnread2) {
+                return 1;
+            }
+            return latestMessageId2.compareTo(latestMessageId1);
+        });
+        return filterChats;
+    }
+
+    private List<Chat> getFilterChats(List<Consult> consults, Boolean filter) {
+        if (filter) {
+            return consults.stream()
+                    .map(Consult::getChat)
+                    .filter(chat -> (chat.getChatStatus() != ChatStatus.FINISH) && (chat.getChatStatus()
+                            != ChatStatus.CANCEL))
+                    .collect(Collectors.toList());
+        }
         return consults.stream()
-                .filter(consult -> consult.getChat() != null)
-                .map(consult -> createChatInfoGetResponse(consult, isCustomer))
-                .toList();
+                .map(Consult::getChat)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -118,7 +233,7 @@ public class ChatServiceImpl implements ChatService {
         validateChatStatusRequest(chat, chatStatusUpdateRequest, isCustomer);
 
         handleStatusRequest(chat, chatStatusUpdateRequest);
-        
+
         return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
     }
 
@@ -144,7 +259,6 @@ public class ChatServiceImpl implements ChatService {
 
             case CUSTOMER_CHAT_START_RESPONSE: {
                 chat.updateChatStatus(ChatStatus.ONGOING);
-                chat.updateStartedAt();
 
                 chatTaskScheduler.checkChatDuration(chat);
 
@@ -202,9 +316,9 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private ChatLetterGetResponse createChatInfoGetResponse(Consult consult, Boolean isCustomer) {
+    private ChatLetterGetResponse createChatInfoGetResponse(Chat chat, Boolean isCustomer) {
 
-        Chat chat = consult.getChat();
+        Consult consult = chat.getConsult();
 
         String nickname = isCustomer ? consult.getCounselor().getNickname() : consult.getCustomer().getNickname();
 
@@ -229,7 +343,7 @@ public class ChatServiceImpl implements ChatService {
         if (customerChatIds != null) {
             customerChatIds.add(chat.getChatId()); //todo: 혹시나 모르니 이미 레디스에 해당 방이 있는 상황 검토..
             redisTemplate.opsForValue().set(customerKey, customerChatIds);
-            log.info("Updated chat IDs for user {} in Redis: {}", customerKey, customerChatIds); //todo: 테스트 후 삭제
+            log.info("Updated chat IDs for user {} in Redis: {}", customerKey, customerChatIds);
         }
     }
 
