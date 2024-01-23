@@ -269,7 +269,6 @@ public class ChatServiceImpl implements ChatService {
 
             case CUSTOMER_CHAT_START_RESPONSE: {
                 chat.updateChatStatus(ChatStatus.ONGOING);
-                chat.updateStartedAt();
 
                 chatTaskScheduler.checkChatDuration(chat);
 
