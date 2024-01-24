@@ -200,7 +200,7 @@ public class CounselorController {
             )
     })
     @Parameter(name = "sortType", description = "LATEST: 최근순, POPULARITY: 인기순, STAR_RATING: 별점 평균 순")
-    @GetMapping()
+    @PatchMapping()
     public ResponseEntity<List<CounselorGetListResponse>> getCounselorsByCategory(
             @Valid @RequestBody CounselorGetRequest counselorGetRequest,
             @RequestParam String sortType,
