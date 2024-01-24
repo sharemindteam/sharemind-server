@@ -68,6 +68,13 @@ public class LetterServiceImpl implements LetterService {
     }
 
     @Override
+    public String getCustomerCategory(Long letterId) {
+        Letter letter = getLetterByLetterId(letterId);
+
+        return letter.getConsultCategory().getDisplayName();
+    }
+
+    @Override
     public LetterGetNicknameCategoryResponse getCustomerNicknameAndCategory(Long letterId) {
         Letter letter = getLetterByLetterId(letterId);
 
