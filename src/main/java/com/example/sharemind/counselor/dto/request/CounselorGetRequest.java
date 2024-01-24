@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class CounselorGetRequest {
 
-    @Schema(description = "상담 카테고리", example = "연애갈등")
+    @Schema(description = "상담 카테고리", example = "DATING")
     private String consultCategory;
 
     @Schema(description = "페이지 번호 index 0이면 0~3번째 값 반환, 1이면 4~7번째 값 반환", example = "0")
