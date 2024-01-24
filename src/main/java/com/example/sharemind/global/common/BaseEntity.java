@@ -24,4 +24,12 @@ public abstract class BaseEntity {
 
     @Column(name = "is_activated")
     private boolean isActivated = true;
+
+    public void updateIsActivatedTrue() {
+        this.isActivated = true;
+    }
+
+    public void updateIsActivatedFalse() {
+        this.isActivated = false;
+    }
 }
