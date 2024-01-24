@@ -3,9 +3,11 @@ package com.example.sharemind.counselor.presentation;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
@@ -19,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -135,8 +138,7 @@ public class CounselorController {
     }
 
     @Operation(summary = "구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것",
-            description = "- 구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것\n " +
-                    "- 주소 형식: /api/v1/counselors/consults/{chatId}?isCustomer=true")
+            description = "- 주소 형식: /api/v1/counselors/consults/{chatId}?isCustomer=true")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 chat 2. 채팅방에 해당 유저가 없을 때"
@@ -180,5 +182,14 @@ public class CounselorController {
     public ResponseEntity<CounselorGetForConsultResponse> getCounselorForConsultCreation(@PathVariable Long counselorId,
                                                                                          @RequestParam String consultType) {
         return ResponseEntity.ok(counselorService.getCounselorForConsultCreation(counselorId, consultType));
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<CounselorGetListResponse>> getCounselorsByCategory(
+            @Valid @RequestBody CounselorGetRequest counselorGetRequest,
+            @RequestParam String sortType,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(counselorService.getCounselorsByCategory(customUserDetails.getCustomer()
+                .getCustomerId(), sortType, counselorGetRequest));
     }
 }
