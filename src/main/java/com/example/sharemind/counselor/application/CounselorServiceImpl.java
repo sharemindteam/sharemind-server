@@ -167,15 +167,15 @@ public class CounselorServiceImpl implements CounselorService {
 
     private List<Counselor> getCounselorByCategoryWithPagination(CounselorGetRequest counselorGetRequest,
                                                                  String sortType) {
-        ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
-                counselorGetRequest.getConsultCategory());
         String sortColumn = getCounselorSortColumn(sortType);
-
         Pageable pageable = PageRequest.of(counselorGetRequest.getIndex(), COUNSELOR_PAGE,
                 Sort.by(sortColumn).descending());
         if (counselorGetRequest.getConsultCategory() == null) {
             return counselorRepository.findByLevelAndStatus(pageable).getContent();
         }
+
+        ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
+                counselorGetRequest.getConsultCategory());
         return counselorRepository.findByConsultCategoryAndLevelAndStatus(consultCategory, pageable).getContent();
     }
 
