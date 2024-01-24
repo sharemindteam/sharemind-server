@@ -1,7 +1,7 @@
-package com.example.sharemind.wishlist.application;
+package com.example.sharemind.wishList.application;
 
 import com.example.sharemind.customer.domain.Customer;
-import com.example.sharemind.wishlist.domain.WishList;
+import com.example.sharemind.wishList.domain.WishList;
 import java.util.List;
 import java.util.Set;
 

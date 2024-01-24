@@ -1,4 +1,4 @@
-package com.example.sharemind.wishlist.domain;
+package com.example.sharemind.wishList.domain;
 
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.common.BaseEntity;

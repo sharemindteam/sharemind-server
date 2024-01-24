@@ -9,7 +9,7 @@ import com.example.sharemind.searchWord.domain.SearchWord;
 import com.example.sharemind.searchWord.dto.request.SearchWordDeleteRequest;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import com.example.sharemind.searchWord.repository.SearchWordRepository;
-import com.example.sharemind.wishlist.application.WishListService;
+import com.example.sharemind.wishList.application.WishListService;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
