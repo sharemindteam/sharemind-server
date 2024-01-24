@@ -5,6 +5,7 @@ import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
+import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
@@ -38,6 +39,7 @@ public class LetterServiceImpl implements LetterService {
     private static final Boolean IS_COMPLETED = true;
     private static final Integer FINISH_AT_FIRST_MESSAGES = 2;
 
+    private final CustomerService customerService;
     private final ConsultService consultService;
     private final LetterRepository letterRepository;
     private final LetterMessageRepository letterMessageRepository;
@@ -80,7 +82,8 @@ public class LetterServiceImpl implements LetterService {
     }
 
     @Override
-    public List<ChatLetterGetResponse> getLetters(Boolean filter, Boolean isCustomer, String letterSortType, Customer customer) {
+    public List<ChatLetterGetResponse> getLetters(Boolean filter, Boolean isCustomer, String letterSortType, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
         ChatLetterSortType sortType = ChatLetterSortType.getSortTypeByName(letterSortType);
 
         List<Consult> consults;
