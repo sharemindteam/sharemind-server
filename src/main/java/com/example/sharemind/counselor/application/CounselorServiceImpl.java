@@ -11,6 +11,7 @@ import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
@@ -21,6 +22,7 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
+import com.example.sharemind.wishlist.application.WishListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +43,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     private final CounselorRepository counselorRepository;
     private final CustomerService customerService;
+    private final WishListService wishListService;
 
     @Override
     public Counselor getCounselorByCounselorId(Long counselorId) {
@@ -185,6 +188,20 @@ public class CounselorServiceImpl implements CounselorService {
         Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordFindRequest.getWord(),
                 pageable);
         return page.getContent();
+    }
+
+    @Override
+    public List<CounselorGetListResponse> getCounselorsByCategory(Long customerId, String sortType,
+                                                                  CounselorGetRequest counselorGetRequest) {
+        List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest, sortType);
+
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
+
+        return counselors.stream()
+                .map(counselor -> CounselorGetListResponse.of(counselor,
+                        wishListCounselorIds.contains(counselor.getCounselorId())))
+                .toList();
     }
 
     private String getCounselorSortColumn(String sortType) {
