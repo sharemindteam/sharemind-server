@@ -54,6 +54,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
                                 .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html",
                                         "/counselor.html").permitAll()
+                                .requestMatchers("/api/v1/chats/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/chatMessages/counselors/**").hasRole(ROLE_COUNSELOR)
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer
