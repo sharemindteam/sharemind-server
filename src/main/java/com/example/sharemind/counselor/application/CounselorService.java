@@ -35,4 +35,4 @@ public interface CounselorService {
     CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId, String consultType);
 
     CounselorGetBannerResponse getCounselorChatBanner(Chat chat);
-}
+ }

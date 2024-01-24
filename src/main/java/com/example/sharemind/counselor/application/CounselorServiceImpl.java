@@ -7,6 +7,7 @@ import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
@@ -159,6 +160,20 @@ public class CounselorServiceImpl implements CounselorService {
     @Override
     public List<Counselor> getEvaluationPendingConsults() {
         return counselorRepository.findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
+    }
+
+    private List<Counselor> getCounselorByCategoryWithPagination(CounselorGetRequest counselorGetRequest,
+                                                                 String sortType) {
+        ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
+                counselorGetRequest.getConsultCategory());
+        String sortColumn = getCounselorSortColumn(sortType);
+
+        Pageable pageable = PageRequest.of(counselorGetRequest.getIndex(), COUNSELOR_PAGE,
+                Sort.by(sortColumn).descending());
+        if (counselorGetRequest.getConsultCategory() == null) {
+            return counselorRepository.findByLevelAndStatus(pageable).getContent();
+        }
+        return counselorRepository.findByConsultCategoryAndLevelAndStatus(consultCategory, pageable).getContent();
     }
 
     @Override
