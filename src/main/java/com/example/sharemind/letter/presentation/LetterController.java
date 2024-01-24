@@ -43,12 +43,28 @@ public class LetterController {
     @Parameters({
             @Parameter(name = "letterId", description = "편지 아이디")
     })
-    @GetMapping("/categories/{letterId}")
+    @GetMapping("/counselor-categories/{letterId}")
     public ResponseEntity<LetterGetCounselorCategoriesResponse> getCounselorCategories(@PathVariable Long letterId) {
         return ResponseEntity.ok(letterService.getCounselorCategories(letterId));
     }
 
-    @Operation(summary = "구매자 닉네임, 상담 카테고리 조회", description = "판매자 답장 시 상단에 뜨는 구매자 닉네임, 상담 카테고리 조회")
+    @Operation(summary = "구매자 임시저장 카테고리 조회", description = "구매자가 첫번째 질문 임시저장 시 선택한 카테고리 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 편지 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "letterId", description = "편지 아이디")
+    })
+    @GetMapping("/customer-category/{letterId}")
+    public ResponseEntity<String> getCustomerCategory(@PathVariable Long letterId) {
+        return ResponseEntity.ok(letterService.getCustomerCategory(letterId));
+    }
+
+    @Operation(summary = "판매자 답장 페이지 구매자 닉네임, 상담 카테고리 조회", description = "판매자 답장 시 상단에 뜨는 구매자 닉네임, 상담 카테고리 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "403", description = "판매 정보 등록되지 않은 상담사",
