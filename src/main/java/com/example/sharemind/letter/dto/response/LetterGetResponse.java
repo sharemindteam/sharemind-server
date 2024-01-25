@@ -1,7 +1,7 @@
 package com.example.sharemind.letter.dto.response;
 
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
-import com.example.sharemind.global.utils.TimeUtil;
+import com.example.sharemind.global.utils.*;
 import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
@@ -47,7 +47,8 @@ public class LetterGetResponse {
         }
 
         Boolean reviewCompleted = null;
-        if (letter.getLetterStatus().equals(LetterStatus.FINISH)) {
+        if (letter.getLetterStatus().equals(LetterStatus.FIRST_FINISH) ||
+                letter.getLetterStatus().equals(LetterStatus.SECOND_FINISH)) {
             reviewCompleted = letter.getConsult().getReview().getIsCompleted();
         }
 

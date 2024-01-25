@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LetterServiceImpl implements LetterService {
     private static final Boolean IS_COMPLETED = true;
-    private static final Integer FINISH_AT_FIRST_MESSAGES = 2;
 
     private final CustomerService customerService;
     private final ConsultService consultService;
@@ -100,7 +99,7 @@ public class LetterServiceImpl implements LetterService {
         } else {
             Counselor counselor = customer.getCounselor();
             if (counselor == null) {
-                throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND, null);
+                throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND);
             }
 
             consults = consultService.getConsultsByCounselorIdAndConsultTypeAndIsPaid(
@@ -111,7 +110,10 @@ public class LetterServiceImpl implements LetterService {
         if (filter) {
             letters = consults.stream()
                     .map(Consult::getLetter)
-                    .filter(letter -> (letter.getLetterStatus() != LetterStatus.FINISH) && (letter.getLetterStatus() != LetterStatus.CANCEL))
+                    .filter(letter -> (letter.getLetterStatus() != LetterStatus.FIRST_FINISH) &&
+                            (letter.getLetterStatus() != LetterStatus.SECOND_FINISH) &&
+                            (letter.getLetterStatus() != LetterStatus.COUNSELOR_CANCEL) &&
+                            (letter.getLetterStatus() != LetterStatus.CUSTOMER_CANCEL))
                     .collect(Collectors.toList());
         } else {
             letters = consults.stream()
@@ -158,43 +160,52 @@ public class LetterServiceImpl implements LetterService {
         Boolean readAllLetter = null;
 
         switch (letter.getLetterStatus()) {
-            case WAITING, CANCEL -> readAllLetter = true;
+            case WAITING -> readAllLetter = true;
             case FIRST_ASKING, SECOND_ASKING -> {
                 if (isCustomer) {
                     readAllLetter = true;
                 } else {
                     LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByStatus(letter.getLetterStatus());
-                    LetterMessage recentMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(letter, messageType, IS_COMPLETED)
-                            .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
+                    LetterMessage recentMessage = getRecentMessageWithMessageType(letter, messageType);
 
                     readAllLetter = recentMessage.getMessageId().equals(letter.getCounselorReadId());
                 }
             }
-            case FIRST_ANSWER -> {
+            case FIRST_ANSWER, SECOND_FINISH -> {
                 if (isCustomer) {
                     LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByStatus(letter.getLetterStatus());
-                    LetterMessage recentMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(letter, messageType, IS_COMPLETED)
-                            .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
+                    LetterMessage recentMessage = getRecentMessageWithMessageType(letter, messageType);
 
                     readAllLetter = recentMessage.getMessageId().equals(letter.getCustomerReadId());
                 } else {
                     readAllLetter = true;
                 }
             }
-            case FINISH -> {
+            case FIRST_FINISH -> {
                 if (isCustomer) {
-                    LetterMessage recentMessage;
-                    if (letterMessageRepository.countByLetterAndIsCompletedIsTrueAndIsActivatedIsTrue(letter).equals(FINISH_AT_FIRST_MESSAGES)) {
-                        recentMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(letter, LetterMessageType.FIRST_REPLY, IS_COMPLETED)
-                                .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
-                    } else {
-                        recentMessage = letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(letter, LetterMessageType.SECOND_REPLY, IS_COMPLETED)
-                                .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
-                    }
+                    LetterMessageType messageType = LetterMessageType.FIRST_REPLY;
+                    LetterMessage recentMessage = getRecentMessageWithMessageType(letter, messageType);
 
                     readAllLetter = recentMessage.getMessageId().equals(letter.getCustomerReadId());
                 } else {
                     readAllLetter = true;
+                }
+            }
+            case COUNSELOR_CANCEL -> {
+                if (isCustomer) {
+                    readAllLetter = true;
+                } else {
+                    LetterMessage recentMessage = getRecentMessage(letter);
+
+                    readAllLetter = (recentMessage == null) || recentMessage.getMessageId().equals(letter.getCounselorReadId());
+                }
+            }
+            case CUSTOMER_CANCEL -> {
+                LetterMessage recentMessage = getRecentMessage(letter);
+                if (isCustomer) {
+                    readAllLetter = (recentMessage == null) || recentMessage.getMessageId().equals(letter.getCustomerReadId());
+                } else {
+                    readAllLetter = (recentMessage == null) || recentMessage.getMessageId().equals(letter.getCounselorReadId());
                 }
             }
         }
@@ -214,7 +225,11 @@ public class LetterServiceImpl implements LetterService {
             case 4 -> recentType = LetterMessageType.SECOND_REPLY;
         }
 
-        return letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(letter, recentType, IS_COMPLETED)
+        return getRecentMessageWithMessageType(letter, recentType);
+    }
+
+    private LetterMessage getRecentMessageWithMessageType(Letter letter, LetterMessageType messageType) {
+        return letterMessageRepository.findByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(letter, messageType, IS_COMPLETED)
                 .orElseThrow(() -> new LetterMessageException(LetterMessageErrorCode.LETTER_MESSAGE_NOT_FOUND));
     }
 }
