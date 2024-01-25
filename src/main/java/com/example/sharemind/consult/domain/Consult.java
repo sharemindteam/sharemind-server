@@ -49,19 +49,19 @@ public class Consult extends BaseEntity {
     @Column(name = "consulted_at")
     private LocalDateTime consultedAt;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "review_id", unique = true)
     private Review review;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "letter_id", unique = true)
     private Letter letter;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id", unique = true)
     private Chat chat;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "payment_id", unique = true)
     private Payment payment;
 
@@ -87,8 +87,8 @@ public class Consult extends BaseEntity {
         this.counselor.increaseTotalConsult();
     }
 
-    public void updateConsultStatusCancel() {
-        this.consultStatus = ConsultStatus.CANCEL;
+    public void updateConsultStatusCounselorCancel() {
+        this.consultStatus = ConsultStatus.COUNSELOR_CANCEL;
 
         this.payment.updatePaymentCustomerStatus(PaymentCustomerStatus.REFUND_WAITING);
     }

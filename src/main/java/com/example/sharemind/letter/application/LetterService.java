@@ -14,6 +14,7 @@ public interface LetterService {
     Letter getLetterByLetterId(Long letterId);
 
     LetterGetCounselorCategoriesResponse getCounselorCategories(Long letterId);
+
     String getCustomerCategory(Long letterId);
 
     LetterGetNicknameCategoryResponse getCustomerNicknameAndCategory(Long letterId);
