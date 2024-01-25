@@ -7,4 +7,6 @@ public interface CustomerService {
     Customer getCustomerByCustomerId(Long customerId);
 
     Customer getCustomerByCounselor(Counselor counselor);
+
+    String getCustomerNickname(Long customerId);
 }
