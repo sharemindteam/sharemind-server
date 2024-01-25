@@ -71,11 +71,21 @@ public class Letter extends BaseEntity {
                 updateCounselorReadId(messageId);
                 updateDeadline();
             }
-            case FINISH -> {
+            case SECOND_FINISH -> {
                 updateCounselorReadId(messageId);
                 this.consult.updateConsultStatusFinish();
             }
         }
+    }
+
+    public void updateLetterStatusFirstFinish() {
+        this.letterStatus = LetterStatus.FIRST_FINISH;
+        this.consult.updateConsultStatusFinish();
+    }
+
+    public void updateLetterStatusCounselorCancel() {
+        this.letterStatus = LetterStatus.COUNSELOR_CANCEL;
+        this.consult.updateConsultStatusCounselorCancel();
     }
 
     public void updateConsultCategory(ConsultCategory category) {
