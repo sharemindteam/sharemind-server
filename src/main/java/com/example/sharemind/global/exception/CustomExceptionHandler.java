@@ -9,6 +9,7 @@ import com.example.sharemind.email.exception.EmailException;
 import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
 import com.example.sharemind.review.exception.ReviewException;
+import com.example.sharemind.wishList.exception.WishListException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ConsultException.class)
     public ResponseEntity<CustomExceptionResponse> catchConsultException(ConsultException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(WishListException.class)
+    public ResponseEntity<CustomExceptionResponse> catchWishListException(WishListException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
