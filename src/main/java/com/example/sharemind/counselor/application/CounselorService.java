@@ -7,6 +7,7 @@ import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest
 import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetWishListResponse;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
@@ -40,4 +41,6 @@ public interface CounselorService {
 
     List<CounselorGetListResponse> getCounselorsByCategory(Long customerId, String sortType,
                                                            CounselorGetRequest counselorGetRequest);
+
+    List<CounselorGetWishListResponse> getCounselorWishListByCustomer(Long wishlistId, Long customerId);
 }

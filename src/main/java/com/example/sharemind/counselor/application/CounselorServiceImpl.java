@@ -14,6 +14,7 @@ import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetWishListResponse;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
@@ -23,6 +24,7 @@ import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import com.example.sharemind.wishList.application.WishListCounselorService;
+import com.example.sharemind.wishList.domain.WishList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -241,5 +243,13 @@ public class CounselorServiceImpl implements CounselorService {
     public CounselorGetBannerResponse getCounselorChatBanner(Chat chat) {
         Counselor counselor = getCounselorByCounselorId(chat.getConsult().getCounselor().getCounselorId());
         return CounselorGetBannerResponse.of(counselor);
+    }
+
+    @Override
+    public List<CounselorGetWishListResponse> getCounselorWishListByCustomer(Long wishlistId, Long customerId) {
+        List<WishList> wishLists = wishListCounselorService.getWishList(wishlistId, customerId);
+        return wishLists.stream()
+                .map(CounselorGetWishListResponse::of)
+                .toList();
     }
 }
