@@ -158,7 +158,7 @@ public class LetterServiceImpl implements LetterService {
                 .toList();
     }
 
-//    @Scheduled(cron = "0 0 0/1 * * *", zone = "Asia/Seoul") TODO 나중에 주석 해제... 아마 데모데이 전에?
+    @Scheduled(cron = "0 0 0/1 * * *", zone = "Asia/Seoul")
     @Transactional
     public void checkLettersDeadline() {
         letterRepository.findAll().stream()
