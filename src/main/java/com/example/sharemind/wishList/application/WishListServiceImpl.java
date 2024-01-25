@@ -1,7 +1,10 @@
 package com.example.sharemind.wishList.application;
 
 import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.counselor.exception.CounselorErrorCode;
+import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.wishList.domain.WishList;
@@ -26,7 +29,9 @@ public class WishListServiceImpl implements WishListService {
     public void addWishListByCustomer(Long customerId, Long counselorId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
-
+        if (counselor.getProfileStatus() != ProfileStatus.EVALUATION_COMPLETE) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_COMPLETE_EVALUATION, counselorId.toString());
+        }
         WishList wishList = wishListRepository.findByCustomerAndCounselor(customer, counselor);
         if (wishList == null) {
             wishListRepository.save(WishList.builder().customer(customer).counselor(counselor).build());

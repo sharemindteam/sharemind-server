@@ -26,14 +26,14 @@ public class WishListCounselorService {
     private final WishListRepository wishListRepository;
 
     public Set<Long> getWishListCounselorIds(Customer customer) {
-        List<WishList> wishLists = getWishList(customer);
+        List<WishList> wishLists = getWishListByCustomer(customer);
 
         return wishLists.stream()
                 .map(wishList -> wishList.getCounselor().getCounselorId())
                 .collect(Collectors.toSet());
     }
 
-    private List<WishList> getWishList(Customer customer) {
+    private List<WishList> getWishListByCustomer(Customer customer) {
         return wishListRepository.findByCustomerAndIsActivatedIsTrue(customer);
     }
 
