@@ -84,7 +84,7 @@ public class ChatController {
             @Parameter(name = "chatId", description = "채팅방 id"),
             @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
     })
-    @GetMapping("/counselors/{chatId}")
+    @PatchMapping("/counselors/{chatId}")
     public ResponseEntity<Void> updateCounselorReadId(@PathVariable Long chatId,
                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         chatService.updateReadId(chatId, customUserDetails.getCustomer().getCustomerId(), false);
@@ -101,7 +101,7 @@ public class ChatController {
             @Parameter(name = "chatId", description = "채팅방 id"),
             @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
     })
-    @GetMapping("/{chatId}")
+    @PatchMapping("/{chatId}")
     public ResponseEntity<Void> updateCustomerReadId(@PathVariable Long chatId,
                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         chatService.updateReadId(chatId, customUserDetails.getCustomer().getCustomerId(), true);
