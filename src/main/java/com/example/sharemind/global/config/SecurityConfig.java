@@ -50,10 +50,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**",
                                         "/api/v1/auth/**", "/api/v1/emails/**").permitAll()
-                                .requestMatchers("/api/v1/reviews/counselors**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/letters/counselors/**", "/api/v1/reviews/counselors**").hasRole(ROLE_COUNSELOR)
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
                                 .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html",
                                         "/counselor.html").permitAll()
+                                .requestMatchers("/api/v1/chats/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/chatMessages/counselors/**").hasRole(ROLE_COUNSELOR)
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer

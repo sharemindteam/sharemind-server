@@ -43,7 +43,7 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @Operation(summary = "채팅 메세지 조회", description = "채팅방에 해당하는 채팅메세지 리턴해주는 함수"
+    @Operation(summary = "상담사의 채팅 메세지 조회", description = "채팅방에 해당하는 채팅메세지 리턴해주는 함수"
             + "- 주소 형식 : /api/v1/chatMessages/{chatId}?isCustomer=true&messageId=0"
             + "해당하는 메세지가 없을 경우 빈배열 리턴")
     @ApiResponses({
@@ -54,19 +54,41 @@ public class ChatMessageController {
             )
     })
     @Parameters({
-            @Parameter(name = "isCustomer", description = "구매자이면 true"),
             @Parameter(name = "messageId", description = """
                     1. messageId를 기준으로 그보다 index가 작은 것에서 11개 리턴
                     2. 처음 요청을 할 때, 즉 messageId를 모를 때는 0으로 요청부탁드립니다.""")
     })
-    @GetMapping("/{chatId}")
-    public ResponseEntity<List<ChatMessageGetResponse>> getChatMessage(@PathVariable Long chatId,
-                                                                       @RequestParam Long messageId,
-                                                                       @RequestParam Boolean isCustomer,
-                                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    @GetMapping("/counselors/{chatId}")
+    public ResponseEntity<List<ChatMessageGetResponse>> getCounselorChatMessage(@PathVariable Long chatId,
+                                                                                @RequestParam Long messageId,
+                                                                                @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(
                 chatMessageService.getChatMessage(chatId, messageId, customUserDetails.getCustomer().getCustomerId(),
-                        isCustomer));
+                        false));
+    }
+
+    @Operation(summary = "구매자 채팅 메세지 조회", description = "채팅방에 해당하는 채팅메세지 리턴해주는 함수"
+            + "- 주소 형식 : /api/v1/chatMessages/{chatId}?isCustomer=true&messageId=0"
+            + "해당하는 메세지가 없을 경우 빈배열 리턴")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 채팅 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "messageId", description = """
+                    1. messageId를 기준으로 그보다 index가 작은 것에서 11개 리턴
+                    2. 처음 요청을 할 때, 즉 messageId를 모를 때는 0으로 요청부탁드립니다.""")
+    })
+    @GetMapping("/customers/{chatId}")
+    public ResponseEntity<List<ChatMessageGetResponse>> getCustomerChatMessage(@PathVariable Long chatId,
+                                                                               @RequestParam Long messageId,
+                                                                               @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                chatMessageService.getChatMessage(chatId, messageId, customUserDetails.getCustomer().getCustomerId(),
+                        true));
     }
 
     @MessageMapping("/api/v1/chatMessages/customers/{chatId}")
