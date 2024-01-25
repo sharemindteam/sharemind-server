@@ -40,7 +40,7 @@ public class WishListServiceImpl implements WishListService {
 
     @Transactional
     @Override
-    public void updateWishListByCustomer(Long customerId, Long counselorId) {
+    public void addWishListByCustomer(Long customerId, Long counselorId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
 
@@ -50,7 +50,20 @@ public class WishListServiceImpl implements WishListService {
         } else if (!wishList.isActivated()) {
             wishList.updateIsActivatedTrue();
         } else {
-            throw new WishListException(WishListErrorCode.WISH_LIST_ALREADY_EXIST, customerId.toString());
+            throw new WishListException(WishListErrorCode.WISH_LIST_ALREADY_EXIST, counselorId.toString());
         }
+    }
+
+    @Transactional
+    @Override
+    public void removeWishListByCustomer(Long customerId, Long counselorId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
+
+        WishList wishList = wishListRepository.findByCustomerAndCounselor(customer, counselor);
+        if (wishList == null || !wishList.isActivated()) {
+            throw new WishListException(WishListErrorCode.WISH_LIST_NOT_EXIST, counselorId.toString());
+        }
+        wishList.updateIsActivatedFalse();
     }
 }

@@ -10,5 +10,7 @@ public interface WishListService {
 
     Set<Long> getWishListCounselorIds(Customer customer);
 
-    void updateWishListByCustomer(Long customerId, Long counselorId);
+    void addWishListByCustomer(Long customerId, Long counselorId);
+
+    void removeWishListByCustomer(Long customerId, Long counselorId);
 }
