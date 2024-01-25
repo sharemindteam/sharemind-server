@@ -28,4 +28,9 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findByCounselorAndIsActivatedIsTrue(counselor)
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND));
     }
+
+    @Override
+    public String getCustomerNickname(Long customerId) {
+        return getCustomerByCustomerId(customerId).getNickname();
+    }
 }
