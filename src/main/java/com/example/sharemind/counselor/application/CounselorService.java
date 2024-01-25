@@ -4,12 +4,8 @@ import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
-import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
+import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
-import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 
 import java.util.List;
 
@@ -40,4 +36,6 @@ public interface CounselorService {
 
     List<CounselorGetListResponse> getCounselorsByCategory(Long customerId, String sortType,
                                                            CounselorGetRequest counselorGetRequest);
+
+    CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId);
 }
