@@ -25,9 +25,11 @@ import com.example.sharemind.letterMessage.exception.LetterMessageErrorCode;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
 import com.example.sharemind.letterMessage.repository.LetterMessageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -154,6 +156,23 @@ public class LetterServiceImpl implements LetterService {
         return letters.stream()
                 .map(letter -> LetterGetResponse.of(letter, getRecentMessage(letter), isCustomer))
                 .toList();
+    }
+
+//    @Scheduled(cron = "0 0 0/1 * * *", zone = "Asia/Seoul") TODO 나중에 주석 해제... 아마 데모데이 전에?
+    @Transactional
+    public void checkLettersDeadLine() {
+        letterRepository.findAll().stream()
+                .filter(letter -> ((letter.getLetterStatus() == LetterStatus.FIRST_ASKING) ||
+                        (letter.getLetterStatus() == LetterStatus.FIRST_ANSWER) ||
+                        (letter.getLetterStatus() == LetterStatus.SECOND_ASKING))
+                        && letter.getDeadline().isBefore(LocalDateTime.now()) && letter.isActivated())
+                .forEach(letter -> {
+                    if (letter.getLetterStatus() == LetterStatus.FIRST_ANSWER) {
+                        letter.updateLetterStatusFirstFinish();
+                    } else {
+                        letter.updateLetterStatusCounselorCancel();
+                    }
+                });
     }
 
     private Boolean checkLetterReadAll(Letter letter, Boolean isCustomer) {
