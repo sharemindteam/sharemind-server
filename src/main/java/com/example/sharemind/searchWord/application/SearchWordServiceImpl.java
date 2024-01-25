@@ -42,7 +42,7 @@ public class SearchWordServiceImpl implements SearchWordService {
         List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordFindRequest, sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
+        Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIds(customer);
 
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,

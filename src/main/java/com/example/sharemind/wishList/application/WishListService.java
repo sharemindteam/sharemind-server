@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface WishListService {
-    List<WishList> getWishListByCustomer(Customer customer);
+    List<WishList> getWishList(Customer customer);
 
-    Set<Long> getWishListCounselorIdsByCustomer(Customer customer);
+    Set<Long> getWishListCounselorIds(Customer customer);
 }
