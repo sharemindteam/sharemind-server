@@ -23,4 +23,10 @@ public class WishList extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "counselor_id")
     private Counselor counselor;
+
+    @Builder
+    public WishList(Customer customer, Counselor counselor) {
+        this.customer = customer;
+        this.counselor = counselor;
+    }
 }
