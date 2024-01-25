@@ -5,11 +5,7 @@ import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
-import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
+import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -210,5 +206,22 @@ public class CounselorController {
         }
         return ResponseEntity.ok(counselorService.getCounselorsByCategory(customUserDetails.getCustomer()
                 .getCustomerId(), sortType, counselorGetRequest));
+    }
+
+    @Operation(summary = "구매자 페이지에서 마인더 프로필 조회",
+            description = "구매자 페이지에서 필요한 마인더 프로필 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사 아이디",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "counselorId", description = "상담사 아이디")
+    })
+    @GetMapping("/{counselorId}")
+    public ResponseEntity<CounselorGetMinderProfileResponse> getCounselorMinderProfile(@PathVariable Long counselorId) {
+        return ResponseEntity.ok(counselorService.getCounselorMinderProfile(counselorId));
     }
 }
