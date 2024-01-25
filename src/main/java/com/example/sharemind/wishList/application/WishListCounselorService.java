@@ -40,10 +40,14 @@ public class WishListCounselorService {
     public List<WishList> getWishList(Long wishlistId, Long customerId) {
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, WISHLIST_PAGE);
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Page<WishList> page = wishListRepository.findByCustomerAndWishlistIdLessThanAndIsActivatedIsTrueOrderByUpdatedAtDesc(
-                customer,
-                wishlistId,
-                pageable);
+
+        Page<WishList> page =
+                (wishlistId == 0) ? wishListRepository.findByCustomerAndIsActivatedIsTrueOrderByUpdatedAtDesc(customer,
+                        pageable) :
+                        wishListRepository.findByCustomerAndWishlistIdLessThanAndIsActivatedIsTrueOrderByUpdatedAtDesc(
+                                customer,
+                                wishlistId,
+                                pageable);
         return page.getContent();
     }
 }

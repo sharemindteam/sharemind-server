@@ -18,4 +18,6 @@ public interface WishListRepository extends JpaRepository<WishList, Long> {
     Page<WishList> findByCustomerAndWishlistIdLessThanAndIsActivatedIsTrueOrderByUpdatedAtDesc(Customer customer,
                                                                                                Long wishlistId,
                                                                                                Pageable pageable);
+
+    Page<WishList> findByCustomerAndIsActivatedIsTrueOrderByUpdatedAtDesc(Customer customer, Pageable pageable);
 }
