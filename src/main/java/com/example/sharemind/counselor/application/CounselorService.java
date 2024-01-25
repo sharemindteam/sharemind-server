@@ -4,13 +4,8 @@ import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
-import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetWishListResponse;
+import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
-import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 
 import java.util.List;
 
@@ -43,4 +38,6 @@ public interface CounselorService {
                                                            CounselorGetRequest counselorGetRequest);
 
     List<CounselorGetWishListResponse> getCounselorWishListByCustomer(Long wishlistId, Long customerId);
+
+    CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId);
 }

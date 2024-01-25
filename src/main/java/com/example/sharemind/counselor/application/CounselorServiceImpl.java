@@ -9,12 +9,7 @@ import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
-import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
-import com.example.sharemind.counselor.dto.response.CounselorGetWishListResponse;
+import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
@@ -204,6 +199,13 @@ public class CounselorServiceImpl implements CounselorService {
                 .map(counselor -> CounselorGetListResponse.of(counselor,
                         wishListCounselorIds.contains(counselor.getCounselorId())))
                 .toList();
+    }
+
+    @Override
+    public CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId) {
+        Counselor counselor = getCounselorByCounselorId(counselorId);
+
+        return CounselorGetMinderProfileResponse.of(counselor);
     }
 
     private String getCounselorSortColumn(String sortType) {
