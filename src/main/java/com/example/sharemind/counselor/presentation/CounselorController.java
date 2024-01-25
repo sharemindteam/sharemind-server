@@ -3,9 +3,11 @@ package com.example.sharemind.counselor.presentation;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.CounselorGetForConsultResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetInfoResponse;
+import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetBannerResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
@@ -19,6 +21,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -135,8 +139,7 @@ public class CounselorController {
     }
 
     @Operation(summary = "구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것",
-            description = "- 구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것\n " +
-                    "- 주소 형식: /api/v1/counselors/consults/{chatId}?isCustomer=true")
+            description = "- 주소 형식: /api/v1/counselors/consults/{chatId}?isCustomer=true")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 chat 2. 채팅방에 해당 유저가 없을 때"
@@ -180,5 +183,32 @@ public class CounselorController {
     public ResponseEntity<CounselorGetForConsultResponse> getCounselorForConsultCreation(@PathVariable Long counselorId,
                                                                                          @RequestParam String consultType) {
         return ResponseEntity.ok(counselorService.getCounselorForConsultCreation(counselorId, consultType));
+    }
+
+    @Operation(summary = "상담사 리스트 반환",
+            description = """
+                    - 카테고리 선택 || 들을 준비가 된 마인더들 페이지 상담사 리스트 반환
+                     - 주소 형식: /api/v1/counselors?sortType=POPULARITY
+                     - 결과는 4개씩 반환하며, index는 페이지 번호 입니다(ex index 0 : id 0~3에 해당하는 값 반환 index 1: 4~7에 해당하는 값 반환)
+                    - 해당하는 검색 결과가 없을 때(범위를 벗어난 인덱스 혹은 음수 인덱스)는 빈배열을 리턴합니다.
+                    - 들을 준비가 된 마인더들(상담사 전체 리스트)조회의 경우, RequestBody에서 consultCategory를 빼고 넘겨주시면 됩니다.""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "1. sortType이 잘못된 경우 2. RequestBody의 카테고리가 잘못도니 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameter(name = "sortType", description = "LATEST: 최근순, POPULARITY: 인기순, STAR_RATING: 별점 평균 순")
+    @PatchMapping()
+    public ResponseEntity<List<CounselorGetListResponse>> getCounselorsByCategory(
+            @Valid @RequestBody CounselorGetRequest counselorGetRequest,
+            @RequestParam String sortType,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (counselorGetRequest.getIndex() < 0) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        return ResponseEntity.ok(counselorService.getCounselorsByCategory(customUserDetails.getCustomer()
+                .getCustomerId(), sortType, counselorGetRequest));
     }
 }
