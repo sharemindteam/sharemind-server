@@ -160,7 +160,7 @@ public class LetterServiceImpl implements LetterService {
 
 //    @Scheduled(cron = "0 0 0/1 * * *", zone = "Asia/Seoul") TODO 나중에 주석 해제... 아마 데모데이 전에?
     @Transactional
-    public void checkLettersDeadLine() {
+    public void checkLettersDeadline() {
         letterRepository.findAll().stream()
                 .filter(letter -> ((letter.getLetterStatus() == LetterStatus.FIRST_ASKING) ||
                         (letter.getLetterStatus() == LetterStatus.FIRST_ANSWER) ||
