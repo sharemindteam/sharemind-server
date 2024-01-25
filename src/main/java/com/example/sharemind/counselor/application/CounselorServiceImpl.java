@@ -22,7 +22,7 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
-import com.example.sharemind.wishList.application.WishListService;
+import com.example.sharemind.wishList.application.WishListCounselorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +43,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     private final CounselorRepository counselorRepository;
     private final CustomerService customerService;
-    private final WishListService wishListService;
+    private final WishListCounselorService wishListCounselorService;
 
     @Override
     public Counselor getCounselorByCounselorId(Long counselorId) {
@@ -196,7 +196,7 @@ public class CounselorServiceImpl implements CounselorService {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest, sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIds(customer);
+        Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIds(customer);
 
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,

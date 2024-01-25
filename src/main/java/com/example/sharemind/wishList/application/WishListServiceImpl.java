@@ -8,9 +8,6 @@ import com.example.sharemind.wishList.domain.WishList;
 import com.example.sharemind.wishList.exception.WishListErrorCode;
 import com.example.sharemind.wishList.exception.WishListException;
 import com.example.sharemind.wishList.repository.WishListRepository;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,20 +20,6 @@ public class WishListServiceImpl implements WishListService {
     private final CustomerService customerService;
     private final CounselorService counselorService;
     private final WishListRepository wishListRepository;
-
-    @Override
-    public List<WishList> getWishList(Customer customer) {
-        return wishListRepository.findByCustomerAndIsActivatedIsTrue(customer);
-    }
-
-    @Override
-    public Set<Long> getWishListCounselorIds(Customer customer) {
-        List<WishList> wishLists = getWishList(customer);
-
-        return wishLists.stream()
-                .map(wishList -> wishList.getCounselor().getCounselorId())
-                .collect(Collectors.toSet());
-    }
 
     @Transactional
     @Override

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class WishListController {
 
-    private WishListService wishListService;
+    private final WishListService wishListService;
 
     @PatchMapping()
     public ResponseEntity<Void> addWishList(@RequestParam Long counselorId,
