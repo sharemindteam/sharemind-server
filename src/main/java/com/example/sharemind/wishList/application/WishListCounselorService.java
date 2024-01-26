@@ -26,7 +26,7 @@ public class WishListCounselorService {
     private final CustomerService customerService;
     private final WishListRepository wishListRepository;
 
-    public Set<Long> getWishListCounselorIds(Customer customer) {
+    public Set<Long> getWishListCounselorIdsByCustomer(Customer customer) {
         List<WishList> wishLists = getWishListByCustomer(customer);
 
         return wishLists.stream()

@@ -194,7 +194,7 @@ public class CounselorServiceImpl implements CounselorService {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest, sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIds(customer);
+        Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(customer);
 
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,
