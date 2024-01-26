@@ -19,7 +19,11 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.payment.application.PaymentService;
+import com.example.sharemind.payment.content.PaymentCustomerStatus;
+import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
+import com.example.sharemind.payment.exception.PaymentErrorCode;
+import com.example.sharemind.payment.exception.PaymentException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +51,6 @@ public class AdminServiceImpl implements AdminService {
 
     @Transactional
     public void updateIsPaid(Long consultId) {
-
         Consult consult = consultService.getConsultByConsultId(consultId);
         if (consult.getPayment().getIsPaid()) {
             throw new ConsultException(ConsultErrorCode.CONSULT_ALREADY_PAID, consultId.toString());
@@ -104,5 +107,17 @@ public class AdminServiceImpl implements AdminService {
         return paymentService.getRefundWaitingPayments().stream()
                 .map(PaymentGetCustomerResponse::of)
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updatePaymentCustomerStatus(Long paymentId) {
+        Payment payment = paymentService.getPaymentByPaymentId(paymentId);
+        if ((payment.getCustomerStatus() == null) ||
+                (!payment.getCustomerStatus().equals(PaymentCustomerStatus.REFUND_WAITING))) {
+            throw new PaymentException(PaymentErrorCode.INVALID_REFUND_COMPLETE);
+        }
+
+        payment.updatePaymentCustomerStatus(PaymentCustomerStatus.REFUND_COMPLETE);
     }
 }

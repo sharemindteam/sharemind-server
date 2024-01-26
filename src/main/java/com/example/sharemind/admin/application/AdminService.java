@@ -16,4 +16,6 @@ public interface AdminService {
     void updateProfileStatus(Long counselorId, Boolean isPassed);
 
     List<PaymentGetCustomerResponse> getRefundWaitingPayments();
+
+    void updatePaymentCustomerStatus(Long paymentId);
 }
