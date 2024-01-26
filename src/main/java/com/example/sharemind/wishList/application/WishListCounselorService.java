@@ -1,5 +1,6 @@
 package com.example.sharemind.wishList.application;
 
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.wishList.domain.WishList;
@@ -52,5 +53,9 @@ public class WishListCounselorService {
                                 wishListGetRequest.getWishlistId(),
                                 pageable);
         return page.getContent();
+    }
+
+    public Boolean getIsWishListByCustomerAndCounselor(Customer customer, Counselor counselor) {
+        return wishListRepository.existsByCustomerAndCounselorAndIsActivatedIsTrue(customer, counselor);
     }
 }

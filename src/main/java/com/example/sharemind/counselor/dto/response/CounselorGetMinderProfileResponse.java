@@ -47,11 +47,14 @@ public class CounselorGetMinderProfileResponse {
     @Schema(description = "경험 소개")
     private final String experience;
 
-    public static CounselorGetMinderProfileResponse of(Counselor counselor) {
+    @Schema(description = "찜여부")
+    private final Boolean isWishList;
+
+    public static CounselorGetMinderProfileResponse of(Counselor counselor, Boolean isWishList) {
         return new CounselorGetMinderProfileResponse(counselor.getCounselorId(), counselor.getNickname(),
                 counselor.getLevel(), counselor.getTotalReview(), counselor.getRatingAverage(),
                 CounselorUtil.convertConsultCategories(counselor), counselor.getConsultStyle().getDisplayName(),
                 CounselorUtil.convertConsultTypes(counselor), CounselorUtil.convertConsultTimes(counselor),
-                CounselorUtil.convertConsultCosts(counselor), counselor.getExperience());
+                CounselorUtil.convertConsultCosts(counselor), counselor.getExperience(), isWishList);
     }
 }

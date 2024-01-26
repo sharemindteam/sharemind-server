@@ -26,4 +26,6 @@ public interface WishListRepository extends JpaRepository<WishList, Long> {
                                                       Pageable pageable);
 
     Page<WishList> findByCustomerAndIsActivatedIsTrueOrderByUpdatedAtDesc(Customer customer, Pageable pageable);
+
+    Boolean existsByCustomerAndCounselorAndIsActivatedIsTrue(Customer customer, Counselor counselor);
 }
