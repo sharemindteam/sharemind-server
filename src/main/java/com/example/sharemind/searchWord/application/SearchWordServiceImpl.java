@@ -9,7 +9,7 @@ import com.example.sharemind.searchWord.domain.SearchWord;
 import com.example.sharemind.searchWord.dto.request.SearchWordDeleteRequest;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 import com.example.sharemind.searchWord.repository.SearchWordRepository;
-import com.example.sharemind.wishlist.application.WishListService;
+import com.example.sharemind.wishList.application.WishListCounselorService;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class SearchWordServiceImpl implements SearchWordService {
     private static final String SEARCH_WORD_PREFIX = "searchWord: ";
 
     private final CounselorService counselorService;
-    private final WishListService wishListService;
+    private final WishListCounselorService wishListCounselorService;
     private final CustomerService customerService;
     private final SearchWordRepository searchWordRepository;
 
@@ -42,7 +42,7 @@ public class SearchWordServiceImpl implements SearchWordService {
         List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordFindRequest, sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
+        Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(customer);
 
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,

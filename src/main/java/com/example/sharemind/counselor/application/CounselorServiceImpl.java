@@ -18,7 +18,9 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
-import com.example.sharemind.wishlist.application.WishListService;
+import com.example.sharemind.wishList.application.WishListCounselorService;
+import com.example.sharemind.wishList.domain.WishList;
+import com.example.sharemind.wishList.dto.request.WishListGetRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +41,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     private final CounselorRepository counselorRepository;
     private final CustomerService customerService;
-    private final WishListService wishListService;
+    private final WishListCounselorService wishListCounselorService;
 
     @Override
     public Counselor getCounselorByCounselorId(Long counselorId) {
@@ -192,7 +194,7 @@ public class CounselorServiceImpl implements CounselorService {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest, sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Set<Long> wishListCounselorIds = wishListService.getWishListCounselorIdsByCustomer(customer);
+        Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(customer);
 
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,
@@ -244,5 +246,14 @@ public class CounselorServiceImpl implements CounselorService {
     public CounselorGetBannerResponse getCounselorChatBanner(Chat chat) {
         Counselor counselor = getCounselorByCounselorId(chat.getConsult().getCounselor().getCounselorId());
         return CounselorGetBannerResponse.of(counselor);
+    }
+
+    @Override
+    public List<CounselorGetWishListResponse> getCounselorWishListByCustomer(WishListGetRequest wishListGetRequest,
+                                                                             Long customerId) {
+        List<WishList> wishLists = wishListCounselorService.getWishList(wishListGetRequest, customerId);
+        return wishLists.stream()
+                .map(CounselorGetWishListResponse::of)
+                .toList();
     }
 }
