@@ -98,4 +98,26 @@ public class AdminController {
     public ResponseEntity<List<PaymentGetCustomerResponse>> getRefundWaitingPayments() {
         return ResponseEntity.ok(adminService.getRefundWaitingPayments());
     }
+
+    @Operation(summary = "결제 환불 완료 수정",
+            description = "환불 예정인 결제를 환불 완료로 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "환불 예정 상태가 아닌 결제에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 결제 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "paymentId", description = "결제 아이디")
+    })
+    @PatchMapping("/refund-waiting/{paymentId}")
+    public ResponseEntity<Void> updatePaymentCustomerStatus(@PathVariable Long paymentId) {
+        adminService.updatePaymentCustomerStatus(paymentId);
+        return ResponseEntity.ok().build();
+    }
 }
