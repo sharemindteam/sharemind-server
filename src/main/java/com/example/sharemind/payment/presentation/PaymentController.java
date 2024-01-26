@@ -15,10 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,5 +50,31 @@ public class PaymentController {
                                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(paymentService.getPaymentsByCustomer(paymentId, status,
                 customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "구매자 상담 취소 신청", description = "구매자가 상담 대기인 결제 내역 중 상담 취소 신청")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "취소 성공"),
+            @ApiResponse(responseCode = "400", description = "결제 완료 상태가 아닌 결제에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "취소 권한이 없는 결제에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 결제 정보",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "paymentId", description = "취소할 결제 정보 아이디")
+    })
+    @PatchMapping("/customers/{paymentId}")
+    public ResponseEntity<Void> updateRefundWaitingByCustomer(@PathVariable Long paymentId,
+                                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        paymentService.updateRefundWaitingByCustomer(paymentId, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
     }
 }
