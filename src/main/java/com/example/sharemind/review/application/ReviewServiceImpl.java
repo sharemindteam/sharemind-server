@@ -47,30 +47,30 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewGetResponse> getReviewsByCustomer(Boolean isCompleted, Long cursorId, Long customerId) {
+    public List<ReviewGetResponse> getReviewsByCustomer(Boolean isCompleted, Long reviewId, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, REVIEW_PAGE_SIZE);
         Page<ReviewGetResponse> page =
-                (cursorId == 0 ?
+                (reviewId == 0 ?
                         reviewRepository.findAllByCustomerAndIsCompleted(customer, isCompleted, pageable) :
                         reviewRepository.findAllByReviewIdLessThanAndCustomerAndIsCompleted(
-                                cursorId, customer, isCompleted, pageable))
+                                reviewId, customer, isCompleted, pageable))
                         .map(review -> ReviewGetResponse.of(review, IS_CUSTOMER));
 
         return page.getContent();
     }
 
     @Override
-    public List<ReviewGetResponse> getReviewsByCounselor(Long cursorId, Long customerId) {
+    public List<ReviewGetResponse> getReviewsByCounselor(Long reviewId, Long customerId) {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, REVIEW_PAGE_SIZE);
         Page<ReviewGetResponse> page =
-                (cursorId == 0 ?
+                (reviewId == 0 ?
                         reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable) :
                         reviewRepository.findAllByReviewIdLessThanAndCounselorAndIsCompletedIsTrue(
-                                cursorId, counselor, pageable))
+                                reviewId, counselor, pageable))
                         .map(review -> ReviewGetResponse.of(review, IS_COUNSELOR));
 
         return page.getContent();
@@ -86,15 +86,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewGetShortResponse> getShortReviewsForCounselorProfile(Long cursorId, Long counselorId) {
+    public List<ReviewGetShortResponse> getShortReviewsForCounselorProfile(Long reviewId, Long counselorId) {
         Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
 
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, REVIEW_PAGE_SIZE);
         Page<ReviewGetShortResponse> page =
-                (cursorId == 0 ?
+                (reviewId == 0 ?
                         reviewRepository.findAllByCounselorAndIsCompletedIsTrue(counselor, pageable) :
                         reviewRepository.findAllByReviewIdLessThanAndCounselorAndIsCompletedIsTrue(
-                                cursorId, counselor, pageable))
+                                reviewId, counselor, pageable))
                         .map(ReviewGetShortResponse::of);
 
         return page.getContent();
