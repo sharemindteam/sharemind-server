@@ -4,6 +4,7 @@ import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
+import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -87,5 +88,14 @@ public class AdminController {
     public ResponseEntity<Void> updateProfileStatus(@PathVariable Long counselorId, @RequestParam Boolean isPassed) {
         adminService.updateProfileStatus(counselorId, isPassed);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "환불 예정 결제 정보 조회", description = "환불 예정 상태인 결제 정보 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/refund-waiting")
+    public ResponseEntity<List<PaymentGetCustomerResponse>> getRefundWaitingPayments() {
+        return ResponseEntity.ok(adminService.getRefundWaitingPayments());
     }
 }
