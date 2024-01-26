@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
@@ -23,4 +25,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             "ORDER BY p.paymentId DESC")
     Page<Payment> findAllByPaymentIdLessThanAndCustomerAndCustomerStatusAndIsActivatedIsTrue(
             Long paymentId, Customer customer, PaymentCustomerStatus status, Pageable pageable);
+
+    List<Payment> findAllByCustomerStatusAndIsActivatedIsTrue(PaymentCustomerStatus status);
 }

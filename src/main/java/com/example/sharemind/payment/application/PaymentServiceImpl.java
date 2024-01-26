@@ -3,6 +3,7 @@ package com.example.sharemind.payment.application;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
+import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import com.example.sharemind.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,10 @@ public class PaymentServiceImpl implements PaymentService {
                         .map(PaymentGetCustomerResponse::of);
 
         return page.getContent();
+    }
+
+    @Override
+    public List<Payment> getRefundWaitingPayments() {
+        return paymentRepository.findAllByCustomerStatusAndIsActivatedIsTrue(PaymentCustomerStatus.REFUND_WAITING);
     }
 }

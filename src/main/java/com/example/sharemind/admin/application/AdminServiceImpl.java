@@ -18,6 +18,8 @@ import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
+import com.example.sharemind.payment.application.PaymentService;
+import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,7 @@ public class AdminServiceImpl implements AdminService {
     private final ConsultService consultService;
     private final LetterService letterService;
     private final ChatService chatService;
+    private final PaymentService paymentService;
     private final CounselorService counselorService;
     private final CustomerService customerService;
 
@@ -94,5 +97,12 @@ public class AdminServiceImpl implements AdminService {
                 customer.addRole(Role.ROLE_COUNSELOR);
             }
         }
+    }
+
+    @Override
+    public List<PaymentGetCustomerResponse> getRefundWaitingPayments() {
+        return paymentService.getRefundWaitingPayments().stream()
+                .map(PaymentGetCustomerResponse::of)
+                .toList();
     }
 }
