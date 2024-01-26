@@ -16,6 +16,9 @@ public class CounselorGetWishListResponse extends CounselorGetBaseResponse {
     @Schema(description = "위시리스트 id", example = "1")
     private final Long wishlistId;
 
+    @Schema(description = "상담사 아이디", example = "1")
+    private final Long counselorId;
+
     @Schema(description = "레벨", example = "1")
     private final Integer level;
 
@@ -32,6 +35,7 @@ public class CounselorGetWishListResponse extends CounselorGetBaseResponse {
     private CounselorGetWishListResponse(Counselor counselor, WishList wishList) {
         super(counselor);
         this.wishlistId = wishList.getWishlistId();
+        this.counselorId = counselor.getCounselorId();
         this.level = counselor.getLevel();
         this.totalReview = counselor.getTotalReview();
         this.ratingAverage = counselor.getRatingAverage();
