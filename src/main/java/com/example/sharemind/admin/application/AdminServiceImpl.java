@@ -1,6 +1,7 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
@@ -21,7 +22,6 @@ import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.payment.application.PaymentService;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.domain.Payment;
-import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
 import com.example.sharemind.payment.exception.PaymentException;
 import lombok.RequiredArgsConstructor;
@@ -103,9 +103,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<PaymentGetCustomerResponse> getRefundWaitingPayments() {
+    public List<PaymentGetRefundWaitingResponse> getRefundWaitingPayments() {
         return paymentService.getRefundWaitingPayments().stream()
-                .map(PaymentGetCustomerResponse::of)
+                .map(PaymentGetRefundWaitingResponse::of)
                 .toList();
     }
 

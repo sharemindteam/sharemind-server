@@ -1,8 +1,8 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
-import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface AdminService {
 
     void updateProfileStatus(Long counselorId, Boolean isPassed);
 
-    List<PaymentGetCustomerResponse> getRefundWaitingPayments();
+    List<PaymentGetRefundWaitingResponse> getRefundWaitingPayments();
 
     void updatePaymentCustomerStatus(Long paymentId);
 }
