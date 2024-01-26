@@ -8,7 +8,6 @@ import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.chat.domain.Chat;
-import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.review.domain.Review;
 import com.example.sharemind.customer.domain.Customer;
@@ -90,7 +89,7 @@ public class Consult extends BaseEntity {
     public void updateConsultStatusCounselorCancel() {
         this.consultStatus = ConsultStatus.COUNSELOR_CANCEL;
 
-        this.payment.updatePaymentCustomerStatus(PaymentCustomerStatus.REFUND_WAITING);
+        this.payment.updateCustomerStatusToRefundWaiting();
     }
 
     public void updateIsPaidAndLetter(Letter letter) {
