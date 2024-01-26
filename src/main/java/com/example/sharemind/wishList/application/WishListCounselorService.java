@@ -3,6 +3,7 @@ package com.example.sharemind.wishList.application;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.wishList.domain.WishList;
+import com.example.sharemind.wishList.dto.request.WishListGetRequest;
 import com.example.sharemind.wishList.repository.WishListRepository;
 import java.util.List;
 import java.util.Set;
@@ -37,16 +38,18 @@ public class WishListCounselorService {
         return wishListRepository.findByCustomerAndIsActivatedIsTrue(customer);
     }
 
-    public List<WishList> getWishList(Long wishlistId, Long customerId) {
+    public List<WishList> getWishList(WishListGetRequest wishListGetRequest, Long customerId) {
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, WISHLIST_PAGE);
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         Page<WishList> page =
-                (wishlistId == 0) ? wishListRepository.findByCustomerAndIsActivatedIsTrueOrderByUpdatedAtDesc(customer,
+                (wishListGetRequest.getWishlistId() == 0)
+                        ? wishListRepository.findByCustomerAndIsActivatedIsTrueOrderByUpdatedAtDesc(customer,
                         pageable) :
-                        wishListRepository.findByCustomerAndWishlistIdLessThanAndIsActivatedIsTrueOrderByUpdatedAtDesc(
+                        wishListRepository.findByCustomerOrderByUpdatedAtDesc(
                                 customer,
-                                wishlistId,
+                                wishListGetRequest.getUpdatedAt(),
+                                wishListGetRequest.getWishlistId(),
                                 pageable);
         return page.getContent();
     }

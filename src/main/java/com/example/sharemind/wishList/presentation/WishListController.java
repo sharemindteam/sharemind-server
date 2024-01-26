@@ -4,6 +4,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.dto.response.CounselorGetWishListResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.wishList.application.WishListService;
+import com.example.sharemind.wishList.dto.request.WishListGetRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +35,12 @@ public class WishListController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping()
-    public ResponseEntity<List<CounselorGetWishListResponse>> getWishList(@RequestParam Long wishlistId,
-                                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    @PostMapping()
+    public ResponseEntity<List<CounselorGetWishListResponse>> getWishList(
+            @RequestBody WishListGetRequest wishListGetRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getCounselorWishListByCustomer(
-                wishlistId, customUserDetails.getCustomer()
+                wishListGetRequest,customUserDetails.getCustomer()
                         .getCustomerId()));
     }
 }

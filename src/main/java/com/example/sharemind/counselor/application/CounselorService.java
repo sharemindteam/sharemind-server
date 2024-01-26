@@ -7,6 +7,7 @@ import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest
 import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 
+import com.example.sharemind.wishList.dto.request.WishListGetRequest;
 import java.util.List;
 
 public interface CounselorService {
@@ -37,7 +38,7 @@ public interface CounselorService {
     List<CounselorGetListResponse> getCounselorsByCategory(Long customerId, String sortType,
                                                            CounselorGetRequest counselorGetRequest);
 
-    List<CounselorGetWishListResponse> getCounselorWishListByCustomer(Long wishlistId, Long customerId);
+    List<CounselorGetWishListResponse> getCounselorWishListByCustomer(WishListGetRequest wishListGetRequest, Long customerId);
 
     CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId);
 }
