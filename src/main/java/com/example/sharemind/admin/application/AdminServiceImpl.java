@@ -118,6 +118,6 @@ public class AdminServiceImpl implements AdminService {
             throw new PaymentException(PaymentErrorCode.INVALID_REFUND_COMPLETE);
         }
 
-        payment.updateCustomerStatusToRefundComplete();
+        payment.updateCustomerStatusRefundComplete();
     }
 }

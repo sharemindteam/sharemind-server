@@ -51,10 +51,10 @@ public class Payment extends BaseEntity {
 
     public void updateIsPaidTrue() {
         this.isPaid = true;
-        updateCustomerStatusToPaymentComplete();
+        updateCustomerStatusPaymentComplete();
     }
 
-    public void updateCustomerStatusToPaymentComplete() {
+    public void updateCustomerStatusPaymentComplete() {
         this.customerStatus = PaymentCustomerStatus.PAYMENT_COMPLETE;
     }
 
@@ -62,7 +62,7 @@ public class Payment extends BaseEntity {
         this.customerStatus = PaymentCustomerStatus.REFUND_WAITING;
     }
 
-    public void updateCustomerStatusToRefundComplete() {
+    public void updateCustomerStatusRefundComplete() {
         this.customerStatus = PaymentCustomerStatus.REFUND_COMPLETE;
     }
 }

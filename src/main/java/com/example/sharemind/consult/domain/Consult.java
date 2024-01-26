@@ -89,7 +89,7 @@ public class Consult extends BaseEntity {
     public void updateConsultStatusCounselorCancel() {
         this.consultStatus = ConsultStatus.COUNSELOR_CANCEL;
 
-        this.payment.updateCustomerStatusToRefundWaiting();
+        this.payment.updateCustomerStatusRefundWaiting();
     }
 
     public void updateIsPaidAndLetter(Letter letter) {
