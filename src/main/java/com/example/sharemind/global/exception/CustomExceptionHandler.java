@@ -8,6 +8,7 @@ import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.email.exception.EmailException;
 import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
+import com.example.sharemind.payment.exception.PaymentException;
 import com.example.sharemind.review.exception.ReviewException;
 import com.example.sharemind.wishList.exception.WishListException;
 import jakarta.validation.ConstraintViolationException;
@@ -87,6 +88,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ReviewException.class)
     public ResponseEntity<CustomExceptionResponse> catchReviewException(ReviewException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<CustomExceptionResponse> catchPaymentException(PaymentException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
