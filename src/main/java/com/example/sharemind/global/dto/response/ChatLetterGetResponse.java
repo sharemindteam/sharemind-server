@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChatLetterGetResponse {
 
-    @Schema(description = "아이디")
+    @Schema(description = "(채팅/편지)아이디")
     private final Long id;
 
     @Schema(description = "상담 스타일", example = "조언")
@@ -42,11 +42,14 @@ public class ChatLetterGetResponse {
     @Schema(description = "리뷰 작성 여부")
     private final Boolean reviewCompleted;
 
+    @Schema(description = "상담 아이디")
+    private final Long consultId;
+
     public static ChatLetterGetResponse of(LetterGetResponse letterGetResponse) {
         return new ChatLetterGetResponse(letterGetResponse.getLetterId(), letterGetResponse.getConsultStyle(),
                 letterGetResponse.getLetterStatus(), letterGetResponse.getOpponentName(),
                 letterGetResponse.getUpdatedAt(), letterGetResponse.getRecentContent(), null,
-                null, letterGetResponse.getReviewCompleted());
+                null, letterGetResponse.getReviewCompleted(), letterGetResponse.getConsultId());
     }
 
     public static ChatLetterGetResponse of(String nickname, int unreadMessageCount, Chat chat, Counselor counselor,
@@ -59,10 +62,11 @@ public class ChatLetterGetResponse {
         if (chatMessage == null) {
             return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
                     chat.getChatStatus().getDisplayName(), nickname, null, null,
-                    null, null, reviewCompleted);
+                    null, null, reviewCompleted, chat.getConsult().getConsultId());
         }
         return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
                 chat.getChatStatus().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
-                chatMessage.getContent(), chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted);
+                chatMessage.getContent(), chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted,
+                chat.getConsult().getConsultId());
     }
 }

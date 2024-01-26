@@ -35,6 +35,9 @@ public class LetterGetResponse {
     @Schema(description = "리뷰 작성 여부")
     private final Boolean reviewCompleted;
 
+    @Schema(description = "상담 아이디")
+    private final Long consultId;
+
     public static ChatLetterGetResponse of(Letter letter, LetterMessage recentMessage, Boolean isCustomer) {
         String letterStatus;
         String opponentName;
@@ -55,11 +58,12 @@ public class LetterGetResponse {
         if (recentMessage == null) {
             return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                     letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
-                    null, null, reviewCompleted));
+                    null, null, reviewCompleted, letter.getConsult().getConsultId()));
         }
 
         return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                 letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
-                TimeUtil.getUpdatedAt((recentMessage.getUpdatedAt())), recentMessage.getContent(), reviewCompleted));
+                TimeUtil.getUpdatedAt((recentMessage.getUpdatedAt())), recentMessage.getContent(), reviewCompleted,
+                letter.getConsult().getConsultId()));
     }
 }
