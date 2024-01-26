@@ -5,6 +5,8 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
+import com.example.sharemind.payment.exception.PaymentErrorCode;
+import com.example.sharemind.payment.exception.PaymentException;
 import com.example.sharemind.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final CustomerService customerService;
+
+    @Override
+    public Payment getPaymentByPaymentId(Long paymentId) {
+        return paymentRepository.findByPaymentIdAndIsActivatedIsTrue(paymentId)
+                .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND, paymentId.toString()));
+    }
 
     @Override
     public List<PaymentGetCustomerResponse> getPaymentsByCustomer(Long paymentId, String status, Long customerId) {

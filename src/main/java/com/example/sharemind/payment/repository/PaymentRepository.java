@@ -10,9 +10,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
+    Optional<Payment> findByPaymentIdAndIsActivatedIsTrue(Long paymentId);
 
     @Query("SELECT p FROM Payment p JOIN FETCH p.consult c " +
             "WHERE c.customer = :customer AND p.customerStatus = :status AND p.isActivated = true " +
