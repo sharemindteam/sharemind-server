@@ -10,5 +10,7 @@ public interface PaymentService {
 
     List<PaymentGetCustomerResponse> getPaymentsByCustomer(Long paymentId, String status, Long customerId);
 
+    void updateRefundWaitingByCustomer(Long paymentId, Long customerId);
+
     List<Payment> getRefundWaitingPayments();
 }

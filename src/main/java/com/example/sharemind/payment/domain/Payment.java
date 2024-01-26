@@ -1,9 +1,12 @@
 package com.example.sharemind.payment.domain;
 
+import com.example.sharemind.consult.content.ConsultStatus;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.payment.content.PaymentCounselorStatus;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
+import com.example.sharemind.payment.exception.PaymentErrorCode;
+import com.example.sharemind.payment.exception.PaymentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -67,5 +70,11 @@ public class Payment extends BaseEntity {
 
     public void updateCustomerStatusRefundComplete() {
         this.customerStatus = PaymentCustomerStatus.REFUND_COMPLETE;
+    }
+
+    public void checkUpdateAuthority(Long customerId) {
+        if (!this.consult.getCustomer().getCustomerId().equals(customerId)) {
+            throw new PaymentException(PaymentErrorCode.PAYMENT_UPDATE_DENIED);
+        }
     }
 }

@@ -50,6 +50,19 @@ public class PaymentServiceImpl implements PaymentService {
         return page.getContent();
     }
 
+    @Transactional
+    @Override
+    public void updateRefundWaitingByCustomer(Long paymentId, Long customerId) {
+        Payment payment = getPaymentByPaymentId(paymentId);
+        payment.checkUpdateAuthority(customerId);
+        if ((payment.getCustomerStatus() == null) ||
+                (!payment.getCustomerStatus().equals(PaymentCustomerStatus.PAYMENT_COMPLETE))) {
+            throw new PaymentException(PaymentErrorCode.INVALID_REFUND_WAITING, paymentId.toString());
+        }
+
+        payment.updateCustomerStatusRefundWaiting();
+    }
+
     @Override
     public List<Payment> getRefundWaitingPayments() {
         return paymentRepository.findAllByCustomerStatusAndIsActivatedIsTrue(PaymentCustomerStatus.REFUND_WAITING);
