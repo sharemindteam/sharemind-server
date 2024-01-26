@@ -58,7 +58,10 @@ public class Payment extends BaseEntity {
         this.customerStatus = PaymentCustomerStatus.PAYMENT_COMPLETE;
     }
 
-    public void updateCustomerStatusToRefundWaiting() {
+    public void updateCustomerStatusRefundWaiting() {
+        if (!this.consult.getConsultStatus().equals(ConsultStatus.COUNSELOR_CANCEL)) {
+            this.consult.updateConsultStatusCustomerCancel();
+        }
         this.customerStatus = PaymentCustomerStatus.REFUND_WAITING;
     }
 

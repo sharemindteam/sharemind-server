@@ -92,6 +92,18 @@ public class Consult extends BaseEntity {
         this.payment.updateCustomerStatusRefundWaiting();
     }
 
+    public void updateConsultStatusCustomerCancel() {
+        this.consultStatus = ConsultStatus.CUSTOMER_CANCEL;
+
+        switch (this.consultType) {
+            /**
+             * TODO chat 상태 cancel로 변경
+             * case CHAT ->
+             */
+            case LETTER -> this.letter.updateLetterStatusCustomerCancel();
+        }
+    }
+
     public void updateIsPaidAndLetter(Letter letter) {
         validateConsultType(ConsultType.LETTER);
         setLetter(letter);
