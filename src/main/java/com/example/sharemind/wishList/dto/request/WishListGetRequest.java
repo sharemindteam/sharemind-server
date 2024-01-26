@@ -1,6 +1,7 @@
 package com.example.sharemind.wishList.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 public class WishListGetRequest {
 
+    @NotNull(message = "찜하기 id는 공백일 수 없습니다.")
     @Schema(description = "찜하기 id", example = "1")
     Long wishlistId;
 
