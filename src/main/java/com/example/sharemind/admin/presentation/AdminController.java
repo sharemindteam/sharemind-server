@@ -1,7 +1,7 @@
 package com.example.sharemind.admin.presentation;
 
 import com.example.sharemind.admin.application.AdminService;
-import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
@@ -32,7 +32,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping("/unpaid-consults")
-    public ResponseEntity<List<ConsultsGetUnpaidResponse>> getUnpaidConsults() {
+    public ResponseEntity<List<ConsultGetUnpaidResponse>> getUnpaidConsults() {
         return ResponseEntity.ok(adminService.getUnpaidConsults());
     }
 

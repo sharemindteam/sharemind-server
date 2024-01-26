@@ -1,6 +1,6 @@
 package com.example.sharemind.admin.application;
 
-import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
@@ -43,9 +43,9 @@ public class AdminServiceImpl implements AdminService {
     private final CustomerService customerService;
 
     @Override
-    public List<ConsultsGetUnpaidResponse> getUnpaidConsults() {
+    public List<ConsultGetUnpaidResponse> getUnpaidConsults() {
         return consultService.getUnpaidConsults().stream()
-                .map(ConsultsGetUnpaidResponse::of)
+                .map(ConsultGetUnpaidResponse::of)
                 .toList();
     }
 

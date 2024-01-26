@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConsultsGetUnpaidResponse {
+public class ConsultGetUnpaidResponse {
 
     @Schema(description = "상담 아이디")
     private final Long consultId;
@@ -30,8 +30,8 @@ public class ConsultsGetUnpaidResponse {
     @Schema(description = "상담 신청 일시")
     private final LocalDateTime createdAt;
 
-    public static ConsultsGetUnpaidResponse of(Consult consult) {
-        return new ConsultsGetUnpaidResponse(consult.getConsultId(), consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
+    public static ConsultGetUnpaidResponse of(Consult consult) {
+        return new ConsultGetUnpaidResponse(consult.getConsultId(), consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
                 consult.getConsultType().getDisplayName(), consult.getCost(), consult.getCreatedAt());
     }
 }
