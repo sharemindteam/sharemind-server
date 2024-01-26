@@ -17,5 +17,5 @@ public interface AdminService {
 
     List<PaymentGetRefundWaitingResponse> getRefundWaitingPayments();
 
-    void updatePaymentCustomerStatus(Long paymentId);
+    void updateRefundComplete(Long paymentId);
 }

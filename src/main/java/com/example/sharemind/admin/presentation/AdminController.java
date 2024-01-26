@@ -116,8 +116,8 @@ public class AdminController {
             @Parameter(name = "paymentId", description = "결제 아이디")
     })
     @PatchMapping("/refund-waiting/{paymentId}")
-    public ResponseEntity<Void> updatePaymentCustomerStatus(@PathVariable Long paymentId) {
-        adminService.updatePaymentCustomerStatus(paymentId);
+    public ResponseEntity<Void> updateRefundComplete(@PathVariable Long paymentId) {
+        adminService.updateRefundComplete(paymentId);
         return ResponseEntity.ok().build();
     }
 }
