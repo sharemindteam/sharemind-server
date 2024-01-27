@@ -6,7 +6,7 @@ import static com.example.sharemind.global.constants.Constants.CUSTOMER_PREFIX;
 import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
-import com.example.sharemind.chat.domain.ChatCreateEvent;
+import com.example.sharemind.chat.domain.ChatCreateAndFinishEvent;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
 import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
@@ -382,7 +382,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private void notifyNewChat(Chat chat, Consult consult) {
-        publisher.publishEvent(ChatCreateEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
+        publisher.publishEvent(ChatCreateAndFinishEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
                 consult.getCounselor().getCounselorId()));
     }
 }
