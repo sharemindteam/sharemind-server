@@ -1,9 +1,6 @@
 package com.example.sharemind.auth.application;
 
-import com.example.sharemind.auth.dto.request.AuthGetPasswordMatchRequest;
-import com.example.sharemind.auth.dto.request.AuthReissueRequest;
-import com.example.sharemind.auth.dto.request.AuthSignInRequest;
-import com.example.sharemind.auth.dto.request.AuthSignUpRequest;
+import com.example.sharemind.auth.dto.request.*;
 import com.example.sharemind.auth.dto.response.TokenDto;
 import com.example.sharemind.auth.exception.AuthErrorCode;
 import com.example.sharemind.auth.exception.AuthException;
@@ -81,5 +78,17 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
 
         return passwordEncoder.matches(authGetPasswordMatchRequest.getPassword(), customer.getPassword());
+    }
+
+    @Transactional
+    @Override
+    public void updatePassword(AuthUpdatePasswordRequest authUpdatePasswordRequest, Long customerId) {
+        Customer customer = customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
+        if (passwordEncoder.matches(authUpdatePasswordRequest.getPassword(), customer.getPassword())) {
+            throw new AuthException(AuthErrorCode.DUPLICATE_PASSWORD);
+        }
+
+        customer.updatePassword(passwordEncoder.encode(authUpdatePasswordRequest.getPassword()));
     }
 }
