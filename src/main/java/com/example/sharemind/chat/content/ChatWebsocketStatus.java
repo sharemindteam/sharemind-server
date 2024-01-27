@@ -6,9 +6,6 @@ import lombok.Getter;
 @Getter
 public enum ChatWebsocketStatus {
 
-    @Schema(description = "채팅 생성")
-    CHAT_CREATE,
-
     @Schema(description = "채팅 시작")
     CHAT_START,
 
