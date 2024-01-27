@@ -1,10 +1,7 @@
 package com.example.sharemind.auth.presentation;
 
 import com.example.sharemind.auth.application.AuthService;
-import com.example.sharemind.auth.dto.request.AuthGetPasswordMatchRequest;
-import com.example.sharemind.auth.dto.request.AuthReissueRequest;
-import com.example.sharemind.auth.dto.request.AuthSignInRequest;
-import com.example.sharemind.auth.dto.request.AuthSignUpRequest;
+import com.example.sharemind.auth.dto.request.*;
 import com.example.sharemind.auth.dto.response.TokenDto;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
@@ -92,5 +89,21 @@ public class AuthController {
                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(authService.getPasswordMatched(authGetPasswordMatchRequest,
                 customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "비밀번호 변경",
+            description = "비밀번호 변경")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "변경 성공"),
+            @ApiResponse(responseCode = "400", description = "1. 올바르지 않은 비밀번호 형식\n 2. 새 비밀번호가 현재 비밀번호와 동일",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @PatchMapping("/password")
+    public ResponseEntity<Void> updatePassword(@Valid @RequestBody AuthUpdatePasswordRequest authUpdatePasswordRequest,
+                                               @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        authService.updatePassword(authUpdatePasswordRequest, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
     }
 }
