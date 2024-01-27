@@ -1,5 +1,6 @@
 package com.example.sharemind.auth.application;
 
+import com.example.sharemind.auth.dto.request.AuthGetPasswordMatchRequest;
 import com.example.sharemind.auth.dto.request.AuthReissueRequest;
 import com.example.sharemind.auth.dto.request.AuthSignInRequest;
 import com.example.sharemind.auth.dto.request.AuthSignUpRequest;
@@ -28,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public void signUp(AuthSignUpRequest authSignUpRequest) {
-
         if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail())) {
             throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST, authSignUpRequest.getEmail());
         }
@@ -39,7 +39,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenDto signIn(AuthSignInRequest authSignInRequest) {
-
         Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(authSignInRequest.getEmail())
                 .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, authSignInRequest.getEmail()));
 
@@ -55,7 +54,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenDto reissueToken(AuthReissueRequest authReissueRequest) {
-
         if(!tokenProvider.validateRefreshToken(authReissueRequest.getRefreshToken())) {
             throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
@@ -75,5 +73,13 @@ public class AuthServiceImpl implements AuthService {
         if (customerRepository.existsByEmailAndIsActivatedIsTrue(email)) {
             throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST, email);
         }
+    }
+
+    @Override
+    public Boolean getPasswordMatched(AuthGetPasswordMatchRequest authGetPasswordMatchRequest, Long customerId) {
+        Customer customer = customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
+
+        return passwordEncoder.matches(authGetPasswordMatchRequest.getPassword(), customer.getPassword());
     }
 }
