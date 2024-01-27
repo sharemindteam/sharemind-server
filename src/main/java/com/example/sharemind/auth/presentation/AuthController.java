@@ -1,11 +1,13 @@
 package com.example.sharemind.auth.presentation;
 
 import com.example.sharemind.auth.application.AuthService;
+import com.example.sharemind.auth.dto.request.AuthGetPasswordMatchRequest;
 import com.example.sharemind.auth.dto.request.AuthReissueRequest;
 import com.example.sharemind.auth.dto.request.AuthSignInRequest;
 import com.example.sharemind.auth.dto.request.AuthSignUpRequest;
 import com.example.sharemind.auth.dto.response.TokenDto;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
+import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,10 +18,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth Controller", description = "인증 컨트롤러")
 @RestController
@@ -76,5 +76,21 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissueToken(@Valid @RequestBody AuthReissueRequest authReissueRequest) {
         return ResponseEntity.ok(authService.reissueToken(authReissueRequest));
+    }
+
+    @Operation(summary = "비밀번호 변경 시 현재 비밀번호 일치 여부 조회",
+            description = "비밀번호 변경 시 현재 비밀번호 일치 여부 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "비밀번호 값이 공백으로 들어옴",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @PostMapping("/password")
+    public ResponseEntity<Boolean> getPasswordMatched(@Valid @RequestBody AuthGetPasswordMatchRequest authGetPasswordMatchRequest,
+                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(authService.getPasswordMatched(authGetPasswordMatchRequest,
+                customUserDetails.getCustomer().getCustomerId()));
     }
 }
