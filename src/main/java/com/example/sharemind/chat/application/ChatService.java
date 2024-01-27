@@ -2,7 +2,6 @@ package com.example.sharemind.chat.application;
 
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
-import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 
@@ -16,7 +15,7 @@ public interface ChatService {
 
     void validateChatWithWebSocket(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer);
 
-    ChatGetConnectResponse getChatIdsByWebSocket(Map<String, Object> sessionAttributes, Boolean isCustomer);
+    void getAndSendChatIdsByWebSocket(Map<String, Object> sessionAttributes, Boolean isCustomer);
 
     List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer, Boolean filter,
                                                         String sortType);

@@ -101,13 +101,23 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatGetConnectResponse getChatIdsByWebSocket(Map<String, Object> sessionAttributes, Boolean isCustomer) {
+    public void getAndSendChatIdsByWebSocket(Map<String, Object> sessionAttributes, Boolean isCustomer) {
+        ChatGetConnectResponse chatGetConnectResponse = getChatIds(sessionAttributes, isCustomer);
+        sendChatIds(chatGetConnectResponse);
+    }
+
+    private ChatGetConnectResponse getChatIds(Map<String, Object> sessionAttributes, Boolean isCustomer) {
         Long userId = (Long) sessionAttributes.get("userId");
         String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId;
 
         List<Long> chatRoomIds = redisTemplate.opsForValue()
                 .get(redisKey);
         return ChatGetConnectResponse.of(userId, chatRoomIds);
+    }
+
+    private void sendChatIds(ChatGetConnectResponse chatGetConnectResponse) {
+        simpMessagingTemplate.convertAndSend("/queue/chattings/connect/counselors/", chatGetConnectResponse);
+        simpMessagingTemplate.convertAndSend("/queue/chattings/connect/customers/", chatGetConnectResponse);
     }
 
     private Long getLatestMessageIdForChat(Chat chat) { //todo: ChatMessageService로 빼고싶었는데 순환참조 문제때문에 못뺌.. 구조 고민해보기

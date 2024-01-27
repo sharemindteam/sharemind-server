@@ -2,7 +2,6 @@ package com.example.sharemind.chat.presentation;
 
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
-import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
@@ -144,14 +143,16 @@ public class ChatController {
     }
 
     @MessageMapping("/api/v1/chat/customers/connect")
-    public ResponseEntity<ChatGetConnectResponse> getAndSendCustomerChatIds(SimpMessageHeaderAccessor headerAccessor) {
+    public ResponseEntity<Void> getAndSendCustomerChatIds(SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
-        return ResponseEntity.ok(chatService.getChatIdsByWebSocket(sessionAttributes, true));
+        chatService.getAndSendChatIdsByWebSocket(sessionAttributes, true);
+        return ResponseEntity.ok().build();
     }
 
     @MessageMapping("/api/v1/chat/counselors/connect")
-    public ResponseEntity<ChatGetConnectResponse> getAndSendCounselorChatIds(SimpMessageHeaderAccessor headerAccessor) {
+    public ResponseEntity<Void> getAndSendCounselorChatIds(SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
-        return ResponseEntity.ok(chatService.getChatIdsByWebSocket(sessionAttributes, false));
+        chatService.getAndSendChatIdsByWebSocket(sessionAttributes, false);
+        return ResponseEntity.ok().build();
     }
 }
