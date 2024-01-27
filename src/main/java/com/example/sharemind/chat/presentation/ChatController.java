@@ -6,15 +6,15 @@ import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,7 +103,7 @@ public class ChatController {
     })
     @PatchMapping("/{chatId}")
     public ResponseEntity<Void> updateCustomerReadId(@PathVariable Long chatId,
-                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         chatService.updateReadId(chatId, customUserDetails.getCustomer().getCustomerId(), true);
         return ResponseEntity.ok().build();
     }
@@ -139,6 +139,20 @@ public class ChatController {
             simpMessagingTemplate.convertAndSend("/queue/chattings/exception/counselors/" + chatId, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        return ResponseEntity.ok().build();
+    }
+
+    @MessageMapping("/api/v1/chat/customers/connect")
+    public ResponseEntity<Void> getAndSendCustomerChatIds(SimpMessageHeaderAccessor headerAccessor) {
+        Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
+        chatService.getAndSendChatIdsByWebSocket(sessionAttributes, true);
+        return ResponseEntity.ok().build();
+    }
+
+    @MessageMapping("/api/v1/chat/counselors/connect")
+    public ResponseEntity<Void> getAndSendCounselorChatIds(SimpMessageHeaderAccessor headerAccessor) {
+        Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
+        chatService.getAndSendChatIdsByWebSocket(sessionAttributes, false);
         return ResponseEntity.ok().build();
     }
 }

@@ -19,6 +19,7 @@
     <button onclick="sendChatStartRequest()">Start Chat Request</button>
     <button onclick="sendChatStartResponse()">Start Chat Response</button>
     <button onclick="sendChatFinishRequest()">End Chat</button>
+    <button onclick="sendConnectRequest()">Send Connect Request</button>
 </div>
 
 <script type="text/javascript">
@@ -36,6 +37,9 @@
         }, function (frame) {
             console.log('Connected: ' + frame);
 
+            stompClient.subscribe('/queue/chattings/connect/customers/', function (response) {
+                console.log('Received response for customers: ', response.body);
+            });
             // 구독
             stompClient.subscribe('/queue/chattings/notifications/customers/19', function (notification) {
                 console.log('Notification: ', notification.body);
@@ -76,6 +80,12 @@
     function displayMessage(message) {
         var messagesDiv = document.getElementById('messages');
         messagesDiv.innerHTML += '<div>' + message + '</div>';
+    }
+
+    function sendConnectRequest() {
+        if (stompClient !== null) {
+            stompClient.send("/app/api/v1/chat/customers/connect", {}, JSON.stringify({}));
+        }
     }
 </script>
 </body>
