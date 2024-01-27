@@ -75,6 +75,10 @@ public class Customer extends BaseEntity {
         }};
     }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
     public void setCounselor(Counselor counselor) {
         this.counselor = counselor;
     }
