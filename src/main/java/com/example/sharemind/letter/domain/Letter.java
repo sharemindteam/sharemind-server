@@ -88,6 +88,10 @@ public class Letter extends BaseEntity {
         this.consult.updateConsultStatusCounselorCancel();
     }
 
+    public void updateLetterStatusCustomerCancel() {
+        this.letterStatus = LetterStatus.CUSTOMER_CANCEL;
+    }
+
     public void updateConsultCategory(ConsultCategory category) {
         validateConsultCategory(category);
 

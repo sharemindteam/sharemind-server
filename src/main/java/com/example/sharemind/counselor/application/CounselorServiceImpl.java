@@ -203,10 +203,12 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId) {
+    public CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = getCounselorByCounselorId(counselorId);
 
-        return CounselorGetMinderProfileResponse.of(counselor);
+        return CounselorGetMinderProfileResponse.of(counselor,
+                wishListCounselorService.getIsWishListByCustomerAndCounselor(customer, counselor));
     }
 
     private String getCounselorSortColumn(String sortType) {

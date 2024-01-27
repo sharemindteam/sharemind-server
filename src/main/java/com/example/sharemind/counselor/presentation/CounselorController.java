@@ -221,7 +221,8 @@ public class CounselorController {
             @Parameter(name = "counselorId", description = "상담사 아이디")
     })
     @GetMapping("/{counselorId}")
-    public ResponseEntity<CounselorGetMinderProfileResponse> getCounselorMinderProfile(@PathVariable Long counselorId) {
-        return ResponseEntity.ok(counselorService.getCounselorMinderProfile(counselorId));
+    public ResponseEntity<CounselorGetMinderProfileResponse> getCounselorMinderProfile(@PathVariable Long counselorId,
+                                                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(counselorService.getCounselorMinderProfile(counselorId, customUserDetails.getCustomer().getCustomerId()));
     }
 }

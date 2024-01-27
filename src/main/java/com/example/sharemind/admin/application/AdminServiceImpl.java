@@ -1,6 +1,7 @@
 package com.example.sharemind.admin.application;
 
-import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
@@ -18,6 +19,11 @@ import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
+import com.example.sharemind.payment.application.PaymentService;
+import com.example.sharemind.payment.content.PaymentCustomerStatus;
+import com.example.sharemind.payment.domain.Payment;
+import com.example.sharemind.payment.exception.PaymentErrorCode;
+import com.example.sharemind.payment.exception.PaymentException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,19 +38,19 @@ public class AdminServiceImpl implements AdminService {
     private final ConsultService consultService;
     private final LetterService letterService;
     private final ChatService chatService;
+    private final PaymentService paymentService;
     private final CounselorService counselorService;
     private final CustomerService customerService;
 
     @Override
-    public List<ConsultsGetUnpaidResponse> getUnpaidConsults() {
+    public List<ConsultGetUnpaidResponse> getUnpaidConsults() {
         return consultService.getUnpaidConsults().stream()
-                .map(ConsultsGetUnpaidResponse::of)
+                .map(ConsultGetUnpaidResponse::of)
                 .toList();
     }
 
     @Transactional
     public void updateIsPaid(Long consultId) {
-
         Consult consult = consultService.getConsultByConsultId(consultId);
         if (consult.getPayment().getIsPaid()) {
             throw new ConsultException(ConsultErrorCode.CONSULT_ALREADY_PAID, consultId.toString());
@@ -94,5 +100,24 @@ public class AdminServiceImpl implements AdminService {
                 customer.addRole(Role.ROLE_COUNSELOR);
             }
         }
+    }
+
+    @Override
+    public List<PaymentGetRefundWaitingResponse> getRefundWaitingPayments() {
+        return paymentService.getRefundWaitingPayments().stream()
+                .map(PaymentGetRefundWaitingResponse::of)
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updateRefundComplete(Long paymentId) {
+        Payment payment = paymentService.getPaymentByPaymentId(paymentId);
+        if ((payment.getCustomerStatus() == null) ||
+                (!payment.getCustomerStatus().equals(PaymentCustomerStatus.REFUND_WAITING))) {
+            throw new PaymentException(PaymentErrorCode.INVALID_REFUND_COMPLETE);
+        }
+
+        payment.updateCustomerStatusRefundComplete();
     }
 }

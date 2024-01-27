@@ -37,7 +37,7 @@ public class ReviewGetResponse {
     private final String consultType;
 
     @Schema(description = "상담 날짜", example = "2024년 1월 12일", type = "string")
-    @JsonFormat(pattern = "yyyy년 MM월 dd일")
+    @JsonFormat(pattern = "yyyy년 MM월 dd일", timezone = "Asia/Seoul")
     private final LocalDateTime consultedAt;
 
     @Schema(description = "상담료", example = "20000")
@@ -52,23 +52,17 @@ public class ReviewGetResponse {
     public static ReviewGetResponse of(Review review, Boolean isCustomer) {
         Consult consult = review.getConsult();
 
-        LocalDateTime consultedAt = null;
-        switch (consult.getConsultType()) {
-            case LETTER -> consultedAt = consult.getLetter().getCreatedAt();
-            case CHAT -> consultedAt = consult.getChat().getCreatedAt();
-        }
-
         if (isCustomer) {
             Counselor counselor = consult.getCounselor();
             return new ReviewGetResponse(review.getReviewId(), counselor.getNickname(),
                     counselor.getConsultStyle().getDisplayName(), counselor.getLevel(), counselor.getRatingAverage(),
-                    counselor.getTotalReview(), consult.getConsultType().getDisplayName(), consultedAt,
+                    counselor.getTotalReview(), consult.getConsultType().getDisplayName(), consult.getConsultedAt(),
                     consult.getCost(), review.getRating(), review.getComment());
         } else {
             String nickname = consult.getCustomer().getNickname().charAt(0) + "**";
             return new ReviewGetResponse(review.getReviewId(), nickname, null, null, null,
-                    null, consult.getConsultType().getDisplayName(), consultedAt, consult.getCost(),
-                    review.getRating(), review.getComment());
+                    null, consult.getConsultType().getDisplayName(), consult.getConsultedAt(),
+                    consult.getCost(), review.getRating(), review.getComment());
         }
     }
 }

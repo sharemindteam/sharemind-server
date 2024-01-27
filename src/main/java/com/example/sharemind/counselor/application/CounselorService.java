@@ -40,5 +40,5 @@ public interface CounselorService {
 
     List<CounselorGetWishListResponse> getCounselorWishListByCustomer(WishListGetRequest wishListGetRequest, Long customerId);
 
-    CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId);
+    CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId, Long customerId);
 }

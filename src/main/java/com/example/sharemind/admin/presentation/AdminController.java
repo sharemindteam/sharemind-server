@@ -1,7 +1,8 @@
 package com.example.sharemind.admin.presentation;
 
 import com.example.sharemind.admin.application.AdminService;
-import com.example.sharemind.admin.dto.response.ConsultsGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +32,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping("/unpaid-consults")
-    public ResponseEntity<List<ConsultsGetUnpaidResponse>> getUnpaidConsults() {
+    public ResponseEntity<List<ConsultGetUnpaidResponse>> getUnpaidConsults() {
         return ResponseEntity.ok(adminService.getUnpaidConsults());
     }
 
@@ -86,6 +87,37 @@ public class AdminController {
     @PatchMapping("/pending-profiles/{counselorId}")
     public ResponseEntity<Void> updateProfileStatus(@PathVariable Long counselorId, @RequestParam Boolean isPassed) {
         adminService.updateProfileStatus(counselorId, isPassed);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "환불 예정 결제 정보 조회", description = "환불 예정 상태인 결제 정보 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/refund-waiting")
+    public ResponseEntity<List<PaymentGetRefundWaitingResponse>> getRefundWaitingPayments() {
+        return ResponseEntity.ok(adminService.getRefundWaitingPayments());
+    }
+
+    @Operation(summary = "결제 환불 완료 수정",
+            description = "환불 예정인 결제를 환불 완료로 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "환불 예정 상태가 아닌 결제에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 결제 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "paymentId", description = "결제 아이디")
+    })
+    @PatchMapping("/refund-waiting/{paymentId}")
+    public ResponseEntity<Void> updateRefundComplete(@PathVariable Long paymentId) {
+        adminService.updateRefundComplete(paymentId);
         return ResponseEntity.ok().build();
     }
 }
