@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ChatCreateEventResponse {
+public class ChatNotifyEventResponse {
 
     @Schema(description = "채팅방 id")
     private final Long chatId;
@@ -24,7 +24,7 @@ public class ChatCreateEventResponse {
     @Schema(description = "채팅 이벤트")
     private final ChatRoomStatus chatRoomStatus;
 
-    public static ChatCreateEventResponse of(Long chatId, ChatRoomStatus chatRoomStatus) {
-        return new ChatCreateEventResponse(chatId, LocalDateTime.now(), chatRoomStatus);
+    public static ChatNotifyEventResponse of(Long chatId, ChatRoomStatus chatRoomStatus) {
+        return new ChatNotifyEventResponse(chatId, LocalDateTime.now(), chatRoomStatus);
     }
 }

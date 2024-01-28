@@ -1,9 +1,9 @@
 package com.example.sharemind.global.websocket;
 
 import com.example.sharemind.chat.content.ChatRoomStatus;
-import com.example.sharemind.chat.domain.ChatCreateAndFinishEvent;
+import com.example.sharemind.chat.domain.ChatNotifyEvent;
 import com.example.sharemind.chat.domain.ChatUpdateStatusEvent;
-import com.example.sharemind.chat.dto.response.ChatCreateEventResponse;
+import com.example.sharemind.chat.dto.response.ChatNotifyEventResponse;
 import com.example.sharemind.chat.dto.response.ChatUpdateStatusResponse;
 
 import java.util.Objects;
@@ -37,25 +37,15 @@ public class WebSocketEventListener {
     }
 
     @EventListener
-    public void handleChatCreateEvent(ChatCreateAndFinishEvent chatCreateEvent) {
-        System.out.println("customerId : " + chatCreateEvent.getCustomerId() + "\ncounselorId: "
-                + chatCreateEvent.getCounselorId()); //todo: 로깅용으로 찍은 것.. 채팅 연결 후 삭제
+    public void handleChatNotifyEvent(ChatNotifyEvent chatNotifyEvent) {
+        System.out.println("customerId : " + chatNotifyEvent.getCustomerId() + "\ncounselorId: "
+                + chatNotifyEvent.getCounselorId()); //todo: 로깅용으로 찍은 것.. 채팅 연결 후 삭제
         messageSendingOperations.convertAndSend(
-                "/queue/chattings/notifications/customers/" + chatCreateEvent.getCustomerId(),
-                ChatCreateEventResponse.of(chatCreateEvent.getChatId(), ChatRoomStatus.CHAT_ROOM_CREATE));
+                "/queue/chattings/notifications/customers/" + chatNotifyEvent.getCustomerId(),
+                ChatNotifyEventResponse.of(chatNotifyEvent.getChatId(), ChatRoomStatus.CHAT_ROOM_CREATE));
         messageSendingOperations.convertAndSend(
-                "/queue/chattings/notifications/counselors/" + chatCreateEvent.getCounselorId(),
-                ChatCreateEventResponse.of(chatCreateEvent.getChatId(), ChatRoomStatus.CHAT_ROOM_CREATE));
-    }
-
-    @EventListener
-    public void handleChatFinishEvent(ChatCreateAndFinishEvent chatCreateAndFinishEvent) {
-        messageSendingOperations.convertAndSend(
-                "/queue/chattings/notifications/customers/" + chatCreateAndFinishEvent.getCustomerId(),
-                ChatCreateEventResponse.of(chatCreateAndFinishEvent.getChatId(), ChatRoomStatus.CHAT_ROOM_FINISH));
-        messageSendingOperations.convertAndSend(
-                "/queue/chattings/notifications/counselors/" + chatCreateAndFinishEvent.getCounselorId(),
-                ChatCreateEventResponse.of(chatCreateAndFinishEvent.getChatId(), ChatRoomStatus.CHAT_ROOM_FINISH));
+                "/queue/chattings/notifications/counselors/" + chatNotifyEvent.getCounselorId(),
+                ChatNotifyEventResponse.of(chatNotifyEvent.getChatId(), ChatRoomStatus.CHAT_ROOM_CREATE));
     }
 
     @EventListener

@@ -3,10 +3,11 @@ package com.example.sharemind.chat.application;
 import static com.example.sharemind.global.constants.Constants.COUNSELOR_PREFIX;
 import static com.example.sharemind.global.constants.Constants.CUSTOMER_PREFIX;
 
+import com.example.sharemind.chat.content.ChatRoomStatus;
 import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
-import com.example.sharemind.chat.domain.ChatCreateAndFinishEvent;
+import com.example.sharemind.chat.domain.ChatNotifyEvent;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
 import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
@@ -147,7 +148,6 @@ public class ChatServiceImpl implements ChatService {
         if (chat.getChatStatus() == ChatStatus.FINISH) {
             throw new ChatException(ChatErrorCode.CHAT_STATUS_FINISH, chatId.toString());
         }
-
     }
 
     @Override
@@ -291,6 +291,7 @@ public class ChatServiceImpl implements ChatService {
             case CUSTOMER_CHAT_FINISH_REQUEST: { //구매자가 상담 종료를 누른 상황
                 chat.updateChatStatus(ChatStatus.FINISH);
 
+                notifyFinishChat(chat, chat.getConsult());
                 break;
             }
             default:
@@ -382,7 +383,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private void notifyNewChat(Chat chat, Consult consult) {
-        publisher.publishEvent(ChatCreateAndFinishEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
-                consult.getCounselor().getCounselorId()));
+        publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
+                consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_CREATE));
+    }
+
+    private void notifyFinishChat(Chat chat, Consult consult) {
+        publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
+                consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_FINISH));
     }
 }
