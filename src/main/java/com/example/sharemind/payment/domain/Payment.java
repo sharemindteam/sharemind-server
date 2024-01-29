@@ -31,11 +31,11 @@ public class Payment extends BaseEntity {
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
-    @Column(name = "payment_counselor_status")
+    @Column(name = "payment_counselor_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentCounselorStatus counselorStatus;
 
-    @Column(name = "payment_customer_status")
+    @Column(name = "payment_customer_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentCustomerStatus customerStatus;
 
@@ -50,11 +50,17 @@ public class Payment extends BaseEntity {
         this.consult = consult;
         this.method = "외부 결제";
         this.isPaid = false;
+        updateBothStatusNone();
     }
 
     public void updateIsPaidTrue() {
         this.isPaid = true;
         updateCustomerStatusPaymentComplete();
+    }
+
+    public void updateBothStatusNone() {
+        this.customerStatus = PaymentCustomerStatus.NONE;
+        this.counselorStatus = PaymentCounselorStatus.NONE;
     }
 
     public void updateCustomerStatusPaymentComplete() {
@@ -70,6 +76,10 @@ public class Payment extends BaseEntity {
 
     public void updateCustomerStatusRefundComplete() {
         this.customerStatus = PaymentCustomerStatus.REFUND_COMPLETE;
+    }
+
+    public void updateCounselorStatusConsultFinish() {
+        this.counselorStatus = PaymentCounselorStatus.CONSULT_FINISH;
     }
 
     public void checkUpdateAuthority(Long customerId) {
