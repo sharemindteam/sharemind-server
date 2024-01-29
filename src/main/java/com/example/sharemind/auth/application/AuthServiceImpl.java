@@ -4,11 +4,16 @@ import com.example.sharemind.auth.dto.request.*;
 import com.example.sharemind.auth.dto.response.TokenDto;
 import com.example.sharemind.auth.exception.AuthErrorCode;
 import com.example.sharemind.auth.exception.AuthException;
+import com.example.sharemind.consult.application.ConsultService;
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.customer.domain.Quit;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
 import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.customer.repository.CustomerRepository;
+import com.example.sharemind.customer.repository.QuitRepository;
 import com.example.sharemind.global.jwt.TokenProvider;
+import com.example.sharemind.payment.application.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +26,10 @@ public class AuthServiceImpl implements AuthService {
 
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final PaymentService paymentService;
+    private final ConsultService consultService;
     private final CustomerRepository customerRepository;
+    private final QuitRepository quitRepository;
 
     @Transactional
     @Override
@@ -90,5 +98,32 @@ public class AuthServiceImpl implements AuthService {
         }
 
         customer.updatePassword(passwordEncoder.encode(authUpdatePasswordRequest.getPassword()));
+    }
+
+    @Transactional
+    @Override
+    public void quit(AuthQuitRequest authQuitRequest, Long customerId) {
+        Customer customer = customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
+        if (consultService.checkWaitingOrOngoingExistsByCustomer(customer)) {
+            throw new AuthException(AuthErrorCode.INVALID_QUIT_CONSULT);
+        } else if (paymentService.checkRefundWaitingExists(customer)) {
+            throw new AuthException(AuthErrorCode.INVALID_QUIT_PAYMENT);
+        }
+
+        Counselor counselor = customer.getCounselor();
+        if (counselor != null) {
+            if (consultService.checkWaitingOrOngoingExistsByCounselor(counselor)) {
+                throw new AuthException(AuthErrorCode.INVALID_QUIT_CONSULT);
+            } else if (paymentService.checkNotSettlementCompleteAndNotNoneExists(counselor)) {
+                throw new AuthException(AuthErrorCode.INVALID_QUIT_PAYMENT);
+            } else {
+                counselor.updateIsActivatedFalse();
+            }
+        }
+
+        Quit quit = quitRepository.save(authQuitRequest.toEntity());
+        customer.setQuit(quit);
+        customer.updateIsActivatedFalse();
     }
 }

@@ -15,4 +15,6 @@ public interface AuthService {
     Boolean getPasswordMatched(AuthGetPasswordMatchRequest authGetPasswordMatchRequest, Long customerId);
 
     void updatePassword(AuthUpdatePasswordRequest authUpdatePasswordRequest, Long customerId);
+
+    void quit(AuthQuitRequest authQuitRequest, Long customerId);
 }
