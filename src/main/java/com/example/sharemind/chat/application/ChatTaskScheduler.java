@@ -29,6 +29,7 @@ public class ChatTaskScheduler {
     private static final int TEN_MINUTE = 600000;
     private static final int TWENTY_FIVE_MINUTE = 1500000;
     private static final int THIRTY_MINUTE = 1800000;
+    private static final int ONE_DAY = 24 * 60 * 60 * 1000;
 
     public void checkSendRequest(Chat chat) {
         scheduler.schedule(() -> {
@@ -59,5 +60,17 @@ public class ChatTaskScheduler {
             publisher.publishEvent(
                     ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_TIME_OVER));
         }, new Date(System.currentTimeMillis() + THIRTY_MINUTE));
+    }
+
+    public void checkAutoRefund(Chat chat) {
+        scheduler.schedule(() -> {
+
+            if (chat.getAutoRefund() == Boolean.TRUE) {
+                chat.updateChatStatus(ChatStatus.CANCEL);
+                chatRepository.save(chat);
+
+                publisher.publishEvent(ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_CANCEL));
+            }
+        }, new Date(System.currentTimeMillis() + ONE_DAY));
     }
 }

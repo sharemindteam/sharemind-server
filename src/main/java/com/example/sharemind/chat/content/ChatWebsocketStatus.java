@@ -21,6 +21,9 @@ public enum ChatWebsocketStatus {
     @Schema(description = "채팅 종료")
     CHAT_FINISH,
 
+    @Schema(description = "채팅 취소")
+    CHAT_CANCEL,
+
     @Schema(description = "상담사가 채팅 시작 요청")
     COUNSELOR_CHAT_START_REQUEST,
 
