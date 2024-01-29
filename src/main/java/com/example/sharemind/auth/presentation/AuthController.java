@@ -106,4 +106,21 @@ public class AuthController {
         authService.updatePassword(authUpdatePasswordRequest, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "회원 탈퇴",
+            description = "회원 탈퇴")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "탈퇴 성공"),
+            @ApiResponse(responseCode = "400",
+                    description = "1. 미완료 상담이 남아있음\n 2. 환불금/정산금 남아있음\n 3. 탈퇴 사유(shortReason) 공백으로 들어옴",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @PatchMapping("/quit")
+    public ResponseEntity<Void> quit(@Valid @RequestBody AuthQuitRequest authQuitRequest,
+                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        authService.quit(authQuitRequest, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
+    }
 }
