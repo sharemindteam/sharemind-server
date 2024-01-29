@@ -5,7 +5,9 @@ import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.domain.ChatUpdateStatusEvent;
 import com.example.sharemind.chat.repository.ChatRepository;
+
 import java.util.Date;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.TaskScheduler;
@@ -21,7 +23,7 @@ public class ChatTaskScheduler {
     private final ApplicationEventPublisher publisher;
     private final ChatRepository chatRepository;
 
-//    private static final int TEN_MINUTE = 60000; //1분
+    //    private static final int TEN_MINUTE = 60000; //1분
 //    private static final int TWENTY_FIVE_MINUTE = 300000; //5분
 //    private static final int THIRTY_MINUTE = 600000; //10분 //테스트용으로 남겨둡니다.
     private static final int TEN_MINUTE = 600000;
@@ -51,7 +53,7 @@ public class ChatTaskScheduler {
         }, new Date(System.currentTimeMillis() + TWENTY_FIVE_MINUTE));
 
         scheduler.schedule(() -> {
-            chat.updateChatStatus(ChatStatus.FINISH);
+            chat.updateChatStatus(ChatStatus.TIME_OVER);
             chatRepository.save(chat);
 
             publisher.publishEvent(
