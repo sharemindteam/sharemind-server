@@ -3,6 +3,7 @@ package com.example.sharemind.consult.application;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.dto.request.ConsultCreateRequest;
+import com.example.sharemind.consult.dto.response.ConsultGetOngoingResponse;
 import com.example.sharemind.global.content.ConsultType;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface ConsultService {
     List<Consult> getConsultsByCounselorIdAndConsultTypeAndIsPaid(Long counselorId, ConsultType consultType);
 
     Consult getConsultByChat(Chat chat);
+
+    ConsultGetOngoingResponse getOngoingConsults(Long customerId, Boolean isCustomer);
 }
