@@ -26,7 +26,7 @@ public class TokenProvider implements InitializingBean {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenRepository tokenRepository;
 
     private final String secret;
     private final Long accessExpirationTime;
@@ -34,12 +34,12 @@ public class TokenProvider implements InitializingBean {
     private Key key;
 
     public TokenProvider(CustomUserDetailsService customUserDetailsService,
-                         RefreshTokenRepository refreshTokenRepository,
+                         TokenRepository tokenRepository,
                          @Value("${jwt.secret}") String secret,
                          @Value("${jwt.access-expiration-time}") Long accessExpirationTime,
                          @Value("${jwt.refresh-expiration-time}") Long refreshExpirationTime) {
         this.customUserDetailsService = customUserDetailsService;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.tokenRepository = tokenRepository;
         this.secret = secret;
         this.accessExpirationTime = accessExpirationTime;
         this.refreshExpirationTime = refreshExpirationTime;
@@ -86,7 +86,7 @@ public class TokenProvider implements InitializingBean {
                 .compact();
 
         Duration duration = Duration.between(Instant.now(), expirationTime.toInstant());
-        refreshTokenRepository.save(email, refreshToken, duration);
+        tokenRepository.save(email, refreshToken, duration);
 
         return refreshToken;
     }
@@ -121,7 +121,7 @@ public class TokenProvider implements InitializingBean {
             Claims claims = parseClaims(refreshToken);
 
             String email = claims.getSubject();
-            String savedRefreshToken = refreshTokenRepository.findByKey(email);
+            String savedRefreshToken = tokenRepository.findByKey(email);
 
             return refreshToken.equals(savedRefreshToken);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
