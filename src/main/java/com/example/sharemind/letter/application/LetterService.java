@@ -22,4 +22,6 @@ public interface LetterService {
     LetterGetDeadlineResponse getDeadline(Long letterId);
 
     List<ChatLetterGetResponse> getLetters(Boolean filter, Boolean isCustomer, String sortType, Long customerId);
+
+    String getOpponentNickname(Long letterId, Long customerId);
 }
