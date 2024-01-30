@@ -123,4 +123,15 @@ public class AuthController {
         authService.quit(authQuitRequest, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "로그아웃",
+            description = "로그아웃")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+    })
+    @PatchMapping("/signOut")
+    public ResponseEntity<Void> singOut(@Valid @RequestBody AuthSignOutRequest authSignOutRequest) {
+        authService.signOut(authSignOutRequest);
+        return ResponseEntity.ok().build();
+    }
 }
