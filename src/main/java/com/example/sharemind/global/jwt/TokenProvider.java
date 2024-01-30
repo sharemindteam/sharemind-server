@@ -1,6 +1,8 @@
 package com.example.sharemind.global.jwt;
 
-import com.example.sharemind.auth.repository.RefreshTokenRepository;
+import static com.example.sharemind.global.constants.Constants.TOKEN_PREFIX;
+
+import com.example.sharemind.auth.repository.TokenRepository;
 import com.example.sharemind.customer.content.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -69,7 +71,7 @@ public class TokenProvider implements InitializingBean {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return "Bearer " + accessToken;
+        return TOKEN_PREFIX + accessToken;
     }
 
     public String createRefreshToken(String email) {
@@ -102,7 +104,9 @@ public class TokenProvider implements InitializingBean {
     public boolean validateAccessToken(String accessToken) {
         try {
             Claims claims = parseClaims(accessToken);
-            return !claims.getExpiration().before(new Date());
+            String signOutToken = tokenRepository.findByKey(accessToken);
+
+            return !claims.getExpiration().before(new Date()) && (signOutToken == null);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.warn("잘못된 JWT 서명입니다.", e);
         } catch (ExpiredJwtException e) {
@@ -139,6 +143,14 @@ public class TokenProvider implements InitializingBean {
 
     public String getEmail(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public Duration getRestExpirationTime(String token) {
+        return Duration.between(Instant.now(), parseClaims(token).getExpiration().toInstant());
+    }
+
+    public String getTokenWithNoPrefix(String accessToken) {
+        return accessToken.replace(TOKEN_PREFIX, "");
     }
 
     private Claims parseClaims(String token) {

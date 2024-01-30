@@ -17,4 +17,6 @@ public interface AuthService {
     void updatePassword(AuthUpdatePasswordRequest authUpdatePasswordRequest, Long customerId);
 
     void quit(AuthQuitRequest authQuitRequest, Long customerId);
+
+    void signOut(AuthSignOutRequest authSignOutRequest);
 }

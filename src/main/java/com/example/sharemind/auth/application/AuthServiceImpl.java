@@ -4,6 +4,7 @@ import com.example.sharemind.auth.dto.request.*;
 import com.example.sharemind.auth.dto.response.TokenDto;
 import com.example.sharemind.auth.exception.AuthErrorCode;
 import com.example.sharemind.auth.exception.AuthException;
+import com.example.sharemind.auth.repository.TokenRepository;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.domain.Customer;
@@ -19,10 +20,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+    private static final String SIGNOUT_VALUE = "signOut";
 
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -30,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final ConsultService consultService;
     private final CustomerRepository customerRepository;
     private final QuitRepository quitRepository;
+    private final TokenRepository tokenRepository;
 
     @Transactional
     @Override
@@ -125,5 +130,15 @@ public class AuthServiceImpl implements AuthService {
         Quit quit = quitRepository.save(authQuitRequest.toEntity());
         customer.setQuit(quit);
         customer.updateIsActivatedFalse();
+    }
+
+    @Override
+    public void signOut(AuthSignOutRequest authSignOutRequest) {
+        String email = tokenProvider.getEmail(authSignOutRequest.getRefreshToken());
+        tokenRepository.deleteByKey(email);
+
+        String accessToken = tokenProvider.getTokenWithNoPrefix(authSignOutRequest.getAccessToken());
+        Duration expirationTime = tokenProvider.getRestExpirationTime(accessToken);
+        tokenRepository.save(accessToken, SIGNOUT_VALUE, expirationTime);
     }
 }
