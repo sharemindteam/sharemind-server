@@ -66,6 +66,8 @@ public class ChatServiceImpl implements ChatService {
         updateChatIdsRedis(chat, consult);
 
         notifyNewChat(chat, consult);
+
+        chatTaskScheduler.checkAutoRefund(chat);
         return chat;
     }
 
@@ -276,6 +278,9 @@ public class ChatServiceImpl implements ChatService {
                 chat.updateChatStatus(ChatStatus.SEND_REQUEST);
 
                 chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
+
+                if (!chat.getAutoRefund())
+                    chat.updateAutoRefundTrue();
 
                 break;
             }

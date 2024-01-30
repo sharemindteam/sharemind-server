@@ -68,6 +68,10 @@ public class Chat extends BaseEntity {
         this.startedAt = LocalDateTime.now();
     }
 
+    public void updateAutoRefundTrue() {
+        this.autoRefund = true;
+    }
+
     public void updateCustomerReadId(Long id) {
         this.customerReadId = id;
     }

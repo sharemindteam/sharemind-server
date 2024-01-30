@@ -65,7 +65,7 @@ public class ChatTaskScheduler {
     public void checkAutoRefund(Chat chat) {
         scheduler.schedule(() -> {
 
-            if (chat.getAutoRefund() == Boolean.TRUE) {
+            if (chat.getAutoRefund()) {
                 chat.updateChatStatus(ChatStatus.CANCEL);
                 chatRepository.save(chat);
 
