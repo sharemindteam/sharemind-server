@@ -3,6 +3,7 @@ package com.example.sharemind.letterMessage.application;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.letter.application.LetterService;
+import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.content.LetterMessageType;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
@@ -139,6 +140,9 @@ public class LetterMessageServiceImpl implements LetterMessageService {
             case 4 -> recentType = LetterMessageType.SECOND_REPLY.getDisplayName();
         }
 
-        return LetterMessageGetRecentTypeResponse.of(recentType);
+        Boolean isCanceled = letter.getLetterStatus().equals(LetterStatus.COUNSELOR_CANCEL) ||
+                letter.getLetterStatus().equals(LetterStatus.CUSTOMER_CANCEL);
+
+        return LetterMessageGetRecentTypeResponse.of(recentType, isCanceled);
     }
 }

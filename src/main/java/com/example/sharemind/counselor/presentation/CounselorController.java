@@ -184,7 +184,7 @@ public class CounselorController {
     @Operation(summary = "상담사 리스트 반환",
             description = """
                     - 카테고리 선택 || 들을 준비가 된 마인더들 페이지 상담사 리스트 반환
-                     - 주소 형식: /api/v1/counselors?sortType=POPULARITY
+                     - 주소 형식: /api/v1/counselors/all?sortType=POPULARITY
                      - 결과는 4개씩 반환하며, index는 페이지 번호 입니다(ex index 0 : id 0~3에 해당하는 값 반환 index 1: 4~7에 해당하는 값 반환)
                     - 해당하는 검색 결과가 없을 때(범위를 벗어난 인덱스 혹은 음수 인덱스)는 빈배열을 리턴합니다.
                     - 들을 준비가 된 마인더들(상담사 전체 리스트)조회의 경우, RequestBody에서 consultCategory를 빼고 넘겨주시면 됩니다.""")
@@ -196,7 +196,7 @@ public class CounselorController {
             )
     })
     @Parameter(name = "sortType", description = "LATEST: 최근순, POPULARITY: 인기순, STAR_RATING: 별점 평균 순")
-    @PatchMapping()
+    @PatchMapping("/all")
     public ResponseEntity<List<CounselorGetListResponse>> getCounselorsByCategory(
             @Valid @RequestBody CounselorGetRequest counselorGetRequest,
             @RequestParam String sortType,
@@ -220,7 +220,7 @@ public class CounselorController {
     @Parameters({
             @Parameter(name = "counselorId", description = "상담사 아이디")
     })
-    @GetMapping("/{counselorId}")
+    @GetMapping("/all/{counselorId}")
     public ResponseEntity<CounselorGetMinderProfileResponse> getCounselorMinderProfile(@PathVariable Long counselorId,
                                                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getCounselorMinderProfile(counselorId, customUserDetails.getCustomer().getCustomerId()));

@@ -142,4 +142,27 @@ public class LetterController {
     public ResponseEntity<LetterGetDeadlineResponse> getDeadline(@PathVariable Long letterId) {
         return ResponseEntity.ok(letterService.getDeadline(letterId));
     }
+
+    @Operation(summary = "편지 상대방 닉네임 조회",
+            description = "편지 상대방 닉네임 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "403", description = "편지 참여자가 아님",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 편지 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "letterId", description = "편지 아이디")
+    })
+    @GetMapping("/nickname/{letterId}")
+    public ResponseEntity<String> getOpponentNickname(@PathVariable Long letterId,
+                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(letterService.getOpponentNickname(letterId,
+                customUserDetails.getCustomer().getCustomerId()));
+    }
 }

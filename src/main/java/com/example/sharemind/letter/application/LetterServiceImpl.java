@@ -158,6 +158,19 @@ public class LetterServiceImpl implements LetterService {
                 .toList();
     }
 
+    @Override
+    public String getOpponentNickname(Long letterId, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Consult consult = getLetterByLetterId(letterId).getConsult();
+        if (consult.getCustomer().equals(customer)) {
+            return consult.getCounselor().getNickname();
+        } else if (consult.getCounselor().equals(customer.getCounselor())) {
+            return consult.getCustomer().getNickname();
+        } else {
+            throw new LetterException(LetterErrorCode.INVALID_LETTER_PARTICIPANT, customerId.toString());
+        }
+    }
+
     @Scheduled(cron = "0 0 0/1 * * *", zone = "Asia/Seoul")
     @Transactional
     public void checkLettersDeadline() {
