@@ -17,8 +17,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
 import java.util.Collections;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -204,7 +206,10 @@ public class CounselorController {
         if (counselorGetRequest.getIndex() < 0) {
             return ResponseEntity.ok(Collections.emptyList());
         }
-        return ResponseEntity.ok(counselorService.getCounselorsByCategory(customUserDetails.getCustomer()
+
+        if (customUserDetails == null)
+            return ResponseEntity.ok(counselorService.getAllCounselorsByCategory(sortType, counselorGetRequest));
+        return ResponseEntity.ok(counselorService.getCounselorsByCategoryAndCustomer(customUserDetails.getCustomer()
                 .getCustomerId(), sortType, counselorGetRequest));
     }
 
@@ -223,6 +228,8 @@ public class CounselorController {
     @GetMapping("/all/{counselorId}")
     public ResponseEntity<CounselorGetMinderProfileResponse> getCounselorMinderProfile(@PathVariable Long counselorId,
                                                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(counselorService.getCounselorMinderProfile(counselorId, customUserDetails.getCustomer().getCustomerId()));
+        if (customUserDetails == null)
+            return ResponseEntity.ok(counselorService.getAllCounselorMinderProfile(counselorId));
+        return ResponseEntity.ok(counselorService.getCounselorMinderProfileByCustomer(counselorId, customUserDetails.getCustomer().getCustomerId()));
     }
 }
