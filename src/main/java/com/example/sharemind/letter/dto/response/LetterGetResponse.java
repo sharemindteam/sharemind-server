@@ -58,7 +58,7 @@ public class LetterGetResponse {
         if (recentMessage == null) {
             return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                     letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
-                    null, null, reviewCompleted, letter.getConsult().getConsultId()));
+                    TimeUtil.getUpdatedAt(letter.getConsult().getUpdatedAt()), null, reviewCompleted, letter.getConsult().getConsultId()));
         }
 
         return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
