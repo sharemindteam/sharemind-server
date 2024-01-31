@@ -27,7 +27,7 @@ public class LetterMessageGetResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년 MM월 dd일 a HH시 mm분")
     private final LocalDateTime updatedAt;
 
-    @Schema(description = "작성 일시, 메시지 존재하지 않으면 null", example = "8분 전")
+    @Schema(description = "작성 일시, 메시지 존재하지 않으면 null", example = "01.12")
     private final String updatedAt2;
 
     public static LetterMessageGetResponse of(LetterMessage letterMessage) {
