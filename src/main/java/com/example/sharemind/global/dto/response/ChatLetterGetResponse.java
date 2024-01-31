@@ -11,6 +11,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import static com.example.sharemind.global.constants.Constants.IS_CHAT;
+import static com.example.sharemind.global.constants.Constants.IS_LETTER;
+
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChatLetterGetResponse {
@@ -45,11 +48,15 @@ public class ChatLetterGetResponse {
     @Schema(description = "상담 아이디")
     private final Long consultId;
 
+    @Schema(description = "채팅/편지 여부")
+    private final Boolean isChat;
+
     public static ChatLetterGetResponse of(LetterGetResponse letterGetResponse) {
         return new ChatLetterGetResponse(letterGetResponse.getLetterId(), letterGetResponse.getConsultStyle(),
                 letterGetResponse.getLetterStatus(), letterGetResponse.getOpponentName(),
                 letterGetResponse.getUpdatedAt(), letterGetResponse.getRecentContent(), null,
-                null, letterGetResponse.getReviewCompleted(), letterGetResponse.getConsultId());
+                null, letterGetResponse.getReviewCompleted(), letterGetResponse.getConsultId(),
+                IS_LETTER);
     }
 
     public static ChatLetterGetResponse of(String nickname, int unreadMessageCount, Chat chat, Counselor counselor,
@@ -62,11 +69,12 @@ public class ChatLetterGetResponse {
         if (chatMessage == null) {
             return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
                     chat.getChatStatus().getDisplayName(), nickname, null, null,
-                    null, null, reviewCompleted, chat.getConsult().getConsultId());
+                    null, null, reviewCompleted, chat.getConsult().getConsultId(),
+                    IS_CHAT);
         }
         return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
                 chat.getChatStatus().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
                 chatMessage.getContent(), chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted,
-                chat.getConsult().getConsultId());
+                chat.getConsult().getConsultId(), IS_CHAT);
     }
 }
