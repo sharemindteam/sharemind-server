@@ -1,5 +1,6 @@
 package com.example.sharemind.consult.application;
 
+import com.example.sharemind.chat.application.ChatConsultService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.dto.request.ConsultCreateRequest;
@@ -38,6 +39,7 @@ public class ConsultServiceImpl implements ConsultService {
     private final CounselorService counselorService;
     private final CustomerService customerService;
     private final LetterConsultService letterConsultService;
+    private final ChatConsultService chatConsultService;
 
     @Transactional
     @Override
@@ -94,12 +96,12 @@ public class ConsultServiceImpl implements ConsultService {
     @Override
     public ConsultGetOngoingResponse getOngoingConsults(Long customerId, Boolean isCustomer) {
         ChatLetterGetOngoingResponse letterResponse = letterConsultService.getOngoingLetters(customerId, isCustomer);
-        // TODO chatResponse = ChatService.get~~~
+        ChatLetterGetOngoingResponse chatResponse = chatConsultService.getOngoingChats(customerId, isCustomer);
 
-        Integer totalOngoing = letterResponse.getTotalOngoing(); // TODO + chatResponse.getTotalOngoing()
+        Integer totalOngoing = letterResponse.getTotalOngoing() + chatResponse.getTotalOngoing();
         List<ChatLetterGetResponse> responses = new ArrayList<>();
         responses.addAll(letterResponse.getConsults());
-        // TODO responses.addAll(chatResponse.getChats());
+        responses.addAll(chatResponse.getConsults());
 
         responses.sort(Comparator.comparing(ChatLetterGetResponse::getLatestMessageUpdatedAt).reversed());
         int consultOffset = isCustomer ? CUSTOMER_ONGOING_CONSULT : COUNSELOR_ONGOING_CONSULT;

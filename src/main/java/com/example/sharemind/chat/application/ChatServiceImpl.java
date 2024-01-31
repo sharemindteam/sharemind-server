@@ -21,7 +21,6 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ChatLetterSortType;
 import com.example.sharemind.global.content.ConsultType;
-import com.example.sharemind.global.dto.response.ChatLetterGetOngoingResponse;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 
 import java.time.LocalDateTime;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
