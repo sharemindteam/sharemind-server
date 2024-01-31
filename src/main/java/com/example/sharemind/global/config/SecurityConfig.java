@@ -51,7 +51,7 @@ public class SecurityConfig {
                         requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**",
                                         "/api/v1/auth/signUp", "/api/v1/auth/signIn", "/api/v1/auth/reissue",
                                         "/api/v1/emails/**").permitAll()
-                                .requestMatchers("/api/v1/counselors/all**", "/api/v1/searchWords/results**").permitAll()
+                                .requestMatchers("/api/v1/counselors/all/**", "/api/v1/searchWords/results").permitAll()
                                 .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html",
                                         "/counselor.html").permitAll()
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
