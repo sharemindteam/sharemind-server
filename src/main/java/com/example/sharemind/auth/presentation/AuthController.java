@@ -1,11 +1,10 @@
 package com.example.sharemind.auth.presentation;
 
 import com.example.sharemind.auth.application.AuthService;
-import com.example.sharemind.auth.dto.request.AuthReissueRequest;
-import com.example.sharemind.auth.dto.request.AuthSignInRequest;
-import com.example.sharemind.auth.dto.request.AuthSignUpRequest;
+import com.example.sharemind.auth.dto.request.*;
 import com.example.sharemind.auth.dto.response.TokenDto;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
+import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,10 +15,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth Controller", description = "인증 컨트롤러")
 @RestController
@@ -76,5 +73,65 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissueToken(@Valid @RequestBody AuthReissueRequest authReissueRequest) {
         return ResponseEntity.ok(authService.reissueToken(authReissueRequest));
+    }
+
+    @Operation(summary = "비밀번호 변경 시 현재 비밀번호 일치 여부 조회",
+            description = "비밀번호 변경 시 현재 비밀번호 일치 여부 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "비밀번호 값이 공백으로 들어옴",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @PostMapping("/password")
+    public ResponseEntity<Boolean> getPasswordMatched(@Valid @RequestBody AuthGetPasswordMatchRequest authGetPasswordMatchRequest,
+                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(authService.getPasswordMatched(authGetPasswordMatchRequest,
+                customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "비밀번호 변경",
+            description = "비밀번호 변경")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "변경 성공"),
+            @ApiResponse(responseCode = "400", description = "1. 올바르지 않은 비밀번호 형식\n 2. 새 비밀번호가 현재 비밀번호와 동일",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @PatchMapping("/password")
+    public ResponseEntity<Void> updatePassword(@Valid @RequestBody AuthUpdatePasswordRequest authUpdatePasswordRequest,
+                                               @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        authService.updatePassword(authUpdatePasswordRequest, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "회원 탈퇴",
+            description = "회원 탈퇴")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "탈퇴 성공"),
+            @ApiResponse(responseCode = "400",
+                    description = "1. 미완료 상담이 남아있음\n 2. 환불금/정산금 남아있음\n 3. 탈퇴 사유(shortReason) 공백으로 들어옴",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @DeleteMapping("/quit")
+    public ResponseEntity<Void> quit(@Valid @RequestBody AuthQuitRequest authQuitRequest,
+                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        authService.quit(authQuitRequest, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "로그아웃",
+            description = "로그아웃")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+    })
+    @PatchMapping("/signOut")
+    public ResponseEntity<Void> singOut(@Valid @RequestBody AuthSignOutRequest authSignOutRequest) {
+        authService.signOut(authSignOutRequest);
+        return ResponseEntity.ok().build();
     }
 }

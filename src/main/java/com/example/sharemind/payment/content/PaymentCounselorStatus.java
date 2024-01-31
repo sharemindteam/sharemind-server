@@ -1,7 +1,9 @@
 package com.example.sharemind.payment.content;
 
 public enum PaymentCounselorStatus {
-    COMPLETE,
-    ONGOING,
-    WAITING
+    NONE,
+    CONSULT_FINISH,
+    SETTLEMENT_WAITING,
+    SETTLEMENT_ONGOING,
+    SETTLEMENT_COMPLETE
 }

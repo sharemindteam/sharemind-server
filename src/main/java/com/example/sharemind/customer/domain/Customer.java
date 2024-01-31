@@ -5,7 +5,6 @@ import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.global.common.BaseEntity;
-import com.example.sharemind.global.content.Bank;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -42,23 +41,17 @@ public class Customer extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "optional_agreement")
-    private Boolean optionalAgreement;
-
-    private String account;
-
-    private Bank bank;
-
-    @Column(name = "account_holder")
-    private String accountHolder;
-
     @Email(message = "복구 이메일 형식이 올바르지 않습니다.")
     @Column(name = "recovery_email", nullable = false)
     private String recoveryEmail;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "counselor_id", unique = true)
     private Counselor counselor;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quit_id", unique = true)
+    private Quit quit;
 
     @Builder
     public Customer(String email, String password, String phoneNumber, String recoveryEmail) {
@@ -75,8 +68,16 @@ public class Customer extends BaseEntity {
         }};
     }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
     public void setCounselor(Counselor counselor) {
         this.counselor = counselor;
+    }
+
+    public void setQuit(Quit quit) {
+        this.quit = quit;
     }
 
     public void addRole(Role role) {

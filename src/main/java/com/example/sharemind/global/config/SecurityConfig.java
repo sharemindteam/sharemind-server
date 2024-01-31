@@ -47,9 +47,10 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
+                .authorizeHttpRequests( // TODO 여기 더 나은 방법이 있을 것 같은데 일단 동작은 하니까 두고 추후에 리팩토링...ㅠㅠ
                         requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**",
-                                        "/api/v1/auth/**", "/api/v1/emails/**").permitAll()
+                                        "/api/v1/auth/signUp", "/api/v1/auth/signIn", "/api/v1/auth/reissue",
+                                        "/api/v1/emails/**").permitAll()
                                 .requestMatchers("/api/v1/counselors/all**", "/api/v1/searchWords/results**").permitAll()
                                 .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html",
                                         "/counselor.html").permitAll()
