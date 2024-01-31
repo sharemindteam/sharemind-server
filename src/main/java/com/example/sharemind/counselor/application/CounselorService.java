@@ -8,6 +8,7 @@ import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 
 import com.example.sharemind.wishList.dto.request.WishListGetRequest;
+
 import java.util.List;
 
 public interface CounselorService {
@@ -35,10 +36,15 @@ public interface CounselorService {
 
     CounselorGetBannerResponse getCounselorChatBanner(Chat chat);
 
-    List<CounselorGetListResponse> getCounselorsByCategory(Long customerId, String sortType,
-                                                           CounselorGetRequest counselorGetRequest);
+    List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId, String sortType,
+                                                                      CounselorGetRequest counselorGetRequest);
+
+    List<CounselorGetListResponse> getAllCounselorsByCategory(String sortType,
+                                                              CounselorGetRequest counselorGetRequest);
 
     List<CounselorGetWishListResponse> getCounselorWishListByCustomer(WishListGetRequest wishListGetRequest, Long customerId);
 
-    CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId, Long customerId);
+    CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId, Long customerId);
+
+    CounselorGetMinderProfileResponse getAllCounselorMinderProfile(Long counselorId);
 }
