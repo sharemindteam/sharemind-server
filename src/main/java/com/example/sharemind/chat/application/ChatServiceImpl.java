@@ -1,8 +1,5 @@
 package com.example.sharemind.chat.application;
 
-import static com.example.sharemind.global.constants.Constants.COUNSELOR_PREFIX;
-import static com.example.sharemind.global.constants.Constants.CUSTOMER_PREFIX;
-
 import com.example.sharemind.chat.content.ChatRoomStatus;
 import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.content.ChatWebsocketStatus;
@@ -24,14 +21,11 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ChatLetterSortType;
 import com.example.sharemind.global.content.ConsultType;
+import com.example.sharemind.global.dto.response.ChatLetterGetOngoingResponse;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +36,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.sharemind.global.constants.Constants.*;
 
 @Slf4j
 @Service
@@ -110,8 +106,27 @@ public class ChatServiceImpl implements ChatService {
         sendChatIds(chatGetConnectResponse);
     }
 
-    private List<Chat> getRecentChats(int count) {
-        return chatRepository.findRecentChatsByLatestMessage(PageRequest.of(0, count));
+    @Override
+    public ChatLetterGetOngoingResponse getOngoingChats(Long customerId, Boolean isCustomer) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        List<Chat> chats;
+        if (isCustomer)
+            chats = getRecentChats(CUSTOMER_ONGOING_CONSULT, customer);
+        else
+            chats = getRecentChats(COUNSELOR_ONGOING_CONSULT, customer);
+
+        List<ChatLetterGetResponse> chatLetterGetResponses = new ArrayList<>();
+
+        for (Chat chat : chats) {
+            chatLetterGetResponses.add(createChatInfoGetResponse(chat, isCustomer));
+        }
+
+        Integer totalChatOngoing = chatRepository.countChatsByStatusAndCustomer(customer);
+        return ChatLetterGetOngoingResponse.of(totalChatOngoing,chatLetterGetResponses);
+    }
+
+    private List<Chat> getRecentChats(int count, Customer customer) {
+        return chatRepository.findRecentChatsByLatestMessage(PageRequest.of(0, count), customer);
     }
 
     private ChatGetConnectResponse getChatIds(Map<String, Object> sessionAttributes, Boolean isCustomer) {
