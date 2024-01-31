@@ -3,7 +3,6 @@ package com.example.sharemind.chat.application;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.consult.domain.Consult;
-import com.example.sharemind.global.dto.response.ChatLetterGetOngoingResponse;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 
 import java.util.List;
@@ -30,6 +29,4 @@ public interface ChatService {
     void updateReadId(Long chatId, Long customerId, Boolean isCustomer);
 
     Chat getAndValidateChat(Long chatId, Boolean isCustomer, Long customerId);
-
-    ChatLetterGetOngoingResponse getOngoingChats(Long customerId, Boolean isCustomer);
 }

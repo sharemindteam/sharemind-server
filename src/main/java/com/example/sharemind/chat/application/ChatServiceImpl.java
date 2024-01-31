@@ -50,6 +50,7 @@ public class ChatServiceImpl implements ChatService {
     private final CounselorService counselorService;
     private final ConsultService consultService;
     private final CustomerService customerService;
+    private final ChatConsultService chatConsultService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
@@ -104,29 +105,6 @@ public class ChatServiceImpl implements ChatService {
     public void getAndSendChatIdsByWebSocket(Map<String, Object> sessionAttributes, Boolean isCustomer) {
         ChatGetConnectResponse chatGetConnectResponse = getChatIds(sessionAttributes, isCustomer);
         sendChatIds(chatGetConnectResponse);
-    }
-
-    @Override
-    public ChatLetterGetOngoingResponse getOngoingChats(Long customerId, Boolean isCustomer) {
-        Customer customer = customerService.getCustomerByCustomerId(customerId);
-        List<Chat> chats;
-        if (isCustomer)
-            chats = getRecentChats(CUSTOMER_ONGOING_CONSULT, customer);
-        else
-            chats = getRecentChats(COUNSELOR_ONGOING_CONSULT, customer);
-
-        List<ChatLetterGetResponse> chatLetterGetResponses = new ArrayList<>();
-
-        for (Chat chat : chats) {
-            chatLetterGetResponses.add(createChatInfoGetResponse(chat, isCustomer));
-        }
-
-        Integer totalChatOngoing = chatRepository.countChatsByStatusAndCustomer(customer);
-        return ChatLetterGetOngoingResponse.of(totalChatOngoing,chatLetterGetResponses);
-    }
-
-    private List<Chat> getRecentChats(int count, Customer customer) {
-        return chatRepository.findRecentChatsByLatestMessage(PageRequest.of(0, count), customer);
     }
 
     private ChatGetConnectResponse getChatIds(Map<String, Object> sessionAttributes, Boolean isCustomer) {
@@ -205,7 +183,7 @@ public class ChatServiceImpl implements ChatService {
             }
         }
         return finalChats.stream()
-                .map(chat -> createChatInfoGetResponse(chat, isCustomer))
+                .map(chat -> chatConsultService.createChatInfoGetResponse(chat, isCustomer))
                 .collect(Collectors.toList());
     }
 
@@ -363,21 +341,6 @@ public class ChatServiceImpl implements ChatService {
         if (chat.getChatStatus() != expectedStatus) {
             throw new ChatException(ChatErrorCode.INVALID_CHAT_STATUS_REQUEST, chatWebsocketStatus.toString());
         }
-    }
-
-    private ChatLetterGetResponse createChatInfoGetResponse(Chat chat, Boolean isCustomer) {
-
-        Consult consult = chat.getConsult();
-
-        String nickname = isCustomer ? consult.getCounselor().getNickname() : consult.getCustomer().getNickname();
-
-        ChatMessage latestChatMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
-
-        Long lastReadMessageId = isCustomer ? chat.getCustomerReadId() : chat.getCounselorReadId();
-        int unreadMessageCount = chatMessageRepository.countByChatAndMessageIdGreaterThanAndIsCustomer(
-                chat, lastReadMessageId, !isCustomer);
-
-        return ChatLetterGetResponse.of(nickname, unreadMessageCount, chat, consult.getCounselor(), latestChatMessage);
     }
 
     private void updateChatIdsRedis(Chat chat, Consult consult) {
