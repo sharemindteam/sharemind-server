@@ -98,7 +98,7 @@ public class ConsultServiceImpl implements ConsultService {
 
         Integer totalOngoing = letterResponse.getTotalOngoing(); // TODO + chatResponse.getTotalOngoing()
         List<ChatLetterGetResponse> responses = new ArrayList<>();
-        responses.addAll(letterResponse.getLetters());
+        responses.addAll(letterResponse.getConsults());
         // TODO responses.addAll(chatResponse.getChats());
 
         responses.sort(Comparator.comparing(ChatLetterGetResponse::getLatestMessageUpdatedAt).reversed());
@@ -106,8 +106,8 @@ public class ConsultServiceImpl implements ConsultService {
         consultOffset = Math.min(consultOffset, responses.size());
 
         return ConsultGetOngoingResponse.of(totalOngoing, responses.subList(0, consultOffset));
-    }  
-      
+    }
+
     @Override
     public Boolean checkWaitingOrOngoingExistsByCustomer(Customer customer) {
         return consultRepository.findTopByConsultStatusIsWaitingOrOngoingAndCustomerAndIsPaid(customer) != null;
