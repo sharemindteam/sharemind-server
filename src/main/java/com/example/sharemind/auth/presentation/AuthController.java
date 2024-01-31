@@ -117,7 +117,7 @@ public class AuthController {
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
-    @PatchMapping("/quit")
+    @DeleteMapping("/quit")
     public ResponseEntity<Void> quit(@Valid @RequestBody AuthQuitRequest authQuitRequest,
                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         authService.quit(authQuitRequest, customUserDetails.getCustomer().getCustomerId());
