@@ -103,9 +103,12 @@ public class Consult extends BaseEntity {
         this.consultStatus = ConsultStatus.CUSTOMER_CANCEL;
 
         switch (this.consultType) {
-            case CHAT -> this.chat.updateChatStatus(ChatStatus.CUSTOMER_CANCEL);
+            case CHAT -> {
+                this.chat.updateChatStatus(ChatStatus.CUSTOMER_CANCEL);
+                this.payment.updateCustomerStatusRefundWaiting();
+            }
             case LETTER -> this.letter.updateLetterStatusCustomerCancel();
-        } //todo: 여기는 this.payment.updateCustomerStatusRefundWaiting();이거 없어도 되냐 물어보기
+        }
     }
 
     public void updateIsPaidAndLetter(Letter letter) {
