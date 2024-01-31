@@ -1,5 +1,6 @@
 package com.example.sharemind.payment.repository;
 
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.domain.Payment;
@@ -29,4 +30,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             Long paymentId, Customer customer, PaymentCustomerStatus status, Pageable pageable);
 
     List<Payment> findAllByCustomerStatusAndIsActivatedIsTrue(PaymentCustomerStatus status);
+
+    Boolean existsByConsultCustomerAndCustomerStatusAndIsActivatedIsTrue(Customer customer,
+                                                                  PaymentCustomerStatus status);
+
+    @Query("SELECT p FROM Payment p JOIN FETCH p.consult c " +
+            "WHERE (p.counselorStatus != 'NONE' AND p.counselorStatus != 'FINISH') AND c.counselor = :counselor AND " +
+            "p.isActivated = true")
+    Payment findTopByConsultCounselorAndCounselorStatusIsNotNoneAndFinishAndIsActivatedIsTrue(Counselor counselor);
 }

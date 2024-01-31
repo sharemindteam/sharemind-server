@@ -106,5 +106,15 @@ public class ConsultServiceImpl implements ConsultService {
         consultOffset = Math.min(consultOffset, responses.size());
 
         return ConsultGetOngoingResponse.of(totalOngoing, responses.subList(0, consultOffset));
+    }  
+      
+    @Override
+    public Boolean checkWaitingOrOngoingExistsByCustomer(Customer customer) {
+        return consultRepository.findTopByConsultStatusIsWaitingOrOngoingAndCustomerAndIsPaid(customer) != null;
+    }
+
+    @Override
+    public Boolean checkWaitingOrOngoingExistsByCounselor(Counselor counselor) {
+        return consultRepository.findTopByConsultStatusIsWaitingOrOngoingAndCounselorAndIsPaid(counselor) != null;
     }
 }

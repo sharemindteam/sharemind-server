@@ -6,6 +6,7 @@ import com.example.sharemind.payment.exception.PaymentException;
 import java.util.Arrays;
 
 public enum PaymentCustomerStatus {
+    NONE,
     PAYMENT_COMPLETE,
     REFUND_WAITING,
     REFUND_COMPLETE;

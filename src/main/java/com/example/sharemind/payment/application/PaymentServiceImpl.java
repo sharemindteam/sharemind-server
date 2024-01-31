@@ -1,5 +1,6 @@
 package com.example.sharemind.payment.application;
 
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
@@ -66,5 +67,17 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<Payment> getRefundWaitingPayments() {
         return paymentRepository.findAllByCustomerStatusAndIsActivatedIsTrue(PaymentCustomerStatus.REFUND_WAITING);
+    }
+
+    @Override
+    public Boolean checkRefundWaitingExists(Customer customer) {
+        return paymentRepository.existsByConsultCustomerAndCustomerStatusAndIsActivatedIsTrue(customer,
+                PaymentCustomerStatus.REFUND_WAITING);
+    }
+
+    @Override
+    public Boolean checkNotSettlementCompleteAndNotNoneExists(Counselor counselor) {
+        return paymentRepository.findTopByConsultCounselorAndCounselorStatusIsNotNoneAndFinishAndIsActivatedIsTrue(
+                counselor) != null;
     }
 }

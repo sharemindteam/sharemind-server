@@ -27,9 +27,7 @@ public class ReviewGetShortResponse {
     private final String updatedAt;
 
     public static ReviewGetShortResponse of(Review review) {
-        String nickname = review.getConsult().getCustomer().getNickname().charAt(0) + "**";
-
-        return new ReviewGetShortResponse(review.getReviewId(), nickname, review.getRating(), review.getComment(),
-                TimeUtil.getUpdatedAtForReview(review.getUpdatedAt()));
+        return new ReviewGetShortResponse(review.getReviewId(), review.getConsult().getCustomer().getNickname(),
+                review.getRating(), review.getComment(), TimeUtil.getUpdatedAtForReview(review.getUpdatedAt()));
     }
 }
