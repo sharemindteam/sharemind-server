@@ -67,17 +67,15 @@ public class ChatTaskScheduler {
         }, new Date(System.currentTimeMillis() + THIRTY_MINUTE));
     }
 
+    @Transactional
     public void checkAutoRefund(Chat chat) {
         scheduler.schedule(() -> {
 
             if (chat.getAutoRefund()) {
-                chat.updateChatStatus(ChatStatus.COUNSELOR_CANCEL);
-                chatRepository.save(chat);
 
                 Consult consult = consultService.getConsultByChat(chat);
 
                 consult.updateConsultStatusCounselorCancel();
-                consultRepository.save(consult);
 
                 publisher.publishEvent(ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_CANCEL));
             }

@@ -16,6 +16,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -91,9 +92,10 @@ public class Consult extends BaseEntity {
     public void updateConsultStatusCounselorCancel() {
         this.consultStatus = ConsultStatus.COUNSELOR_CANCEL;
 
-        switch (this.consultType) {
-            case
+        if (Objects.requireNonNull(this.consultType) == ConsultType.CHAT) {
+            this.chat.updateChatStatus(ChatStatus.COUNSELOR_CANCEL);
         }
+
         this.payment.updateCustomerStatusRefundWaiting();
     }
 
@@ -103,7 +105,7 @@ public class Consult extends BaseEntity {
         switch (this.consultType) {
             case CHAT -> this.chat.updateChatStatus(ChatStatus.CUSTOMER_CANCEL);
             case LETTER -> this.letter.updateLetterStatusCustomerCancel();
-        }
+        } //todo: 여기는 this.payment.updateCustomerStatusRefundWaiting();이거 없어도 되냐 물어보기
     }
 
     public void updateIsPaidAndLetter(Letter letter) {
