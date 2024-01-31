@@ -17,6 +17,14 @@ public class AuthQuitRequest {
     @Size(max = 100, message = "선택사항은 최대 100자입니다.")
     private String longReason;
 
+    @Schema(description = "accessToken", example = "Bearer aasldkgjsalaksdjghlasdkjghslgjk")
+    @NotBlank(message = "accessToken은 공백일 수 없습니다.")
+    private String accessToken;
+
+    @Schema(description = "refreshToken", example = "lakjsdlhsakjghslgkjdhslgkjdshaglk")
+    @NotBlank(message = "refreshToken은 공백일 수 없습니다.")
+    private String refreshToken;
+
     public Quit toEntity() {
         return Quit.builder()
                 .shortReason(shortReason)

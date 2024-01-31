@@ -130,6 +130,8 @@ public class AuthServiceImpl implements AuthService {
         Quit quit = quitRepository.save(authQuitRequest.toEntity());
         customer.setQuit(quit);
         customer.updateIsActivatedFalse();
+
+        signOut(AuthSignOutRequest.of(authQuitRequest.getAccessToken(), authQuitRequest.getRefreshToken()));
     }
 
     @Override
