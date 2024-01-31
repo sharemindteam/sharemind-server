@@ -1,5 +1,6 @@
 package com.example.sharemind.consult.domain;
 
+import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.consult.content.ConsultStatus;
 import com.example.sharemind.consult.exception.ConsultErrorCode;
 import com.example.sharemind.consult.exception.ConsultException;
@@ -90,6 +91,9 @@ public class Consult extends BaseEntity {
     public void updateConsultStatusCounselorCancel() {
         this.consultStatus = ConsultStatus.COUNSELOR_CANCEL;
 
+        switch (this.consultType) {
+            case
+        }
         this.payment.updateCustomerStatusRefundWaiting();
     }
 
@@ -97,10 +101,7 @@ public class Consult extends BaseEntity {
         this.consultStatus = ConsultStatus.CUSTOMER_CANCEL;
 
         switch (this.consultType) {
-            /**
-             * TODO chat 상태 cancel로 변경
-             * case CHAT ->
-             */
+            case CHAT -> this.chat.updateChatStatus(ChatStatus.CUSTOMER_CANCEL);
             case LETTER -> this.letter.updateLetterStatusCustomerCancel();
         }
     }
