@@ -34,8 +34,8 @@ public class SearchWordServiceImpl implements SearchWordService {
 
     @Transactional
     @Override
-    public List<CounselorGetListResponse> storeSearchWordAndGetCounselors(Long customerId, String sortType,
-                                                                          SearchWordFindRequest searchWordFindRequest) {
+    public List<CounselorGetListResponse> storeSearchWordAndGetCounselorsByCustomer(Long customerId, String sortType,
+                                                                                    SearchWordFindRequest searchWordFindRequest) {
         storeSearchWordInRedis(customerId, searchWordFindRequest.getWord());
         storeSearchWordInDB(searchWordFindRequest.getWord());
 
@@ -47,6 +47,19 @@ public class SearchWordServiceImpl implements SearchWordService {
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,
                         wishListCounselorIds.contains(counselor.getCounselorId())))
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public List<CounselorGetListResponse> storeAllSearchWordAndGetCounselors(String sortType,
+                                                                          SearchWordFindRequest searchWordFindRequest) {
+        storeSearchWordInDB(searchWordFindRequest.getWord());
+
+        List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordFindRequest, sortType);
+
+        return counselors.stream()
+                .map(counselor -> CounselorGetListResponse.of(counselor, false))
                 .toList();
     }
 

@@ -65,8 +65,10 @@ public class SearchWordController {
         if (searchWordFindRequest.getIndex() < 0) {
             return ResponseEntity.ok(Collections.emptyList());
         }
+        if (customUserDetails == null)
+            return ResponseEntity.ok(searchWordService.storeAllSearchWordAndGetCounselors(sortType, searchWordFindRequest));
         return ResponseEntity.ok(
-                searchWordService.storeSearchWordAndGetCounselors(customUserDetails.getCustomer().getCustomerId(),
+                searchWordService.storeSearchWordAndGetCounselorsByCustomer(customUserDetails.getCustomer().getCustomerId(),
                         sortType, searchWordFindRequest));
     }
 
