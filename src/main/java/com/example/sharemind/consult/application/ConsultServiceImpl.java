@@ -3,6 +3,7 @@ package com.example.sharemind.consult.application;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.dto.request.ConsultCreateRequest;
+import com.example.sharemind.consult.dto.response.ConsultGetOngoingResponse;
 import com.example.sharemind.consult.exception.ConsultErrorCode;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.consult.repository.ConsultRepository;
@@ -14,11 +15,19 @@ import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultType;
+import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
+import com.example.sharemind.letter.application.LetterConsultService;
+import com.example.sharemind.letter.dto.response.LetterGetOngoingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
+import static com.example.sharemind.global.constants.Constants.COUNSELOR_ONGOING_CONSULT;
+import static com.example.sharemind.global.constants.Constants.CUSTOMER_ONGOING_CONSULT;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,6 +37,7 @@ public class ConsultServiceImpl implements ConsultService {
     private final ConsultRepository consultRepository;
     private final CounselorService counselorService;
     private final CustomerService customerService;
+    private final LetterConsultService letterConsultService;
 
     @Transactional
     @Override
@@ -81,6 +91,23 @@ public class ConsultServiceImpl implements ConsultService {
                 () -> new ConsultException(ConsultErrorCode.CONSULT_NOT_FOUND, "chatId : " + chat.getChatId()));
     }
 
+    @Override
+    public ConsultGetOngoingResponse getOngoingConsults(Long customerId, Boolean isCustomer) {
+        LetterGetOngoingResponse letterResponse = letterConsultService.getOngoingLetters(customerId, isCustomer);
+        // TODO chatResponse = ChatService.get~~~
+
+        Integer totalOngoing = letterResponse.getTotalOngoing(); // TODO + chatResponse.getTotalOngoing()
+        List<ChatLetterGetResponse> responses = new ArrayList<>();
+        responses.addAll(letterResponse.getLetters());
+        // TODO responses.addAll(chatResponse.getChats());
+
+        responses.sort(Comparator.comparing(ChatLetterGetResponse::getLatestMessageUpdatedAt).reversed());
+        int consultOffset = isCustomer ? CUSTOMER_ONGOING_CONSULT : COUNSELOR_ONGOING_CONSULT;
+        consultOffset = Math.min(consultOffset, responses.size());
+
+        return ConsultGetOngoingResponse.of(totalOngoing, responses.subList(0, consultOffset));
+    }  
+      
     @Override
     public Boolean checkWaitingOrOngoingExistsByCustomer(Customer customer) {
         return consultRepository.findTopByConsultStatusIsWaitingOrOngoingAndCustomerAndIsPaid(customer) != null;
