@@ -189,8 +189,8 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public List<CounselorGetListResponse> getCounselorsByCategory(Long customerId, String sortType,
-                                                                  CounselorGetRequest counselorGetRequest) {
+    public List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId, String sortType,
+                                                                             CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest, sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
@@ -203,12 +203,29 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public CounselorGetMinderProfileResponse getCounselorMinderProfile(Long counselorId, Long customerId) {
+    public List<CounselorGetListResponse> getAllCounselorsByCategory(String sortType,
+                                                                     CounselorGetRequest counselorGetRequest) {
+        List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest, sortType);
+
+        return counselors.stream()
+                .map(counselor -> CounselorGetListResponse.of(counselor, false))
+                .toList();
+    }
+
+    @Override
+    public CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = getCounselorByCounselorId(counselorId);
 
         return CounselorGetMinderProfileResponse.of(counselor,
                 wishListCounselorService.getIsWishListByCustomerAndCounselor(customer, counselor));
+    }
+
+    @Override
+    public CounselorGetMinderProfileResponse getAllCounselorMinderProfile(Long counselorId) {
+        Counselor counselor = getCounselorByCounselorId(counselorId);
+
+        return CounselorGetMinderProfileResponse.of(counselor, false);
     }
 
     private String getCounselorSortColumn(String sortType) {
