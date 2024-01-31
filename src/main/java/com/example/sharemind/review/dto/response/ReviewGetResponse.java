@@ -59,10 +59,9 @@ public class ReviewGetResponse {
                     counselor.getTotalReview(), consult.getConsultType().getDisplayName(), consult.getConsultedAt(),
                     consult.getCost(), review.getRating(), review.getComment());
         } else {
-            String nickname = consult.getCustomer().getNickname().charAt(0) + "**";
-            return new ReviewGetResponse(review.getReviewId(), nickname, null, null, null,
-                    null, consult.getConsultType().getDisplayName(), consult.getConsultedAt(),
-                    consult.getCost(), review.getRating(), review.getComment());
+            return new ReviewGetResponse(review.getReviewId(), consult.getCustomer().getNickname(), null,
+                    null, null, null, consult.getConsultType().getDisplayName(),
+                    consult.getConsultedAt(), consult.getCost(), review.getRating(), review.getComment());
         }
     }
 }

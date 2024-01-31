@@ -80,4 +80,14 @@ public class ConsultServiceImpl implements ConsultService {
         return consultRepository.findByChatAndIsActivatedIsTrue(chat).orElseThrow(
                 () -> new ConsultException(ConsultErrorCode.CONSULT_NOT_FOUND, "chatId : " + chat.getChatId()));
     }
+
+    @Override
+    public Boolean checkWaitingOrOngoingExistsByCustomer(Customer customer) {
+        return consultRepository.findTopByConsultStatusIsWaitingOrOngoingAndCustomerAndIsPaid(customer) != null;
+    }
+
+    @Override
+    public Boolean checkWaitingOrOngoingExistsByCounselor(Counselor counselor) {
+        return consultRepository.findTopByConsultStatusIsWaitingOrOngoingAndCounselorAndIsPaid(counselor) != null;
+    }
 }

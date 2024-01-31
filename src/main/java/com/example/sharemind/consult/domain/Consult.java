@@ -84,6 +84,7 @@ public class Consult extends BaseEntity {
         setReview();
 
         this.counselor.increaseTotalConsult();
+        this.payment.updateCounselorStatusConsultFinish();
     }
 
     public void updateConsultStatusCounselorCancel() {

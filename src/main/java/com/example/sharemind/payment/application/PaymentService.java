@@ -1,5 +1,7 @@
 package com.example.sharemind.payment.application;
 
+import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 
@@ -13,4 +15,8 @@ public interface PaymentService {
     void updateRefundWaitingByCustomer(Long paymentId, Long customerId);
 
     List<Payment> getRefundWaitingPayments();
+
+    Boolean checkRefundWaitingExists(Customer customer);
+
+    Boolean checkNotSettlementCompleteAndNotNoneExists(Counselor counselor);
 }
