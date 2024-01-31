@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -107,6 +108,10 @@ public class ChatServiceImpl implements ChatService {
     public void getAndSendChatIdsByWebSocket(Map<String, Object> sessionAttributes, Boolean isCustomer) {
         ChatGetConnectResponse chatGetConnectResponse = getChatIds(sessionAttributes, isCustomer);
         sendChatIds(chatGetConnectResponse);
+    }
+
+    private List<Chat> getRecentChats(int count) {
+        return chatRepository.findRecentChatsByLatestMessage(PageRequest.of(0, count));
     }
 
     private ChatGetConnectResponse getChatIds(Map<String, Object> sessionAttributes, Boolean isCustomer) {
