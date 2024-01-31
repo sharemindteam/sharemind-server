@@ -232,8 +232,8 @@ public class ChatServiceImpl implements ChatService {
         if (filter) {
             return consults.stream()
                     .map(Consult::getChat)
-                    .filter(chat -> (chat.getChatStatus() != ChatStatus.FINISH) && (chat.getChatStatus()
-                            != ChatStatus.CANCEL))
+                    .filter(chat -> (chat.getChatStatus() != ChatStatus.FINISH && chat.getChatStatus()
+                            != ChatStatus.COUNSELOR_CANCEL && chat.getChatStatus() != ChatStatus.CUSTOMER_CANCEL))
                     .collect(Collectors.toList());
         }
         return consults.stream()

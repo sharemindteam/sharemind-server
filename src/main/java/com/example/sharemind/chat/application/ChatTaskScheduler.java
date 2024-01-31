@@ -8,6 +8,9 @@ import com.example.sharemind.chat.repository.ChatRepository;
 
 import java.util.Date;
 
+import com.example.sharemind.consult.application.ConsultService;
+import com.example.sharemind.consult.domain.Consult;
+import com.example.sharemind.consult.repository.ConsultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.TaskScheduler;
@@ -21,6 +24,8 @@ public class ChatTaskScheduler {
 
     private final TaskScheduler scheduler;
     private final ApplicationEventPublisher publisher;
+    private final ConsultService consultService;
+    private final ConsultRepository consultRepository;
     private final ChatRepository chatRepository;
 
     //    private static final int TEN_MINUTE = 60000; //1분
@@ -66,8 +71,13 @@ public class ChatTaskScheduler {
         scheduler.schedule(() -> {
 
             if (chat.getAutoRefund()) {
-                chat.updateChatStatus(ChatStatus.CANCEL);
+                chat.updateChatStatus(ChatStatus.COUNSELOR_CANCEL);
                 chatRepository.save(chat);
+
+                Consult consult = consultService.getConsultByChat(chat);
+
+                consult.updateConsultStatusCounselorCancel();
+                consultRepository.save(consult);
 
                 publisher.publishEvent(ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_CANCEL));
             }
