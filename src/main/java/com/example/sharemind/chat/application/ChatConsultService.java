@@ -42,7 +42,13 @@ public class ChatConsultService {
             chatLetterGetResponses = getRecentChats(CUSTOMER_ONGOING_CONSULT, customer, isCustomer);
         else
             chatLetterGetResponses = getRecentChats(COUNSELOR_ONGOING_CONSULT, customer, isCustomer);
-        Integer totalChatOngoing = chatRepository.countChatsByStatusAndCustomer(customer);
+        Integer totalChatOngoing;
+        if (isCustomer)
+            totalChatOngoing = chatRepository.countChatsByStatusAndCustomer(customer);
+        else {
+            Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+            totalChatOngoing = chatRepository.countChatsByStatusAndCounselor(counselor);
+        }
         return ChatLetterGetOngoingResponse.of(totalChatOngoing, chatLetterGetResponses);
     }
 

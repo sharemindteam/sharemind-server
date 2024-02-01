@@ -28,4 +28,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     @Query("SELECT COUNT(c) FROM Chat c WHERE (c.chatStatus != 'FINISH') AND (c.chatStatus != 'COUNSELOR_CANCEL') AND (c.chatStatus != 'CUSTOMER_CANCEL') AND c.consult.customer = :customer")
     Integer countChatsByStatusAndCustomer(Customer customer);
+
+    @Query("SELECT COUNT(c) FROM Chat c WHERE (c.chatStatus != 'FINISH') AND (c.chatStatus != 'COUNSELOR_CANCEL') AND (c.chatStatus != 'CUSTOMER_CANCEL') AND c.consult.counselor = :counselor")
+    Integer countChatsByStatusAndCounselor(Counselor counselor);
 }
