@@ -106,6 +106,23 @@ public class Payment extends BaseEntity {
         this.counselorStatus = PaymentCounselorStatus.SETTLEMENT_ONGOING;
     }
 
+    public void updateCounselorStatusSettlementComplete() {
+        Settlement settlement = this.consult.getCounselor().getSettlement();
+        long amount = this.consult.getCost() - FEE;
+        if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
+            settlement.updateOngoingWeek(-amount);
+        }
+        if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusMonths(1))) {
+            settlement.updateOngoingMonth(-amount);
+        }
+        settlement.updateOngoingAll(-amount);
+        settlement.updateCompleteWeek(amount);
+        settlement.updateCompleteMonth(amount);
+        settlement.updateCompleteAll(amount);
+
+        this.counselorStatus = PaymentCounselorStatus.SETTLEMENT_COMPLETE;
+    }
+
     public void checkUpdateAuthorityByCustomer(Long customerId) {
         if (!this.consult.getCustomer().getCustomerId().equals(customerId)) {
             throw new PaymentException(PaymentErrorCode.PAYMENT_UPDATE_DENIED);

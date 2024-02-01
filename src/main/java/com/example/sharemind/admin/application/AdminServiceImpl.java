@@ -21,6 +21,7 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.payment.application.PaymentService;
+import com.example.sharemind.payment.content.PaymentCounselorStatus;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
@@ -127,5 +128,16 @@ public class AdminServiceImpl implements AdminService {
         return paymentService.getSettlementOngoingPayments().stream()
                 .map(PaymentGetSettlementOngoingResponse::of)
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updateSettlementComplete(Long paymentId) {
+        Payment payment = paymentService.getPaymentByPaymentId(paymentId);
+        if (!payment.getCounselorStatus().equals(PaymentCounselorStatus.SETTLEMENT_ONGOING)) {
+            throw new PaymentException(PaymentErrorCode.INVALID_SETTLEMENT_COMPLETE);
+        }
+
+        payment.updateCounselorStatusSettlementComplete();
     }
 }
