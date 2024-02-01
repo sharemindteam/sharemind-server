@@ -30,7 +30,7 @@ public class ChatLetterGetResponse {
     @Schema(description = "대화 상대방 닉네임", example = "사용자37482")
     private final String opponentNickname;
 
-    @Schema(description = "마지막 업데이트 일시", example = "8분 전")
+    @Schema(description = "마지막 업데이트 일시", example = "02월 01일")
     private final String latestMessageUpdatedAt;
 
     @Schema(description = "마지막 업데이트 내용", example = "안녕하세요, 어쩌구저쩌구~")
@@ -65,13 +65,18 @@ public class ChatLetterGetResponse {
         if (chat.getChatStatus().equals(ChatStatus.FINISH)) {
             reviewCompleted = chat.getConsult().getReview().getIsCompleted();
         }
-
-        if (chatMessage == null) {
+        if (chat.getChatStatus().equals(ChatStatus.WAITING)) {
             return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
-                    chat.getChatStatus().getDisplayName(), nickname, null, null,
-                    null, null, reviewCompleted, chat.getConsult().getConsultId(),
+                    chat.getChatStatus().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chat.getConsult().getUpdatedAt()), nickname + "님께 고민내용을 남겨주세요. "+nickname+"님이 24시간 내에 채팅 요청을 드립니다.",
+                    null, 0, reviewCompleted, chat.getConsult().getConsultId(),
                     IS_CHAT);
         }
+//        if (chatMessage == null) {
+//            return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
+//                    chat.getChatStatus().getDisplayName(), nickname, null, null,
+//                    null, null, reviewCompleted, chat.getConsult().getConsultId(),
+//                    IS_CHAT);
+//        } //todo: 아무말없이 채팅이 끝나는 경우를 고려해보아야함
         return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
                 chat.getChatStatus().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
                 chatMessage.getContent(), chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted,
