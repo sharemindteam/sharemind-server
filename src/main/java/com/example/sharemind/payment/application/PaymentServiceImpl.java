@@ -120,7 +120,7 @@ public class PaymentServiceImpl implements PaymentService {
         switch (sortType) {
             case WEEK -> sortTime = LocalDateTime.now().minusWeeks(1);
             case MONTH -> sortTime = LocalDateTime.now().minusMonths(1);
-            case ALL -> sortTime = LocalDateTime.MIN;
+            case ALL -> sortTime = LocalDateTime.of(2024, 1, 1, 0, 0);
         }
 
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, PAYMENT_COUNSELOR_PAGE_SIZE);
