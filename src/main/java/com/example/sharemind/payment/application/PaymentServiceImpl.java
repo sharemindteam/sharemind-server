@@ -158,8 +158,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<Payment> getSettlementWaitingPayments() {
-        return paymentRepository.findAllByCounselorStatusAndIsActivatedIsTrue(PaymentCounselorStatus.SETTLEMENT_WAITING);
+    public List<Payment> getSettlementOngoingPayments() {
+        return paymentRepository.findAllByCounselorStatusAndIsActivatedIsTrue(PaymentCounselorStatus.SETTLEMENT_ONGOING);
     }
 
     @Override

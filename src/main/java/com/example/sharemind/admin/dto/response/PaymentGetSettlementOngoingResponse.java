@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class PaymentGetSettlementWaitingResponse {
+public class PaymentGetSettlementOngoingResponse {
 
     @Schema(description = "결제 정보 아이디")
     private final Long paymentId;
@@ -44,11 +44,11 @@ public class PaymentGetSettlementWaitingResponse {
     @Schema(description = "예금주명", example = "김뫄뫄")
     private final String accountHolder;
 
-    public static PaymentGetSettlementWaitingResponse of(Payment payment) {
+    public static PaymentGetSettlementOngoingResponse of(Payment payment) {
         Consult consult = payment.getConsult();
         Counselor counselor = consult.getCounselor();
 
-        return new PaymentGetSettlementWaitingResponse(payment.getPaymentId(), consult.getCustomer().getNickname(),
+        return new PaymentGetSettlementOngoingResponse(payment.getPaymentId(), consult.getCustomer().getNickname(),
                 consult.getCounselor().getNickname(), consult.getConsultType().getDisplayName(),
                 consult.getConsultedAt(), consult.getCost(), counselor.getBank(), counselor.getAccount(),
                 counselor.getAccountHolder());
