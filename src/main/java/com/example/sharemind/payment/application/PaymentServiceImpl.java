@@ -8,7 +8,9 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.payment.content.PaymentCounselorStatus;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
+import com.example.sharemind.payment.content.PaymentSortType;
 import com.example.sharemind.payment.domain.Payment;
+import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
 import com.example.sharemind.payment.exception.PaymentException;
@@ -32,6 +34,7 @@ import static com.example.sharemind.global.constants.Constants.FEE;
 public class PaymentServiceImpl implements PaymentService {
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int PAYMENT_CUSTOMER_PAGE_SIZE = 4;
+    private static final int PAYMENT_COUNSELOR_PAGE_SIZE = 3;
     private static final int PAYMENT_FIXED_OFFSET = 7;
 
     private final PaymentRepository paymentRepository;
@@ -78,6 +81,58 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<Payment> getRefundWaitingPayments() {
         return paymentRepository.findAllByCustomerStatusAndIsActivatedIsTrue(PaymentCustomerStatus.REFUND_WAITING);
+    }
+
+    @Override
+    public List<PaymentGetCounselorResponse> getPaymentsByCounselor(Long paymentId, String status, String sort, Long customerId) {
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+        PaymentCounselorStatus counselorStatus = PaymentCounselorStatus.getPaymentCounselorStatusByName(status);
+        PaymentSortType sortType = PaymentSortType.getPaymentSortTypeByName(sort);
+
+        Long total = null;
+        Settlement settlement = counselor.getSettlement();
+        switch (counselorStatus) { // TODO 최적화 필요...
+            case SETTLEMENT_WAITING -> {
+                switch (sortType) {
+                    case WEEK -> total = settlement.getWaitingWeek();
+                    case MONTH -> total = settlement.getWaitingMonth();
+                    case ALL -> total = settlement.getWaitingAll();
+                }
+            }
+            case SETTLEMENT_ONGOING -> {
+                switch (sortType) {
+                    case WEEK -> total = settlement.getOngoingWeek();
+                    case MONTH -> total = settlement.getOngoingMonth();
+                    case ALL -> total = settlement.getOngoingAll();
+                }
+            }
+            case SETTLEMENT_COMPLETE -> {
+                switch (sortType) {
+                    case WEEK -> total = settlement.getCompleteWeek();
+                    case MONTH -> total = settlement.getCompleteMonth();
+                    case ALL -> total = settlement.getCompleteAll();
+                }
+            }
+        }
+
+        LocalDateTime sortTime = null;
+        switch (sortType) {
+            case WEEK -> sortTime = LocalDateTime.now().minusWeeks(1);
+            case MONTH -> sortTime = LocalDateTime.now().minusMonths(1);
+            case ALL -> sortTime = LocalDateTime.MIN;
+        }
+
+        Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, PAYMENT_COUNSELOR_PAGE_SIZE);
+        Long finalTotal = total;
+        Page<PaymentGetCounselorResponse> page =
+                (paymentId == 0 ?
+                        paymentRepository.findAllByCounselorAndCounselorStatusAndUpdatedAtIsBefore(
+                                counselor, counselorStatus, sortTime, pageable) :
+                        paymentRepository.findAllByPaymentIdLessThanAndCounselorAndCounselorStatusAndUpdatedAtIsBefore(
+                                paymentId, counselor, counselorStatus, sortTime, pageable))
+                        .map(payment -> PaymentGetCounselorResponse.of(payment, finalTotal));
+
+        return page.getContent();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.example.sharemind.payment.application;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.payment.domain.Payment;
+import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public interface PaymentService {
     void updateRefundWaitingByCustomer(Long paymentId, Long customerId);
 
     List<Payment> getRefundWaitingPayments();
+
+    List<PaymentGetCounselorResponse> getPaymentsByCounselor(Long paymentId, String status, String sort, Long customerId);
 
     Boolean checkRefundWaitingExists(Customer customer);
 
