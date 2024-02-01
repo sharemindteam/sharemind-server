@@ -1,5 +1,6 @@
 package com.example.sharemind.payment.application;
 
+import com.example.sharemind.consult.content.ConsultStatus;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
@@ -57,7 +58,8 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = getPaymentByPaymentId(paymentId);
         payment.checkUpdateAuthority(customerId);
         if ((payment.getCustomerStatus() == null) ||
-                (!payment.getCustomerStatus().equals(PaymentCustomerStatus.PAYMENT_COMPLETE))) {
+                (!payment.getCustomerStatus().equals(PaymentCustomerStatus.PAYMENT_COMPLETE)) ||
+                (!payment.getConsult().getConsultStatus().equals(ConsultStatus.WAITING))) {
             throw new PaymentException(PaymentErrorCode.INVALID_REFUND_WAITING, paymentId.toString());
         }
 
