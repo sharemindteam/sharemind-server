@@ -2,6 +2,7 @@ package com.example.sharemind.payment.repository;
 
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.payment.content.PaymentCounselorStatus;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.domain.Payment;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             Long paymentId, Customer customer, PaymentCustomerStatus status, Pageable pageable);
 
     List<Payment> findAllByCustomerStatusAndIsActivatedIsTrue(PaymentCustomerStatus status);
+
+    List<Payment> findAllByCounselorStatusAndIsActivatedIsTrue(PaymentCounselorStatus status);
 
     Boolean existsByConsultCustomerAndCustomerStatusAndIsActivatedIsTrue(Customer customer,
                                                                   PaymentCustomerStatus status);

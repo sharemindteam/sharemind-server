@@ -82,6 +82,10 @@ public class Payment extends BaseEntity {
         this.counselorStatus = PaymentCounselorStatus.CONSULT_FINISH;
     }
 
+    public void updateCounselorStatusSettlementWaiting() {
+        this.counselorStatus = PaymentCounselorStatus.SETTLEMENT_WAITING;
+    }
+
     public void checkUpdateAuthority(Long customerId) {
         if (!this.consult.getCustomer().getCustomerId().equals(customerId)) {
             throw new PaymentException(PaymentErrorCode.PAYMENT_UPDATE_DENIED);

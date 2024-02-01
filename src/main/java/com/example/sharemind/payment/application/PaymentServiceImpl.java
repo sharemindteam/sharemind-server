@@ -4,6 +4,7 @@ import com.example.sharemind.consult.content.ConsultStatus;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.payment.content.PaymentCounselorStatus;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
@@ -14,9 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,6 +28,7 @@ import java.util.List;
 public class PaymentServiceImpl implements PaymentService {
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int PAYMENT_CUSTOMER_PAGE_SIZE = 4;
+    private static final int PAYMENT_FIXED_OFFSET = 7;
 
     private final PaymentRepository paymentRepository;
     private final CustomerService customerService;
@@ -81,5 +85,13 @@ public class PaymentServiceImpl implements PaymentService {
     public Boolean checkNotSettlementCompleteAndNotNoneExists(Counselor counselor) {
         return paymentRepository.findTopByConsultCounselorAndCounselorStatusIsNotNoneAndFinishAndIsActivatedIsTrue(
                 counselor) != null;
+    }
+
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    @Transactional
+    public void checkPaymentConsultFinishToSettlementWaiting() {
+        paymentRepository.findAllByCounselorStatusAndIsActivatedIsTrue(PaymentCounselorStatus.CONSULT_FINISH).stream()
+                .filter(payment -> payment.getUpdatedAt().plusDays(PAYMENT_FIXED_OFFSET).isBefore(LocalDateTime.now()))
+                .forEach(Payment::updateCounselorStatusSettlementWaiting);
     }
 }
