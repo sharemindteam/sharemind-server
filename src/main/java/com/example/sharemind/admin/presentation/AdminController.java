@@ -130,4 +130,26 @@ public class AdminController {
     public ResponseEntity<List<PaymentGetSettlementOngoingResponse>> getSettlementOngoingPayments() {
         return ResponseEntity.ok(adminService.getSettlementOngoingPayments());
     }
+
+    @Operation(summary = "정산 완료 수정",
+            description = "정산 중인 정보를 정산 완료로 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "정산 중 상태가 아닌 정보에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 payment 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "paymentId", description = "payment 아이디")
+    })
+    @PatchMapping("/settlement-ongoing/{paymentId}")
+    public ResponseEntity<Void> updateSettlementComplete(@PathVariable Long paymentId) {
+        adminService.updateSettlementComplete(paymentId);
+        return ResponseEntity.ok().build();
+    }
 }
