@@ -19,6 +19,8 @@ public interface CounselorRepository extends JpaRepository<Counselor, Long> {
 
     Optional<Counselor> findByCounselorIdAndIsActivatedIsTrue(Long id);
 
+    List<Counselor> findAllByIsEducatedIsTrueAndIsActivatedIsTrue();
+
     @Query("SELECT c FROM Counselor c WHERE  c.profileStatus = 'EVALUATION_PENDING' AND c.isActivated = true")
     List<Counselor> findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
 

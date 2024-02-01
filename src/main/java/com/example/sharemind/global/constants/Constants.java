@@ -13,4 +13,6 @@ public class Constants {
 
     public static final Boolean IS_CHAT = true;
     public static final Boolean IS_LETTER = false;
+
+    public static final Long FEE = 1000L;
 }

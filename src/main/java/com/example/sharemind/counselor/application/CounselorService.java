@@ -17,6 +17,8 @@ public interface CounselorService {
 
     Counselor getCounselorByCustomerId(Long customerId);
 
+    List<Counselor> getAllCounselors();
+
     void updateIsEducated(Boolean isEducated, Long customerId);
 
     Boolean getRetryPermission(Long customerId);
