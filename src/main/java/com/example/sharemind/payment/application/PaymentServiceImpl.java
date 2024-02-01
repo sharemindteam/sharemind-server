@@ -189,9 +189,10 @@ public class PaymentServiceImpl implements PaymentService {
                 .forEach(payment -> {
                     Long amount = payment.getConsult().getCost() - FEE;
                     settlement.updateWaitingAll(amount);
-                    if (payment.getUpdatedAt().plusWeeks(1).isBefore(LocalDateTime.now())) {
+                    if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateWaitingWeek(amount);
-                    } else if (payment.getUpdatedAt().plusMonths(1).isBefore(LocalDateTime.now())) {
+                    }
+                    if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusMonths(1))) {
                         settlement.updateWaitingMonth(amount);
                     }
                 });
@@ -200,9 +201,10 @@ public class PaymentServiceImpl implements PaymentService {
                 .forEach(payment -> {
                     Long amount = payment.getConsult().getCost() - FEE;
                     settlement.updateOngoingAll(amount);
-                    if (payment.getUpdatedAt().plusWeeks(1).isBefore(LocalDateTime.now())) {
+                    if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateOngoingWeek(amount);
-                    } else if (payment.getUpdatedAt().plusMonths(1).isBefore(LocalDateTime.now())) {
+                    }
+                    if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusMonths(1))) {
                         settlement.updateOngoingMonth(amount);
                     }
                 });
@@ -211,9 +213,10 @@ public class PaymentServiceImpl implements PaymentService {
                 .forEach(payment -> {
                     Long amount = payment.getConsult().getCost() - FEE;
                     settlement.updateCompleteAll(amount);
-                    if (payment.getUpdatedAt().plusWeeks(1).isBefore(LocalDateTime.now())) {
+                    if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateCompleteWeek(amount);
-                    } else if (payment.getUpdatedAt().plusMonths(1).isBefore(LocalDateTime.now())) {
+                    }
+                    if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusMonths(1))) {
                         settlement.updateCompleteMonth(amount);
                     }
                 });
