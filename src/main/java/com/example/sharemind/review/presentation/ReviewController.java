@@ -141,7 +141,7 @@ public class ReviewController {
                     1. 최초 조회 요청이면 reviewId는 0
                     2. 2번째 요청부터 reviewId는 직전 요청의 조회 결과 3개 중 마지막 리뷰 아이디""")
     })
-    @GetMapping("/{counselorId}")
+    @GetMapping("all/{counselorId}")
     public ResponseEntity<List<ReviewGetShortResponse>> getReviewsForCounselorProfile(@PathVariable Long counselorId,
                                                                                       @RequestParam Long reviewId) {
         return ResponseEntity.ok(reviewService.getShortReviewsForCounselorProfile(reviewId, counselorId));
