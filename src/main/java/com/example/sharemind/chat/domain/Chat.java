@@ -7,7 +7,9 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.chat.content.ChatStatus;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,6 +38,9 @@ public class Chat extends BaseEntity {
     @OneToOne(mappedBy = "chat")
     private Consult consult;
 
+    @Column(name = "auto_refund", nullable = false)
+    private Boolean autoRefund = true;
+
     public void updateChatStatus(ChatStatus chatStatus) {
         this.chatStatus = chatStatus;
 
@@ -61,6 +66,10 @@ public class Chat extends BaseEntity {
 
     public void updateStartedAt() {
         this.startedAt = LocalDateTime.now();
+    }
+
+    public void updateAutoRefundTrue() {
+        this.autoRefund = true;
     }
 
     public void updateCustomerReadId(Long id) {

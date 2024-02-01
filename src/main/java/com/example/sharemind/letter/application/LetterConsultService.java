@@ -7,7 +7,7 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import com.example.sharemind.letter.domain.Letter;
-import com.example.sharemind.letter.dto.response.LetterGetOngoingResponse;
+import com.example.sharemind.global.dto.response.ChatLetterGetOngoingResponse;
 import com.example.sharemind.letter.dto.response.LetterGetResponse;
 import com.example.sharemind.letter.repository.LetterRepository;
 import com.example.sharemind.letterMessage.content.LetterMessageType;
@@ -35,7 +35,7 @@ public class LetterConsultService {
     private final LetterRepository letterRepository;
     private final LetterMessageRepository letterMessageRepository;
 
-    public LetterGetOngoingResponse getOngoingLetters(Long customerId, Boolean isCustomer) {
+    public ChatLetterGetOngoingResponse getOngoingLetters(Long customerId, Boolean isCustomer) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         List<Letter> letters;
         if (isCustomer) {
@@ -61,7 +61,7 @@ public class LetterConsultService {
             }
         }
 
-        return LetterGetOngoingResponse.of(letters.size(), chatLetterGetResponses);
+        return ChatLetterGetOngoingResponse.of(letters.size(), chatLetterGetResponses);
     }
 
     private LetterMessage getRecentMessage(Letter letter) {

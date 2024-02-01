@@ -1,5 +1,6 @@
 package com.example.sharemind.consult.domain;
 
+import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.consult.content.ConsultStatus;
 import com.example.sharemind.consult.exception.ConsultErrorCode;
 import com.example.sharemind.consult.exception.ConsultException;
@@ -15,6 +16,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -90,6 +92,10 @@ public class Consult extends BaseEntity {
     public void updateConsultStatusCounselorCancel() {
         this.consultStatus = ConsultStatus.COUNSELOR_CANCEL;
 
+        if (Objects.requireNonNull(this.consultType) == ConsultType.CHAT) {
+            this.chat.updateChatStatus(ChatStatus.COUNSELOR_CANCEL);
+        }
+
         this.payment.updateCustomerStatusRefundWaiting();
     }
 
@@ -97,10 +103,10 @@ public class Consult extends BaseEntity {
         this.consultStatus = ConsultStatus.CUSTOMER_CANCEL;
 
         switch (this.consultType) {
-            /**
-             * TODO chat 상태 cancel로 변경
-             * case CHAT ->
-             */
+            case CHAT -> {
+                this.chat.updateChatStatus(ChatStatus.CUSTOMER_CANCEL);
+                this.payment.updateCustomerStatusRefundWaiting();
+            }
             case LETTER -> this.letter.updateLetterStatusCustomerCancel();
         }
     }

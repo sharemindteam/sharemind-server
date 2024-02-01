@@ -1,12 +1,10 @@
 package com.example.sharemind.chat.application;
 
-import static com.example.sharemind.global.constants.Constants.COUNSELOR_PREFIX;
-import static com.example.sharemind.global.constants.Constants.CUSTOMER_PREFIX;
-
+import com.example.sharemind.chat.content.ChatRoomStatus;
 import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
-import com.example.sharemind.chat.domain.ChatCreateEvent;
+import com.example.sharemind.chat.domain.ChatNotifyEvent;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
 import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
@@ -26,11 +24,7 @@ import com.example.sharemind.global.content.ConsultType;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -40,6 +34,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.sharemind.global.constants.Constants.*;
 
 @Slf4j
 @Service
@@ -52,6 +48,7 @@ public class ChatServiceImpl implements ChatService {
     private final CounselorService counselorService;
     private final ConsultService consultService;
     private final CustomerService customerService;
+    private final ChatConsultService chatConsultService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
@@ -65,6 +62,8 @@ public class ChatServiceImpl implements ChatService {
         updateChatIdsRedis(chat, consult);
 
         notifyNewChat(chat, consult);
+
+        chatTaskScheduler.checkAutoRefund(chat);
         return chat;
     }
 
@@ -147,7 +146,6 @@ public class ChatServiceImpl implements ChatService {
         if (chat.getChatStatus() == ChatStatus.FINISH) {
             throw new ChatException(ChatErrorCode.CHAT_STATUS_FINISH, chatId.toString());
         }
-
     }
 
     @Override
@@ -183,7 +181,7 @@ public class ChatServiceImpl implements ChatService {
             }
         }
         return finalChats.stream()
-                .map(chat -> createChatInfoGetResponse(chat, isCustomer))
+                .map(chat -> chatConsultService.createChatInfoGetResponse(chat, isCustomer))
                 .collect(Collectors.toList());
     }
 
@@ -230,8 +228,8 @@ public class ChatServiceImpl implements ChatService {
         if (filter) {
             return consults.stream()
                     .map(Consult::getChat)
-                    .filter(chat -> (chat.getChatStatus() != ChatStatus.FINISH) && (chat.getChatStatus()
-                            != ChatStatus.CANCEL))
+                    .filter(chat -> (chat.getChatStatus() != ChatStatus.FINISH && chat.getChatStatus()
+                            != ChatStatus.COUNSELOR_CANCEL && chat.getChatStatus() != ChatStatus.CUSTOMER_CANCEL))
                     .collect(Collectors.toList());
         }
         return consults.stream()
@@ -277,6 +275,9 @@ public class ChatServiceImpl implements ChatService {
 
                 chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
 
+                if (!chat.getAutoRefund())
+                    chat.updateAutoRefundTrue();
+
                 break;
             }
 
@@ -291,6 +292,7 @@ public class ChatServiceImpl implements ChatService {
             case CUSTOMER_CHAT_FINISH_REQUEST: { //구매자가 상담 종료를 누른 상황
                 chat.updateChatStatus(ChatStatus.FINISH);
 
+                notifyFinishChat(chat, chat.getConsult());
                 break;
             }
             default:
@@ -339,21 +341,6 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private ChatLetterGetResponse createChatInfoGetResponse(Chat chat, Boolean isCustomer) {
-
-        Consult consult = chat.getConsult();
-
-        String nickname = isCustomer ? consult.getCounselor().getNickname() : consult.getCustomer().getNickname();
-
-        ChatMessage latestChatMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
-
-        Long lastReadMessageId = isCustomer ? chat.getCustomerReadId() : chat.getCounselorReadId();
-        int unreadMessageCount = chatMessageRepository.countByChatAndMessageIdGreaterThanAndIsCustomer(
-                chat, lastReadMessageId, !isCustomer);
-
-        return ChatLetterGetResponse.of(nickname, unreadMessageCount, chat, consult.getCounselor(), latestChatMessage);
-    }
-
     private void updateChatIdsRedis(Chat chat, Consult consult) {
         updateCustomerRedis(chat, consult);
         updateCounselorRedis(chat, consult);
@@ -382,7 +369,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private void notifyNewChat(Chat chat, Consult consult) {
-        publisher.publishEvent(ChatCreateEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
-                consult.getCounselor().getCounselorId()));
+        publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
+                consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_CREATE));
+    }
+
+    private void notifyFinishChat(Chat chat, Consult consult) {
+        publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
+                consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_FINISH));
     }
 }
