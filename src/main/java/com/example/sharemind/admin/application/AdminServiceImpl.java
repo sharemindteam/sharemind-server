@@ -115,8 +115,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateRefundComplete(Long paymentId) {
         Payment payment = paymentService.getPaymentByPaymentId(paymentId);
-        if ((payment.getCustomerStatus() == null) ||
-                (!payment.getCustomerStatus().equals(PaymentCustomerStatus.REFUND_WAITING))) {
+        if (!payment.getCustomerStatus().equals(PaymentCustomerStatus.REFUND_WAITING)) {
             throw new PaymentException(PaymentErrorCode.INVALID_REFUND_COMPLETE);
         }
 
