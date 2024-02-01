@@ -24,7 +24,7 @@ public class LetterMessageGetResponse {
     private final String content;
 
     @Schema(description = "작성 일시, 메시지 존재하지 않으면 null", example = "2024년 1월 4일 오전 9시 45분", type = "string")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년 MM월 dd일 a HH시 mm분")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy년 MM월 dd일 a HH시 mm분", locale="ko")
     private final LocalDateTime updatedAt;
 
     @Schema(description = "작성 일시, 메시지 존재하지 않으면 null", example = "01.12")
