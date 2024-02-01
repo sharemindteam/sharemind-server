@@ -106,4 +106,30 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.getPaymentsByCounselor(
                 paymentId, status, sort, customUserDetails.getCustomer().getCustomerId()));
     }
+
+    @Operation(summary = "상담사 정산 신청", description = "상담사 정산 신청")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "신청 성공"),
+            @ApiResponse(responseCode = "400", description = "정산 예정 상태가 아닌 정산에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "신청 권한이 없는 정산에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 정산 정보",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "paymentId", description = "신청할 정산 정보 아이디")
+    })
+    @PatchMapping("/counselors/{paymentId}")
+    public ResponseEntity<Void> updateSettlementOngoingByCounselor(@PathVariable Long paymentId,
+                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        paymentService.updateSettlementOngoingByCounselor(paymentId, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
+    }
 }
