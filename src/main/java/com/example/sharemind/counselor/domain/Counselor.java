@@ -103,6 +103,10 @@ public class Counselor extends BaseEntity {
     @Column(name = "total_consult", nullable = false)
     private Long totalConsult;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "settlement_id", unique = true)
+    private Settlement settlement;
+
     @Builder
     public Counselor(String nickname) {
         this.nickname = nickname;
@@ -112,6 +116,7 @@ public class Counselor extends BaseEntity {
         this.profileStatus = ProfileStatus.NO_PROFILE;
         this.profileUpdatedAt = LocalDateTime.now();
         this.totalConsult = 0L;
+        this.settlement = Settlement.builder().build();
     }
 
     public Long getConsultCost(ConsultType consultType) {

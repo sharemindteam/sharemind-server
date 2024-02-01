@@ -60,6 +60,11 @@ public class CounselorServiceImpl implements CounselorService {
         return counselor;
     }
 
+    @Override
+    public List<Counselor> getAllCounselors() {
+        return counselorRepository.findAllByIsEducatedIsTrueAndIsActivatedIsTrue();
+    }
+
     @Transactional
     @Override
     public void updateIsEducated(Boolean isEducated, Long customerId) {
