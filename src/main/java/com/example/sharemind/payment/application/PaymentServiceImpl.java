@@ -68,7 +68,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void updateRefundWaitingByCustomer(Long paymentId, Long customerId) {
         Payment payment = getPaymentByPaymentId(paymentId);
-        payment.checkUpdateAuthority(customerId);
+        payment.checkUpdateAuthorityByCustomer(customerId);
         if ((payment.getCustomerStatus() == null) ||
                 (!payment.getCustomerStatus().equals(PaymentCustomerStatus.PAYMENT_COMPLETE)) ||
                 (!payment.getConsult().getConsultStatus().equals(ConsultStatus.WAITING))) {
@@ -133,6 +133,20 @@ public class PaymentServiceImpl implements PaymentService {
                         .map(payment -> PaymentGetCounselorResponse.of(payment, finalTotal));
 
         return page.getContent();
+    }
+
+    @Transactional
+    @Override
+    public void updateSettlementOngoingByCounselor(Long paymentId, Long customerId) {
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+        Payment payment = getPaymentByPaymentId(paymentId);
+        payment.checkUpdateAuthorityByCounselor(counselor.getCounselorId());
+        if ((payment.getCounselorStatus() == null) ||
+                (!payment.getCounselorStatus().equals(PaymentCounselorStatus.SETTLEMENT_WAITING))) {
+            throw new PaymentException(PaymentErrorCode.INVALID_SETTLEMENT_ONGOING, paymentId.toString());
+        }
+
+        payment.updateCounselorStatusSettlementOngoing();
     }
 
     @Override

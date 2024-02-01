@@ -19,6 +19,8 @@ public interface PaymentService {
 
     List<PaymentGetCounselorResponse> getPaymentsByCounselor(Long paymentId, String status, String sort, Long customerId);
 
+    void updateSettlementOngoingByCounselor(Long paymentId, Long customerId);
+
     Boolean checkRefundWaitingExists(Customer customer);
 
     Boolean checkNotSettlementCompleteAndNotNoneExists(Counselor counselor);
