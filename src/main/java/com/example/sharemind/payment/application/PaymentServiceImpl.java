@@ -10,6 +10,7 @@ import com.example.sharemind.payment.content.PaymentCounselorStatus;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.content.PaymentSortType;
 import com.example.sharemind.payment.domain.Payment;
+import com.example.sharemind.payment.dto.response.PaymentGetCounselorHomeResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
@@ -147,6 +148,13 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         payment.updateCounselorStatusSettlementOngoing();
+    }
+
+    @Override
+    public PaymentGetCounselorHomeResponse getCounselorHomePayment(Long customerId) {
+        Settlement settlement = counselorService.getCounselorByCustomerId(customerId).getSettlement();
+        return PaymentGetCounselorHomeResponse.of(settlement.getWaitingMonth() + settlement.getOngoingMonth(),
+                settlement.getWaitingAll());
     }
 
     @Override
