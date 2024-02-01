@@ -81,7 +81,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "상담사 수익 관리 조회", description = "- 상담사 수익 관리 조회\n " +
-            "- 주소 형식: /api/v1/payments/counselors?status=settle_complete&sort=all&paymentId=0")
+            "- 주소 형식: /api/v1/payments/counselors?status=settlement_complete&sort=all&paymentId=0")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공(없으면 빈 배열 반환)"),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 status\n 2. 존재하지 않는 sort",
