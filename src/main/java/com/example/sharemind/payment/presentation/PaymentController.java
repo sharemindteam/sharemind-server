@@ -3,6 +3,7 @@ package com.example.sharemind.payment.presentation;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.payment.application.PaymentService;
+import com.example.sharemind.payment.dto.response.PaymentGetCounselorHomeResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -131,5 +132,14 @@ public class PaymentController {
                                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         paymentService.updateSettlementOngoingByCounselor(paymentId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "상담사 홈화면 수익 관리 조회", description = "상담사 홈화면 수익 관리 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/counselors/home")
+    public ResponseEntity<PaymentGetCounselorHomeResponse> getPaymentInfoForCounselorHome(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(paymentService.getCounselorHomePayment(customUserDetails.getCustomer().getCustomerId()));
     }
 }
