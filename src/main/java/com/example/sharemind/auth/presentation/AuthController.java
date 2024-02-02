@@ -135,12 +135,38 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "아이디 찾기",
+            description = "복구 이메일로 아이디 찾기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "복구 이메일로 아이디 전송 성공"),
+            @ApiResponse(responseCode = "400", description = "1. 올바르지 않은 복구 이메일 형식",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "1. 복구 이메일을 가진 유저가 존재하지 않음",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
     @PatchMapping("find-id")
     public ResponseEntity<Void> findIdByRecoveryEmail(@Valid @RequestBody AuthFindRequest authFindRequest) {
         authService.sendIdByRecoveryEmail(authFindRequest);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "비밀번호 찾기",
+            description = "복구 이메일로 비밀번호 찾기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "복구 이메일로 새로운 비밀번호 전송 성공"),
+            @ApiResponse(responseCode = "400", description = "1. 올바르지 않은 복구 이메일 형식",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "1. 복구 이메일을 가진 유저가 존재하지 않음",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
     @PatchMapping("find-password")
     public ResponseEntity<Void> findPasswordByRecoveryEmail(@Valid @RequestBody AuthFindRequest authFindRequest) {
         authService.updateAndSendPasswordByRecoveryEmail(authFindRequest);
