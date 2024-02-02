@@ -2,7 +2,6 @@ package com.example.sharemind.admin.dto.response;
 
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.counselor.domain.Counselor;
-import com.example.sharemind.global.content.Bank;
 import com.example.sharemind.payment.domain.Payment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,10 +34,10 @@ public class PaymentGetSettlementOngoingResponse {
     @Schema(description = "상담 금액", example = "12345")
     private final Long cost;
 
-    @Schema(description = "은행", example = "SHINHAN")
-    private final Bank bank;
+    @Schema(description = "은행", example = "우리은행")
+    private final String bank;
 
-    @Schema(description = "계좌번호", example = "1002-961-686868")
+    @Schema(description = "계좌번호", example = "1002961686868")
     private final String account;
 
     @Schema(description = "예금주명", example = "김뫄뫄")
