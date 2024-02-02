@@ -4,6 +4,7 @@ import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
+import com.example.sharemind.counselor.dto.request.CounselorUpdateAccountRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
@@ -231,5 +232,21 @@ public class CounselorController {
         if (customUserDetails == null)
             return ResponseEntity.ok(counselorService.getAllCounselorMinderProfile(counselorId));
         return ResponseEntity.ok(counselorService.getCounselorMinderProfileByCustomer(counselorId, customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "상담사 수익 계좌 관리",
+            description = "상담사 수익 계좌 등록/수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "등록/수정 성공"),
+            @ApiResponse(responseCode = "400", description = "계좌번호/은행/예금주가 공백",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @PatchMapping("/account")
+    public ResponseEntity<Void> updateAccount(@Valid @RequestBody CounselorUpdateAccountRequest counselorUpdateAccountRequest,
+                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        counselorService.updateAccount(counselorUpdateAccountRequest, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
     }
 }
