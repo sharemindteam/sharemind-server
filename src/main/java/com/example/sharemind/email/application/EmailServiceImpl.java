@@ -3,8 +3,10 @@ package com.example.sharemind.email.application;
 import com.example.sharemind.email.dto.response.EmailGetSendCountResponse;
 import com.example.sharemind.email.exception.EmailErrorCode;
 import com.example.sharemind.email.exception.EmailException;
+
 import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
@@ -34,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
         } else {
             count = checkCodeCount(email);
         }
-        sendEmail(email, code);
+        sendSignUpEmail(email, code);
         storeCodeInRedis(email, code, count);
 
         return EmailGetSendCountResponse.of(count + 1);
@@ -46,6 +48,15 @@ public class EmailServiceImpl implements EmailService {
         if (!code.equals(storedCode)) {
             throw new EmailException(EmailErrorCode.CODE_MISMATCH, code);
         }
+    }
+
+    @Override
+    public void sendIdEmail(String to, String id) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("sharemind 아이디입니다.");
+        message.setText("sharemind 아이디 정보 입니다.\n" + id);
+        mailSender.send(message);
     }
 
     private String checkExistingCode(String email) {
@@ -75,7 +86,7 @@ public class EmailServiceImpl implements EmailService {
         return String.valueOf(code);
     }
 
-    private void sendEmail(String to, String text) {
+    private void sendSignUpEmail(String to, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("sharemind 회원 가입 인증 코드입니다.");
