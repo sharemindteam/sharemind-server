@@ -7,12 +7,14 @@ import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.auth.repository.TokenRepository;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.customer.domain.Quit;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
 import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.customer.repository.CustomerRepository;
 import com.example.sharemind.customer.repository.QuitRepository;
+import com.example.sharemind.email.application.EmailService;
 import com.example.sharemind.global.jwt.TokenProvider;
 import com.example.sharemind.payment.application.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final PaymentService paymentService;
     private final ConsultService consultService;
+    private final CustomerService customerService;
+    private final EmailService emailService;
     private final CustomerRepository customerRepository;
     private final QuitRepository quitRepository;
     private final TokenRepository tokenRepository;
@@ -39,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public void signUp(AuthSignUpRequest authSignUpRequest) {
-        if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail())) {
+        if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail()) || customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getRecoveryEmail())) {
             throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST, authSignUpRequest.getEmail());
         }
 
@@ -64,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenDto reissueToken(AuthReissueRequest authReissueRequest) {
-        if(!tokenProvider.validateRefreshToken(authReissueRequest.getRefreshToken())) {
+        if (!tokenProvider.validateRefreshToken(authReissueRequest.getRefreshToken())) {
             throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
 
@@ -142,5 +146,11 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = tokenProvider.getTokenWithNoPrefix(authSignOutRequest.getAccessToken());
         Duration expirationTime = tokenProvider.getRestExpirationTime(accessToken);
         tokenRepository.save(accessToken, SIGNOUT_VALUE, expirationTime);
+    }
+
+    @Override
+    public void sendIdByRecoveryEmail(AuthFindRequest authFindRequest) {
+        Customer customer = customerService.getCustomerByRecoveryEmail(authFindRequest.getRecoveryEmail());
+        emailService.sendIdEmail(authFindRequest.getRecoveryEmail(), customer.getEmail());
     }
 }

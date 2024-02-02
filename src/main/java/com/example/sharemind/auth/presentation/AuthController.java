@@ -130,8 +130,14 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     })
     @PatchMapping("/signOut")
-    public ResponseEntity<Void> singOut(@Valid @RequestBody AuthSignOutRequest authSignOutRequest) {
+    public ResponseEntity<Void> signOut(@Valid @RequestBody AuthSignOutRequest authSignOutRequest) {
         authService.signOut(authSignOutRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("find-id")
+    public ResponseEntity<Void> findId(@Valid @RequestBody AuthFindRequest authFindRequest) {
+        authService.sendIdByRecoveryEmail(authFindRequest);
         return ResponseEntity.ok().build();
     }
 }
