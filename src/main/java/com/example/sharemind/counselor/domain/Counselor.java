@@ -168,6 +168,12 @@ public class Counselor extends BaseEntity {
         this.ratingAverage = Math.round(newTotalRating * 10) / 10.0;
     }
 
+    public void updateAccountInfo(String account, String bank, String accountHolder) {
+        this.account = account;
+        this.bank = bank;
+        this.accountHolder = accountHolder;
+    }
+
     private void validateIsEducated() {
         if ((this.isEducated != null) && (this.isEducated.equals(true))) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_ALREADY_EDUCATED);
