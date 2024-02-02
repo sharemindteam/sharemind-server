@@ -59,6 +59,15 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(message);
     }
 
+    @Override
+    public void sendNewPasswordEmail(String to, String password) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("sharemind 임시 비밀번호입니다.");
+        message.setText("sharemind 임시 비밀번호입니다.\n 사이트에 접속하여 새로운 비밀번호로 바꿔주세요.\n" + password);
+        mailSender.send(message);
+    }
+
     private String checkExistingCode(String email) {
         return redisTemplate.opsForValue().get(EMAIL_PREFIX + email);
     }

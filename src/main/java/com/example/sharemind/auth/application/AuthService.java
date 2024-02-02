@@ -21,4 +21,6 @@ public interface AuthService {
     void signOut(AuthSignOutRequest authSignOutRequest);
 
     void sendIdByRecoveryEmail(AuthFindRequest authFindRequest);
+
+    void updateAndSendPasswordByRecoveryEmail(AuthFindRequest authFindRequest);
 }

@@ -30,7 +30,7 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공"),
             @ApiResponse(responseCode = "400", description = "1. 이미 가입된 이메일 주소\n 2. 올바르지 않은 이메일/비밀번호/전화번호 형식\n 3. 로그인 이메일과 복구 이메일 주소가 동일",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
@@ -44,11 +44,11 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = "비밀번호 불일치",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 이메일로 요청됨",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
@@ -62,11 +62,11 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "재발급 성공"),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 refreshToken",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원에 대해 요청됨",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
@@ -136,8 +136,14 @@ public class AuthController {
     }
 
     @PatchMapping("find-id")
-    public ResponseEntity<Void> findId(@Valid @RequestBody AuthFindRequest authFindRequest) {
+    public ResponseEntity<Void> findIdByRecoveryEmail(@Valid @RequestBody AuthFindRequest authFindRequest) {
         authService.sendIdByRecoveryEmail(authFindRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("find-password")
+    public ResponseEntity<Void> findPasswordByRecoveryEmail(@Valid @RequestBody AuthFindRequest authFindRequest) {
+        authService.updateAndSendPasswordByRecoveryEmail(authFindRequest);
         return ResponseEntity.ok().build();
     }
 }

@@ -153,4 +153,13 @@ public class AuthServiceImpl implements AuthService {
         Customer customer = customerService.getCustomerByRecoveryEmail(authFindRequest.getRecoveryEmail());
         emailService.sendIdEmail(authFindRequest.getRecoveryEmail(), customer.getEmail());
     }
+
+    @Transactional
+    @Override
+    public void updateAndSendPasswordByRecoveryEmail(AuthFindRequest authFindRequest) {
+        Customer customer = customerService.getCustomerByRecoveryEmail(authFindRequest.getRecoveryEmail());
+        String newPassword = PasswordGenerator.generateTemporaryPassword();
+        customer.updatePassword(passwordEncoder.encode(newPassword));
+        emailService.sendNewPasswordEmail(authFindRequest.getRecoveryEmail(), newPassword);
+    }
 }
