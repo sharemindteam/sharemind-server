@@ -9,4 +9,6 @@ public interface CustomerService {
     Customer getCustomerByCounselor(Counselor counselor);
 
     String getCustomerNickname(Long customerId);
+
+    Customer getCustomerByRecoveryEmail(String recoveryEmail);
 }

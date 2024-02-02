@@ -33,4 +33,10 @@ public class CustomerServiceImpl implements CustomerService {
     public String getCustomerNickname(Long customerId) {
         return getCustomerByCustomerId(customerId).getNickname();
     }
+
+    @Override
+    public Customer getCustomerByRecoveryEmail(String recoveryEmail) {
+        return customerRepository.findByRecoveryEmailAndIsActivatedIsTrue(recoveryEmail)
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND));
+    }
 }

@@ -16,4 +16,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Optional<Customer> findByCustomerIdAndIsActivatedIsTrue(Long id);
 
     Optional<Customer> findByCounselorAndIsActivatedIsTrue(Counselor counselor);
+
+    Optional<Customer> findByRecoveryEmailAndIsActivatedIsTrue(String recoveryEmail);
 }
