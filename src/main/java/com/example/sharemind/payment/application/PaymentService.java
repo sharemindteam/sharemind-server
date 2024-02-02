@@ -24,6 +24,8 @@ public interface PaymentService {
 
     PaymentGetCounselorHomeResponse getCounselorHomePayment(Long customerId);
 
+    List<Payment> getSettlementOngoingPayments();
+
     Boolean checkRefundWaitingExists(Customer customer);
 
     Boolean checkNotSettlementCompleteAndNotNoneExists(Counselor counselor);

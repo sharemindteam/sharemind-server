@@ -2,6 +2,7 @@ package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
+import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
@@ -20,6 +21,7 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.payment.application.PaymentService;
+import com.example.sharemind.payment.content.PaymentCounselorStatus;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
@@ -113,11 +115,28 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateRefundComplete(Long paymentId) {
         Payment payment = paymentService.getPaymentByPaymentId(paymentId);
-        if ((payment.getCustomerStatus() == null) ||
-                (!payment.getCustomerStatus().equals(PaymentCustomerStatus.REFUND_WAITING))) {
+        if (!payment.getCustomerStatus().equals(PaymentCustomerStatus.REFUND_WAITING)) {
             throw new PaymentException(PaymentErrorCode.INVALID_REFUND_COMPLETE);
         }
 
         payment.updateCustomerStatusRefundComplete();
+    }
+
+    @Override
+    public List<PaymentGetSettlementOngoingResponse> getSettlementOngoingPayments() {
+        return paymentService.getSettlementOngoingPayments().stream()
+                .map(PaymentGetSettlementOngoingResponse::of)
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updateSettlementComplete(Long paymentId) {
+        Payment payment = paymentService.getPaymentByPaymentId(paymentId);
+        if (!payment.getCounselorStatus().equals(PaymentCounselorStatus.SETTLEMENT_ONGOING)) {
+            throw new PaymentException(PaymentErrorCode.INVALID_SETTLEMENT_COMPLETE);
+        }
+
+        payment.updateCounselorStatusSettlementComplete();
     }
 }

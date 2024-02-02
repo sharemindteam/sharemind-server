@@ -3,6 +3,7 @@ package com.example.sharemind.admin.presentation;
 import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
+import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -118,6 +119,37 @@ public class AdminController {
     @PatchMapping("/refund-waiting/{paymentId}")
     public ResponseEntity<Void> updateRefundComplete(@PathVariable Long paymentId) {
         adminService.updateRefundComplete(paymentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "상담사 정산 요청 정보 조회", description = "상담사가 정산을 요청한 정산 정보 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/settlement-ongoing")
+    public ResponseEntity<List<PaymentGetSettlementOngoingResponse>> getSettlementOngoingPayments() {
+        return ResponseEntity.ok(adminService.getSettlementOngoingPayments());
+    }
+
+    @Operation(summary = "정산 완료 수정",
+            description = "정산 중인 정보를 정산 완료로 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "정산 중 상태가 아닌 정보에 대한 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 payment 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "paymentId", description = "payment 아이디")
+    })
+    @PatchMapping("/settlement-ongoing/{paymentId}")
+    public ResponseEntity<Void> updateSettlementComplete(@PathVariable Long paymentId) {
+        adminService.updateSettlementComplete(paymentId);
         return ResponseEntity.ok().build();
     }
 }

@@ -2,6 +2,7 @@ package com.example.sharemind.payment.domain;
 
 import com.example.sharemind.consult.content.ConsultStatus;
 import com.example.sharemind.consult.domain.Consult;
+import com.example.sharemind.counselor.domain.Settlement;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.payment.content.PaymentCounselorStatus;
 import com.example.sharemind.payment.content.PaymentCustomerStatus;
@@ -14,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import static com.example.sharemind.global.constants.Constants.FEE;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -87,7 +90,37 @@ public class Payment extends BaseEntity {
     }
 
     public void updateCounselorStatusSettlementOngoing() {
+        Settlement settlement = this.consult.getCounselor().getSettlement();
+        long amount = this.consult.getCost() - FEE;
+        if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
+            settlement.updateWaitingWeek(-amount);
+        }
+        if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusMonths(1))) {
+            settlement.updateWaitingMonth(-amount);
+        }
+        settlement.updateWaitingAll(-amount);
+        settlement.updateOngoingWeek(amount);
+        settlement.updateOngoingMonth(amount);
+        settlement.updateOngoingAll(amount);
+
         this.counselorStatus = PaymentCounselorStatus.SETTLEMENT_ONGOING;
+    }
+
+    public void updateCounselorStatusSettlementComplete() {
+        Settlement settlement = this.consult.getCounselor().getSettlement();
+        long amount = this.consult.getCost() - FEE;
+        if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
+            settlement.updateOngoingWeek(-amount);
+        }
+        if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusMonths(1))) {
+            settlement.updateOngoingMonth(-amount);
+        }
+        settlement.updateOngoingAll(-amount);
+        settlement.updateCompleteWeek(amount);
+        settlement.updateCompleteMonth(amount);
+        settlement.updateCompleteAll(amount);
+
+        this.counselorStatus = PaymentCounselorStatus.SETTLEMENT_COMPLETE;
     }
 
     public void checkUpdateAuthorityByCustomer(Long customerId) {
