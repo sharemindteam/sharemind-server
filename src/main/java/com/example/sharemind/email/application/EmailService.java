@@ -6,4 +6,8 @@ public interface EmailService {
     EmailGetSendCountResponse sendVerificationCode(String email);
 
     void verifyCode(String email, String code);
+
+    void sendIdEmail(String to, String id);
+
+    void sendNewPasswordEmail(String to, String password);
 }

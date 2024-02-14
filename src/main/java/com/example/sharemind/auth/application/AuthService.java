@@ -19,4 +19,8 @@ public interface AuthService {
     void quit(AuthQuitRequest authQuitRequest, Long customerId);
 
     void signOut(AuthSignOutRequest authSignOutRequest);
+
+    void sendIdByRecoveryEmail(AuthFindRequest authFindRequest);
+
+    void updateAndSendPasswordByRecoveryEmail(AuthFindRequest authFindRequest);
 }
