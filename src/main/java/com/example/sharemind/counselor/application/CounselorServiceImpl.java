@@ -1,6 +1,7 @@
 package com.example.sharemind.counselor.application;
 
 import com.example.sharemind.chat.domain.Chat;
+import com.example.sharemind.counselor.content.Bank;
 import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.counselor.content.CounselorListSortType;
 import com.example.sharemind.counselor.content.ProfileStatus;
@@ -238,6 +239,7 @@ public class CounselorServiceImpl implements CounselorService {
     @Override
     public void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest, Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
+        Bank.existsByDisplayName(counselorUpdateAccountRequest.getBank());
         counselor.updateAccountInfo(counselorUpdateAccountRequest.getAccount(), counselorUpdateAccountRequest.getBank(),
                 counselorUpdateAccountRequest.getAccountHolder());
     }
