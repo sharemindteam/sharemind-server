@@ -4,7 +4,6 @@ import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.global.common.BaseEntity;
-import com.example.sharemind.global.content.Bank;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.global.content.ConsultType;
@@ -83,8 +82,7 @@ public class Counselor extends BaseEntity {
 
     private String account;
 
-    @Enumerated(EnumType.STRING)
-    private Bank bank;
+    private String bank;
 
     @Column(name = "account_holder")
     private String accountHolder;
@@ -168,6 +166,12 @@ public class Counselor extends BaseEntity {
 
         double newTotalRating = (preTotalRating + rating) / this.totalReview;
         this.ratingAverage = Math.round(newTotalRating * 10) / 10.0;
+    }
+
+    public void updateAccountInfo(String account, String bank, String accountHolder) {
+        this.account = account;
+        this.bank = bank;
+        this.accountHolder = accountHolder;
     }
 
     private void validateIsEducated() {

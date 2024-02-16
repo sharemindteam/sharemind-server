@@ -19,6 +19,7 @@ public enum CounselorErrorCode {
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
     INVALID_CONSULT_TYPE(HttpStatus.BAD_REQUEST, "상담사가 제공하는 상담 유형이 아닙니다."),
     COST_NOT_FOUND(HttpStatus.NOT_FOUND, "상담료 정보가 존재하지 않습니다."),
+    BANK_NOT_FOUND(HttpStatus.NOT_FOUND, "은행이 존재하지 않습니다."),
     COUNSELOR_SORT_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 정렬 방식이 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;

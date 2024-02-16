@@ -1,6 +1,7 @@
 package com.example.sharemind.counselor.application;
 
 import com.example.sharemind.chat.domain.Chat;
+import com.example.sharemind.counselor.content.Bank;
 import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.counselor.content.CounselorListSortType;
 import com.example.sharemind.counselor.content.ProfileStatus;
@@ -8,6 +9,7 @@ import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
+import com.example.sharemind.counselor.dto.request.CounselorUpdateAccountRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
@@ -231,6 +233,15 @@ public class CounselorServiceImpl implements CounselorService {
         Counselor counselor = getCounselorByCounselorId(counselorId);
 
         return CounselorGetMinderProfileResponse.of(counselor, false);
+    }
+
+    @Transactional
+    @Override
+    public void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest, Long customerId) {
+        Counselor counselor = getCounselorByCustomerId(customerId);
+        Bank.existsByDisplayName(counselorUpdateAccountRequest.getBank());
+        counselor.updateAccountInfo(counselorUpdateAccountRequest.getAccount(), counselorUpdateAccountRequest.getBank(),
+                counselorUpdateAccountRequest.getAccountHolder());
     }
 
     private String getCounselorSortColumn(String sortType) {
