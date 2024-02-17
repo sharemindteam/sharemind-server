@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Boolean existsByEmailAndIsActivatedIsTrue(String email);
 
+    Boolean existsByRecoveryEmailAndIsActivatedIsTrue(String recoveryEmail);
+
     Optional<Customer> findByEmailAndIsActivatedIsTrue(String email);
 
     Optional<Customer> findByCustomerIdAndIsActivatedIsTrue(Long id);
