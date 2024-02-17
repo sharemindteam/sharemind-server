@@ -29,7 +29,11 @@ public class AuthController {
     @Operation(summary = "회원가입", description = "customer 생성")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 이미 가입된 이메일 주소\n 2. 올바르지 않은 이메일/비밀번호/전화번호 형식\n 3. 로그인 이메일과 복구 이메일 주소가 동일",
+            @ApiResponse(responseCode = "400", description = "1. 올바르지 않은 이메일/비밀번호/전화번호 형식\n 2. 로그인 이메일과 복구 이메일 주소가 동일",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "409", description = "1. 이미 가입된 이메일 주소\n 2. 이미 등록된 복구 이메일 주소",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -148,7 +152,7 @@ public class AuthController {
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
-    @PatchMapping("find-id")
+    @PatchMapping("/find-id")
     public ResponseEntity<Void> findIdByRecoveryEmail(@Valid @RequestBody AuthFindRequest authFindRequest) {
         authService.sendIdByRecoveryEmail(authFindRequest);
         return ResponseEntity.ok().build();
@@ -167,9 +171,22 @@ public class AuthController {
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
-    @PatchMapping("find-password")
+    @PatchMapping("/find-password")
     public ResponseEntity<Void> findPasswordByRecoveryEmail(@Valid @RequestBody AuthFindRequest authFindRequest) {
         authService.updateAndSendPasswordByRecoveryEmail(authFindRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "복구 이메일 중복 확인",
+            description = """
+                    - 복구 이메일 중복 확인
+                    - 중복된 이메일 있으면 true, 없으면 false
+                    - 주소 형식: /api/v1/auth/recovery-email?email=aaa@gmail.com""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "확인 성공")
+    })
+    @GetMapping("/recovery-email")
+    public ResponseEntity<Boolean> checkDuplicateRecoveryEmail(@RequestParam String email) {
+        return ResponseEntity.ok(authService.checkDuplicateRecoveryEmail(email));
     }
 }
