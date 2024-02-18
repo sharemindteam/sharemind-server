@@ -21,7 +21,7 @@ public class ChatNoticeService {
     private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
-    public void createChatNoticeMessage(ChatMessageStatus chatMessageStatus, Chat chat) {
+    public void createChatNoticeMessage(Chat chat, ChatMessageStatus chatMessageStatus) {
         if (chatMessageStatus == ChatMessageStatus.SEND_REQUEST) {
             ChatMessage chatMessage = new ChatMessage(chat, false, chat.getConsult().getCustomer().getNickname() + "님, 지금 바로 상담을 시작할까요?", chatMessageStatus);
             chatMessageRepository.save(chatMessage);

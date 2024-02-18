@@ -11,6 +11,7 @@ import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
+import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.chatMessage.repository.ChatMessageRepository;
 import com.example.sharemind.consult.application.ConsultService;
@@ -53,6 +54,7 @@ public class ChatServiceImpl implements ChatService {
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final ChatNoticeService chatNoticeService;
 
     @Override
     public Chat createChat(Consult consult) {
@@ -273,6 +275,8 @@ public class ChatServiceImpl implements ChatService {
             case COUNSELOR_CHAT_START_REQUEST: { //counselor가 상담 요청을 보낸 상황
                 chat.updateChatStatus(ChatStatus.SEND_REQUEST);
 
+                chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.SEND_REQUEST);
+
                 chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
 
                 if (!chat.getAutoRefund()) // 처음 요청을 보낸거 기준으로 자동환불 처리 해주기 때문에
@@ -283,6 +287,9 @@ public class ChatServiceImpl implements ChatService {
 
             case CUSTOMER_CHAT_START_RESPONSE: {
                 chat.updateChatStatus(ChatStatus.ONGOING);
+
+                chatNoticeService.updateSendRequestMessageIsActivatedFalse(chat);
+                chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.START);
 
                 chatTaskScheduler.checkChatDuration(chat);
 

@@ -25,8 +25,8 @@ public class ChatTaskScheduler {
     private final TaskScheduler scheduler;
     private final ApplicationEventPublisher publisher;
     private final ConsultService consultService;
-    private final ConsultRepository consultRepository;
     private final ChatRepository chatRepository;
+    private final ChatNoticeService chatNoticeService;
 
     //    private static final int TEN_MINUTE = 60000; //1분
 //    private static final int TWENTY_FIVE_MINUTE = 300000; //5분
@@ -42,6 +42,8 @@ public class ChatTaskScheduler {
             if (chat.getChatStatus() == ChatStatus.SEND_REQUEST) {
                 chat.updateChatStatus(ChatStatus.WAITING);
                 chatRepository.save(chat);
+
+                chatNoticeService.updateSendRequestMessageIsActivatedFalse(chat);
 
                 publisher.publishEvent(
                         ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_START_REQUEST_CANCEL));
