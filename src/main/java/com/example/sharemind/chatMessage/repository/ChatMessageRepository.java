@@ -18,5 +18,5 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     ChatMessage findTopByChatAndIsCustomerAndIsActivatedTrueOrderByMessageIdDesc(Chat chat, Boolean isCustomer);
 
-    ChatMessage findByMessageStatusAndIsActivatedTrue(ChatMessageStatus messageStatus);
+    ChatMessage findByMessageStatusAndChatAndIsActivatedTrue(Chat chat, ChatMessageStatus messageStatus);
 }
