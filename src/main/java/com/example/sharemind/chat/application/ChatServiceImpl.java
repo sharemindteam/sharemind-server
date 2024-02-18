@@ -275,7 +275,7 @@ public class ChatServiceImpl implements ChatService {
 
                 chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
 
-                if (!chat.getAutoRefund())
+                if (!chat.getAutoRefund()) // 처음 요청을 보낸거 기준으로 자동환불 처리 해주기 때문에
                     chat.updateAutoRefundTrue();
 
                 break;

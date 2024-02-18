@@ -1,6 +1,7 @@
 package com.example.sharemind.chatMessage.repository;
 
 import com.example.sharemind.chat.domain.Chat;
+import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     Page<ChatMessage> findByChatOrderByMessageIdDesc(Chat chat, Pageable pageable);
 
-
     ChatMessage findTopByChatAndIsCustomerAndIsActivatedTrueOrderByMessageIdDesc(Chat chat, Boolean isCustomer);
+
+    ChatMessage findByMessageStatusAndIsActivatedTrue(ChatMessageStatus messageStatus);
 }
