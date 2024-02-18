@@ -27,7 +27,16 @@ public class ChatNoticeService {
             chatMessageRepository.save(chatMessage);
         } else if (chatMessageStatus == ChatMessageStatus.START) {
             updateSendRequestMessageIsActivatedFalse(chat);
-            ChatMessage chatMessage = new ChatMessage(chat, false, "상담이 시작되었어요. \n" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 a")), chatMessageStatus);
+            ChatMessage chatMessage = new ChatMessage(chat, false, "상담이 시작되었어요.\n" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분")), chatMessageStatus);
+            chatMessageRepository.save(chatMessage);
+        } else if (chatMessageStatus == ChatMessageStatus.FIVE_MINUTE_LEFT) {
+            ChatMessage chatMessage = new ChatMessage(chat, false, "상담 종료까지 5분 남았어요.\n" + chat.getStartedAt().plusMinutes(30).format(DateTimeFormatter.ofPattern("a hh시 mm분")), chatMessageStatus);
+            chatMessageRepository.save(chatMessage);
+        } else if (chatMessageStatus == ChatMessageStatus.TIME_OVER) {
+            ChatMessage chatMessage = new ChatMessage(chat, false, "상담 시간이 모두 마무리 되었어요.\n상담이 정상적으로 종료되었다면 상담 종료 버튼을 눌러 주세요.\n*신고접수가 되지 않은 상담 건은 7일 후 자동으로 거래가 확정됩니다.", chatMessageStatus);
+            chatMessageRepository.save(chatMessage);
+        } else if (chatMessageStatus == ChatMessageStatus.FINISH) {
+            ChatMessage chatMessage = new ChatMessage(chat, false, "님과의 상담이 만족스러우셨나요? 후기를 남겨주시면 더 나은 서비스를 위해 큰 도움이 되어요.", chatMessageStatus);
             chatMessageRepository.save(chatMessage);
         }
     }
@@ -36,7 +45,7 @@ public class ChatNoticeService {
     public void updateSendRequestMessageIsActivatedFalse(Chat chat) {
         ChatMessage chatMessage = chatMessageRepository.findByMessageStatusAndChatAndIsActivatedTrue(chat, ChatMessageStatus.SEND_REQUEST);
         if (chatMessage == null)
-            throw new ChatException(ChatErrorCode.CHAT_STATUS_NOT_FOUND, "채팅 요청 존재하지 않음");
+            throw new ChatException(ChatErrorCode.CHAT_STATUS_NOT_FOUND, "채팅 요청 존재하지 않습니다.");
         chatMessage.updateIsActivatedFalse();
     }
 }

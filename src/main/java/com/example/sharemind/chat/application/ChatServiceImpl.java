@@ -299,6 +299,8 @@ public class ChatServiceImpl implements ChatService {
             case CUSTOMER_CHAT_FINISH_REQUEST: { //구매자가 상담 종료를 누른 상황
                 chat.updateChatStatus(ChatStatus.FINISH);
 
+                chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.FINISH);
+
                 notifyFinishChat(chat, chat.getConsult());
                 break;
             }
