@@ -2,7 +2,7 @@ package com.example.sharemind.chatMessage.application;
 
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
-import com.example.sharemind.chatMessage.content.MessageStatus;
+import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.chatMessage.dto.request.ChatMessageCreateRequest;
 import com.example.sharemind.chatMessage.dto.response.ChatMessageGetResponse;
@@ -61,7 +61,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                                   Boolean isCustomer) {
         Chat chat = chatService.getChatByChatId(chatId);
         chatMessageRepository.save(
-                chatMessageCreateRequest.toEntity(chat, isCustomer, MessageStatus.MESSAGE));
+                chatMessageCreateRequest.toEntity(chat, isCustomer, ChatMessageStatus.MESSAGE));
     }
 
     @Override
@@ -80,8 +80,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private List<ChatMessage> getChatMessageByPagination(Chat chat, Long messageId) {
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, CHAT_MESSAGE_PAGE);
         Page<ChatMessage> page = (messageId == 0)
-                ? chatMessageRepository.findByChatOrderByMessageIdDesc(chat, pageable)
-                : chatMessageRepository.findByChatAndMessageIdLessThanOrderByMessageIdDesc(chat, messageId, pageable);
+                ? chatMessageRepository.findByChatAndIsActivatedTrueOrderByMessageIdDesc(chat, pageable)
+                : chatMessageRepository.findByChatAndIsActivatedTrueAndMessageIdLessThanOrderByMessageIdDesc(chat, messageId, pageable);
         return page.getContent();
     }
 }
