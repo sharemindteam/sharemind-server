@@ -6,8 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ChatMessageErrorCode {
 
-    SEND_REQUEST_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅 요청 상태가 존재하지 않습니다."),
-    SEND_REQUEST_STATUS_DUPLICATE(HttpStatus.BAD_REQUEST, "채팅 요청 상태는 하나만 존재해야합니다.");
+    SEND_REQUEST_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅 요청 상태가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

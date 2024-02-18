@@ -1,6 +1,6 @@
 package com.example.sharemind.chatMessage.domain;
 
-import com.example.sharemind.chatMessage.content.ChatMessageStatus;
+import com.example.sharemind.chatMessage.content.MessageStatus;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.chat.domain.Chat;
 import jakarta.persistence.*;
@@ -28,10 +28,10 @@ public class ChatMessage extends BaseEntity {
 
     @Column(name = "message_Status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ChatMessageStatus messageStatus;
+    private MessageStatus messageStatus;
 
     @Builder
-    public ChatMessage(Chat chat, Boolean isCustomer, String content, ChatMessageStatus messageStatus) {
+    public ChatMessage(Chat chat, Boolean isCustomer, String content, MessageStatus messageStatus) {
         this.chat = chat;
         this.isCustomer = isCustomer;
         this.content = content;

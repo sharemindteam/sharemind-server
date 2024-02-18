@@ -11,7 +11,7 @@ import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
-import com.example.sharemind.chatMessage.content.ChatMessageStatus;
+import com.example.sharemind.chatMessage.content.MessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.chatMessage.repository.ChatMessageRepository;
 import com.example.sharemind.consult.application.ConsultService;
@@ -268,6 +268,7 @@ public class ChatServiceImpl implements ChatService {
                 chatGetStatusResponse.getChatWebsocketStatus().toString(), chatId);
     }
 
+
     private void handleStatusRequest(Chat chat, ChatStatusUpdateRequest chatStatusUpdateRequest) {
 
         ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
@@ -275,7 +276,7 @@ public class ChatServiceImpl implements ChatService {
             case COUNSELOR_CHAT_START_REQUEST: { //counselor가 상담 요청을 보낸 상황
                 chat.updateChatStatus(ChatStatus.SEND_REQUEST);
 
-                chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.SEND_REQUEST);
+                chatNoticeService.createChatNoticeMessage(chat, MessageStatus.SEND_REQUEST);
 
                 chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
 
@@ -288,8 +289,7 @@ public class ChatServiceImpl implements ChatService {
             case CUSTOMER_CHAT_START_RESPONSE: {
                 chat.updateChatStatus(ChatStatus.ONGOING);
 
-                chatNoticeService.updateSendRequestMessageIsActivatedFalse(chat);
-                chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.START);
+                chatNoticeService.createChatNoticeMessage(chat, MessageStatus.START);
 
                 chatTaskScheduler.checkChatDuration(chat);
 
@@ -299,7 +299,7 @@ public class ChatServiceImpl implements ChatService {
             case CUSTOMER_CHAT_FINISH_REQUEST: { //구매자가 상담 종료를 누른 상황
                 chat.updateChatStatus(ChatStatus.FINISH);
 
-                chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.FINISH);
+                chatNoticeService.createChatNoticeMessage(chat, MessageStatus.FINISH);
 
                 notifyFinishChat(chat, chat.getConsult());
                 break;

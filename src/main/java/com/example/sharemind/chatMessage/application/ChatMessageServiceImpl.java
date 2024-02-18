@@ -2,7 +2,7 @@ package com.example.sharemind.chatMessage.application;
 
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.domain.Chat;
-import com.example.sharemind.chatMessage.content.ChatMessageStatus;
+import com.example.sharemind.chatMessage.content.MessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.chatMessage.dto.request.ChatMessageCreateRequest;
 import com.example.sharemind.chatMessage.dto.response.ChatMessageGetResponse;
@@ -61,7 +61,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                                   Boolean isCustomer) {
         Chat chat = chatService.getChatByChatId(chatId);
         chatMessageRepository.save(
-                chatMessageCreateRequest.toEntity(chat, isCustomer, ChatMessageStatus.MESSAGE));
+                chatMessageCreateRequest.toEntity(chat, isCustomer, MessageStatus.MESSAGE));
     }
 
     @Override

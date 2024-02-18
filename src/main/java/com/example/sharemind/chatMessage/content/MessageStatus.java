@@ -3,7 +3,7 @@ package com.example.sharemind.chatMessage.content;
 import lombok.Getter;
 
 @Getter
-public enum ChatMessageStatus {
+public enum MessageStatus {
     MESSAGE("채팅 메세지"),
     SEND_REQUEST("상담 시작 요청"),
     START("상담 시작"),
@@ -13,7 +13,7 @@ public enum ChatMessageStatus {
 
     private final String displayName;
 
-    ChatMessageStatus(String displayName) {
+    MessageStatus(String displayName) {
         this.displayName = displayName;
     }
 }

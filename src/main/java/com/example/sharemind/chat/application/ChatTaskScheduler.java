@@ -8,7 +8,7 @@ import com.example.sharemind.chat.repository.ChatRepository;
 
 import java.util.Date;
 
-import com.example.sharemind.chatMessage.content.ChatMessageStatus;
+import com.example.sharemind.chatMessage.content.MessageStatus;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ public class ChatTaskScheduler {
             chat.updateChatStatus(ChatStatus.FIVE_MINUTE_LEFT);
             chatRepository.save(chat);
 
-            chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.FIVE_MINUTE_LEFT);
+            chatNoticeService.createChatNoticeMessage(chat, MessageStatus.FIVE_MINUTE_LEFT);
 
             publisher.publishEvent(
                     ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_LEFT_FIVE_MINUTE));
@@ -66,7 +66,7 @@ public class ChatTaskScheduler {
             chat.updateChatStatus(ChatStatus.TIME_OVER);
             chatRepository.save(chat);
 
-            chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.TIME_OVER);
+            chatNoticeService.createChatNoticeMessage(chat, MessageStatus.TIME_OVER);
 
             publisher.publishEvent(
                     ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_TIME_OVER));
