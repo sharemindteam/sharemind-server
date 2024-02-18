@@ -11,7 +11,6 @@ import java.util.Date;
 import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
-import com.example.sharemind.consult.repository.ConsultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.TaskScheduler;
