@@ -27,6 +27,7 @@ public class ChatMessage extends BaseEntity {
     private String content;
 
     @Column(name = "message_Status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private ChatMessageStatus messageStatus;
 
     @Builder

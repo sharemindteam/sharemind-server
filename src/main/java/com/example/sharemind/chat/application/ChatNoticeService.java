@@ -1,10 +1,10 @@
 package com.example.sharemind.chat.application;
 
 import com.example.sharemind.chat.domain.Chat;
-import com.example.sharemind.chat.exception.ChatErrorCode;
-import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
+import com.example.sharemind.chatMessage.exception.ChatMessageErrorCode;
+import com.example.sharemind.chatMessage.exception.ChatMessageException;
 import com.example.sharemind.chatMessage.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -43,9 +45,11 @@ public class ChatNoticeService {
 
     @Transactional
     public void updateSendRequestMessageIsActivatedFalse(Chat chat) {
-        ChatMessage chatMessage = chatMessageRepository.findByMessageStatusAndChatAndIsActivatedTrue(chat, ChatMessageStatus.SEND_REQUEST);
-        if (chatMessage == null)
-            throw new ChatException(ChatErrorCode.CHAT_STATUS_NOT_FOUND, "채팅 요청 존재하지 않습니다.");
-        chatMessage.updateIsActivatedFalse();
+        List<ChatMessage> chatMessage = chatMessageRepository.findByChatAndMessageStatusAndIsActivatedIsTrue(chat, ChatMessageStatus.SEND_REQUEST);
+        if (chatMessage.isEmpty())
+            throw new ChatMessageException(ChatMessageErrorCode.SEND_REQUEST_STATUS_NOT_FOUND);
+        else if (chatMessage.size() > 1)
+            throw new ChatMessageException(ChatMessageErrorCode.SEND_REQUEST_STATUS_DUPLICATE);
+        chatMessage.get(0).updateIsActivatedFalse();
     }
 }
