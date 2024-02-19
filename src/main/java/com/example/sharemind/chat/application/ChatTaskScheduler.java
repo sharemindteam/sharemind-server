@@ -8,9 +8,9 @@ import com.example.sharemind.chat.repository.ChatRepository;
 
 import java.util.Date;
 
+import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
-import com.example.sharemind.consult.repository.ConsultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.TaskScheduler;
@@ -25,12 +25,12 @@ public class ChatTaskScheduler {
     private final TaskScheduler scheduler;
     private final ApplicationEventPublisher publisher;
     private final ConsultService consultService;
-    private final ConsultRepository consultRepository;
     private final ChatRepository chatRepository;
+    private final ChatNoticeService chatNoticeService;
 
-    //    private static final int TEN_MINUTE = 60000; //1분
-//    private static final int TWENTY_FIVE_MINUTE = 300000; //5분
-//    private static final int THIRTY_MINUTE = 600000; //10분 //테스트용으로 남겨둡니다.
+//        private static final int TEN_MINUTE = 60000; //1분
+//    private static final int TWENTY_FIVE_MINUTE = 120000; //2분
+//    private static final int THIRTY_MINUTE = 240000; //4분 //테스트용으로 남겨둡니다.
     private static final int TEN_MINUTE = 600000;
     private static final int TWENTY_FIVE_MINUTE = 1500000;
     private static final int THIRTY_MINUTE = 1800000;
@@ -43,6 +43,8 @@ public class ChatTaskScheduler {
                 chat.updateChatStatus(ChatStatus.WAITING);
                 chatRepository.save(chat);
 
+                chatNoticeService.updateSendRequestMessageIsActivatedFalse(chat);
+
                 publisher.publishEvent(
                         ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_START_REQUEST_CANCEL));
             }
@@ -54,6 +56,8 @@ public class ChatTaskScheduler {
             chat.updateChatStatus(ChatStatus.FIVE_MINUTE_LEFT);
             chatRepository.save(chat);
 
+            chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.FIVE_MINUTE_LEFT);
+
             publisher.publishEvent(
                     ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_LEFT_FIVE_MINUTE));
         }, new Date(System.currentTimeMillis() + TWENTY_FIVE_MINUTE));
@@ -61,6 +65,8 @@ public class ChatTaskScheduler {
         scheduler.schedule(() -> {
             chat.updateChatStatus(ChatStatus.TIME_OVER);
             chatRepository.save(chat);
+
+            chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.TIME_OVER);
 
             publisher.publishEvent(
                     ChatUpdateStatusEvent.of(chat.getChatId(), ChatWebsocketStatus.CHAT_TIME_OVER));
