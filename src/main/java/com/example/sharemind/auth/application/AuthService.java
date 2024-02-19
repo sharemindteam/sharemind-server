@@ -12,6 +12,8 @@ public interface AuthService {
 
     void checkDuplicateEmail(String email);
 
+    Boolean checkDuplicateRecoveryEmail(String email);
+
     Boolean getPasswordMatched(AuthGetPasswordMatchRequest authGetPasswordMatchRequest, Long customerId);
 
     void updatePassword(AuthUpdatePasswordRequest authUpdatePasswordRequest, Long customerId);

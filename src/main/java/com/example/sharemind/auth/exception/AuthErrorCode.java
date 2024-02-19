@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum AuthErrorCode {
 
-    EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 회원으로 등록된 이메일입니다."),
+    EMAIL_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 회원으로 등록된 이메일입니다."),
+    RECOVERY_EMAIL_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 등록된 복구 이메일입니다."),
     INVALID_RECOVERY_EMAIL(HttpStatus.BAD_REQUEST, "로그인 이메일과 동일한 이메일은 복구 이메일로 사용할 수 없습니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     DUPLICATE_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호가 현재 비밀번호와 동일합니다."),

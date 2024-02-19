@@ -43,8 +43,12 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public void signUp(AuthSignUpRequest authSignUpRequest) {
-        if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail()) || customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getRecoveryEmail())) {
+        if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail())) {
             throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST, authSignUpRequest.getEmail());
+        } else if (customerRepository.existsByRecoveryEmailAndIsActivatedIsTrue(
+                authSignUpRequest.getRecoveryEmail())) {
+            throw new AuthException(AuthErrorCode.RECOVERY_EMAIL_ALREADY_EXIST,
+                    authSignUpRequest.getRecoveryEmail());
         }
 
         Customer customer = authSignUpRequest.toEntity(passwordEncoder.encode(authSignUpRequest.getPassword()));
@@ -87,6 +91,11 @@ public class AuthServiceImpl implements AuthService {
         if (customerRepository.existsByEmailAndIsActivatedIsTrue(email)) {
             throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST, email);
         }
+    }
+
+    @Override
+    public Boolean checkDuplicateRecoveryEmail(String email) {
+        return customerRepository.existsByRecoveryEmailAndIsActivatedIsTrue(email);
     }
 
     @Override
