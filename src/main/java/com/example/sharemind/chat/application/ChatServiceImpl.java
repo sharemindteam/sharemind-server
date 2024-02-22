@@ -55,7 +55,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatConsultService chatConsultService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
-    private RedisTemplate<String, Map<Long, Integer>> sessionRedisTemplate;
+    private final RedisTemplate<String, Map<Long, Integer>> sessionRedisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatNoticeService chatNoticeService;
