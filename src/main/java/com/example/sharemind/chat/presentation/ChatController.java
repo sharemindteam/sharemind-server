@@ -83,7 +83,7 @@ public class ChatController {
 
             chatService.validateChatWithWebSocket(chatId, sessionAttributes, true);
 
-            chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, true);
+            chatService.getAndSendChatStatus(chatId, sessionAttributes, chatStatusUpdateRequest, true);
         } catch (ChatException | ConsultException e) {
             simpMessagingTemplate.convertAndSend("/queue/chattings/exception/customers/" + chatId, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -100,7 +100,7 @@ public class ChatController {
 
             chatService.validateChatWithWebSocket(chatId, sessionAttributes, false);
 
-            chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, false);
+            chatService.getAndSendChatStatus(chatId, sessionAttributes, chatStatusUpdateRequest, false);
         } catch (ChatException | ConsultException e) {
             simpMessagingTemplate.convertAndSend("/queue/chattings/exception/counselors/" + chatId, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

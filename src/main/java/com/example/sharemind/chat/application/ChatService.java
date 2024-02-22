@@ -20,7 +20,7 @@ public interface ChatService {
     List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer, Boolean filter,
                                                         String sortType);
 
-    void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest, Boolean isCustomer);
+    void getAndSendChatStatus(Long chatId, Map<String, Object> sessionAttributes, ChatStatusUpdateRequest chatStatusUpdateRequest, Boolean isCustomer);
 
     void validateNotFinishChat(Long chatId);
 
