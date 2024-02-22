@@ -1,6 +1,6 @@
 package com.example.sharemind.chat.domain;
 
-import com.example.sharemind.chat.content.ChatRoomStatus;
+import com.example.sharemind.chat.content.ChatRoomWebsocketStatus;
 import lombok.*;
 
 @Getter
@@ -10,9 +10,9 @@ public class ChatNotifyEvent {
     private final Long chatId;
     private final Long customerId;
     private final Long counselorId;
-    private final ChatRoomStatus chatRoomStatus;
+    private final ChatRoomWebsocketStatus chatRoomWebsocketStatus;
 
-    public static ChatNotifyEvent of(Long chatId, Long customerId, Long counselorId, ChatRoomStatus chatRoomStatus) {
-        return new ChatNotifyEvent(chatId, customerId, counselorId, chatRoomStatus);
+    public static ChatNotifyEvent of(Long chatId, Long customerId, Long counselorId, ChatRoomWebsocketStatus chatRoomWebsocketStatus) {
+        return new ChatNotifyEvent(chatId, customerId, counselorId, chatRoomWebsocketStatus);
     }
 }

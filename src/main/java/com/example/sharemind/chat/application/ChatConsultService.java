@@ -14,15 +14,16 @@ import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
-import static com.example.sharemind.global.constants.Constants.COUNSELOR_ONGOING_CONSULT;
-import static com.example.sharemind.global.constants.Constants.CUSTOMER_ONGOING_CONSULT;
+import static com.example.sharemind.global.constants.Constants.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,6 +34,7 @@ public class ChatConsultService {
     private final CounselorService counselorService;
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final RedisTemplate<String, Map<Long, Integer>> sessionRedisTemplate;
 
 
     public ChatLetterGetOngoingResponse getOngoingChats(Long customerId, Boolean isCustomer) {
@@ -69,26 +71,33 @@ public class ChatConsultService {
         List<ChatLetterGetResponse> chatLetterGetResponses = new ArrayList<>();
 
         for (Chat chat : recentChats) {
-            chatLetterGetResponses.add(createChatInfoGetResponse(chat, true));
+            chatLetterGetResponses.add(createChatInfoGetResponse(chat, customer.getCustomerId(), true));
         }
         for (Chat chat : waitingChats) {
-            chatLetterGetResponses.add(createChatInfoGetResponse(chat, true));
+            chatLetterGetResponses.add(createChatInfoGetResponse(chat, customer.getCustomerId(), true));
         }
         chatLetterGetResponses.sort(Comparator.comparing(ChatLetterGetResponse::getLatestMessageUpdatedAt).reversed());
         return chatLetterGetResponses.stream().limit(count).toList();
     }
 
-    public ChatLetterGetResponse createChatInfoGetResponse(Chat chat, Boolean isCustomer) {
+    public ChatLetterGetResponse createChatInfoGetResponse(Chat chat, Long customerId, Boolean isCustomer) {
 
         Consult consult = chat.getConsult();
-
         String nickname = isCustomer ? consult.getCounselor().getNickname() : consult.getCustomer().getNickname();
         ChatMessage latestChatMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
-
         Long lastReadMessageId = isCustomer ? chat.getCustomerReadId() : chat.getCounselorReadId();
-        int unreadMessageCount = chatMessageRepository.countByChatAndMessageIdGreaterThanAndIsCustomer(
-                chat, lastReadMessageId, !isCustomer);
+        Boolean isConnected = checkChatSessionConnect(chat.getChatId(), customerId, isCustomer);
 
+        int unreadMessageCount = isConnected ? 0 : chatMessageRepository.countByChatAndMessageIdGreaterThanAndIsCustomer(
+                chat, lastReadMessageId, !isCustomer);
         return ChatLetterGetResponse.of(nickname, unreadMessageCount, chat, consult.getCounselor(), latestChatMessage);
+    }
+
+    public Boolean checkChatSessionConnect(Long chatId, Long customerId, Boolean isCustomer) {
+        String redisKey = isCustomer
+                ? CUSTOMER_CHATTING_PREFIX + customerId.toString()
+                : COUNSELOR_CHATTING_PREFIX + counselorService.getCounselorByCustomerId(customerId).getCounselorId().toString();
+        Map<Long, Integer> chatIdCounts = sessionRedisTemplate.opsForValue().get(redisKey);
+        return chatIdCounts != null && chatIdCounts.containsKey(chatId);
     }
 }

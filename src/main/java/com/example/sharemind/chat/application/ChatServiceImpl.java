@@ -1,6 +1,6 @@
 package com.example.sharemind.chat.application;
 
-import com.example.sharemind.chat.content.ChatRoomStatus;
+import com.example.sharemind.chat.content.ChatRoomWebsocketStatus;
 import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
@@ -8,6 +8,8 @@ import com.example.sharemind.chat.domain.ChatNotifyEvent;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
 import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
+import com.example.sharemind.chat.dto.response.ChatNotifyEventResponse;
+import com.example.sharemind.chat.dto.response.ChatUpdateStatusResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
@@ -43,9 +45,6 @@ import static com.example.sharemind.global.constants.Constants.*;
 @Transactional
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
-
-    public static final String CUSTOMER_CHATTING_PREFIX = "customer chatting: "; // 현재 접속중인 방
-    public static final String COUNSELOR_CHATTING_PREFIX = "counselor chatting: ";
 
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -186,7 +185,7 @@ public class ChatServiceImpl implements ChatService {
             }
         }
         return finalChats.stream()
-                .map(chat -> chatConsultService.createChatInfoGetResponse(chat, isCustomer))
+                .map(chat -> chatConsultService.createChatInfoGetResponse(chat, customerId, isCustomer))
                 .collect(Collectors.toList());
     }
 
@@ -385,31 +384,43 @@ public class ChatServiceImpl implements ChatService {
 
     private void notifyNewChat(Chat chat, Consult consult) {
         publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
-                consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_CREATE));
+                consult.getCounselor().getCounselorId(), ChatRoomWebsocketStatus.CHAT_ROOM_CREATE));
     }
 
     private void notifyFinishChat(Chat chat, Consult consult) {
         publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
-                consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_FINISH));
+                consult.getCounselor().getCounselorId(), ChatRoomWebsocketStatus.CHAT_ROOM_FINISH));
     }
 
     @Override
     public void setChatInSessionRedis(Long chatId, Long customerId, Boolean isCustomer) {
-        String redisKey;
-        if (isCustomer) {
-            redisKey = CUSTOMER_CHATTING_PREFIX + customerId.toString();
-        } else {
-            redisKey = COUNSELOR_CHATTING_PREFIX + counselorService.getCounselorByCustomerId(customerId).getCounselorId().toString();
-        }
-
+        String redisKey = isCustomer
+                ? CUSTOMER_CHATTING_PREFIX + customerId.toString()
+                : COUNSELOR_CHATTING_PREFIX + counselorService.getCounselorByCustomerId(customerId).getCounselorId().toString();
         Map<Long, Integer> chatIdCounts = sessionRedisTemplate.opsForValue().get(redisKey);
+
         if (chatIdCounts == null) {
             chatIdCounts = new HashMap<>();
         }
-        chatIdCounts.put(chatId, chatIdCounts.getOrDefault(chatId, 0) + 1);
-        //todo: 여기 처음 들어왔을 때, 다른 세션 애들한테 갱신된 채팅방 알려줘야함
-        //todo: 채팅방 unread_id 보낼 때 세션에 있으면 0 으로 보내야함
+
+        int currentCount = chatIdCounts.getOrDefault(chatId, 0);
+        chatIdCounts.put(chatId, currentCount + 1);
+
+        if (currentCount == 0) {
+            sendReadAllEvent(chatId, customerId, isCustomer);
+        }
         sessionRedisTemplate.opsForValue().set(redisKey, chatIdCounts);
+    }
+
+    private void sendReadAllEvent(Long chatId, Long customerId, Boolean isCustomer) {
+        if (isCustomer)
+            simpMessagingTemplate.convertAndSend(
+                    "/queue/chattings/status/customers/" + customerId,
+                    ChatNotifyEventResponse.of(chatId, ChatRoomWebsocketStatus.CHAT_READ_ALL));
+        else
+            simpMessagingTemplate.convertAndSend(
+                    "/queue/chattings/status/counselors/" + counselorService.getCounselorByCustomerId(customerId).getCounselorId(),
+                    ChatNotifyEventResponse.of(chatId, ChatRoomWebsocketStatus.CHAT_READ_ALL));
     }
 
     @Override
