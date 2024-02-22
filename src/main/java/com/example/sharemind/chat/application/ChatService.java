@@ -26,7 +26,9 @@ public interface ChatService {
 
     void validateChat(Chat chat, Boolean isCustomer, Long customerId);
 
-    void updateReadId(Long chatId, Long customerId, Boolean isCustomer);
+    void updateReadId(Chat chat, Long customerId, Boolean isCustomer);
 
     Chat getAndValidateChat(Long chatId, Boolean isCustomer, Long customerId);
+
+    void setChatInSessionRedis(Long chatId, Long customerId, Boolean isCustomer);
 }

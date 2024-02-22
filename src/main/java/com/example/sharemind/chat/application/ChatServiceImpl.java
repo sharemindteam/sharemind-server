@@ -44,6 +44,9 @@ import static com.example.sharemind.global.constants.Constants.*;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
+    public static final String CUSTOMER_CHATTING_PREFIX = "customer chatting: "; // 현재 접속중인 방
+    public static final String COUNSELOR_CHATTING_PREFIX = "counselor chatting: ";
+
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final CounselorService counselorService;
@@ -52,6 +55,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatConsultService chatConsultService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
+    private RedisTemplate<String, Map<Long, Integer>> sessionRedisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatNoticeService chatNoticeService;
@@ -76,8 +80,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void updateReadId(Long chatId, Long customerId, Boolean isCustomer) {
-        Chat chat = getChatByChatId(chatId);
+    public void updateReadId(Chat chat, Long customerId, Boolean isCustomer) {
         validateChat(chat, isCustomer, customerId);
         ChatMessage chatMessage = chatMessageRepository.findTopByChatAndIsCustomerAndIsActivatedTrueOrderByMessageIdDesc(
                 chat, !isCustomer); //customer면 counselor의 가장 위 메세지 아이디를 가져오는거
@@ -385,5 +388,23 @@ public class ChatServiceImpl implements ChatService {
     private void notifyFinishChat(Chat chat, Consult consult) {
         publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
                 consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_FINISH));
+    }
+
+    @Override
+    public void setChatInSessionRedis(Long chatId, Long customerId, Boolean isCustomer) {
+        String redisKey;
+        if (isCustomer) {
+            redisKey = CUSTOMER_CHATTING_PREFIX + customerId.toString();
+        } else {
+            redisKey = COUNSELOR_CHATTING_PREFIX + counselorService.getCounselorByCustomerId(customerId).getCounselorId().toString();
+        }
+
+        Map<Long, Integer> chatIdCounts = sessionRedisTemplate.opsForValue().get(redisKey);
+        if (chatIdCounts == null) {
+            chatIdCounts = new HashMap<>();
+        }
+
+        chatIdCounts.put(chatId, chatIdCounts.getOrDefault(chatId, 0) + 1);
+        sessionRedisTemplate.opsForValue().set(redisKey, chatIdCounts);
     }
 }
