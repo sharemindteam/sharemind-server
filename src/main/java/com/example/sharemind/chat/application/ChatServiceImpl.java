@@ -95,7 +95,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void validateChatWithWebSocket(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer) {
         Long userId = (Long) sessionAttributes.get("userId");
-        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId;
+        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId.toString();
 
         List<Long> chatRoomIds = redisTemplate.opsForValue()
                 .get(redisKey);
@@ -112,7 +112,7 @@ public class ChatServiceImpl implements ChatService {
 
     private ChatGetConnectResponse getChatIds(Map<String, Object> sessionAttributes, Boolean isCustomer) {
         Long userId = (Long) sessionAttributes.get("userId");
-        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId;
+        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId.toString();
 
         List<Long> chatRoomIds = redisTemplate.opsForValue()
                 .get(redisKey);
@@ -403,8 +403,33 @@ public class ChatServiceImpl implements ChatService {
         if (chatIdCounts == null) {
             chatIdCounts = new HashMap<>();
         }
-
         chatIdCounts.put(chatId, chatIdCounts.getOrDefault(chatId, 0) + 1);
         sessionRedisTemplate.opsForValue().set(redisKey, chatIdCounts);
+    }
+
+    @Override
+    public void leaveChatSession(Map<String, Object> sessionAttributes, Long chatId, Boolean isCustomer) {
+        Long userId = (Long) sessionAttributes.get("userId");
+        Long customerId = userId;
+        if (!isCustomer){
+            Counselor counselor = counselorService.getCounselorByCounselorId(userId);
+            customerId = customerService.getCustomerByCounselor(counselor).getCustomerId();
+        }
+        String redisKey = isCustomer ? CUSTOMER_CHATTING_PREFIX + userId.toString() : COUNSELOR_CHATTING_PREFIX + userId.toString();
+        Map<Long, Integer> chatIdCounts = sessionRedisTemplate.opsForValue().get(redisKey);
+        if (chatIdCounts != null && chatIdCounts.containsKey(chatId)) {
+            int count = chatIdCounts.get(chatId);
+            if (count <= 1) { // 마지막 연결 세션이었을 때
+                chatIdCounts.remove(chatId);
+                updateReadId(getChatByChatId(chatId), customerId, isCustomer);
+            } else {
+                chatIdCounts.put(chatId, count - 1);
+            }
+            if (chatIdCounts.isEmpty()) {
+                sessionRedisTemplate.delete(redisKey);
+            } else {
+                sessionRedisTemplate.opsForValue().set(redisKey, chatIdCounts);
+            }
+        }
     }
 }

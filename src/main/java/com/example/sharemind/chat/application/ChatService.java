@@ -31,4 +31,6 @@ public interface ChatService {
     Chat getAndValidateChat(Long chatId, Boolean isCustomer, Long customerId);
 
     void setChatInSessionRedis(Long chatId, Long customerId, Boolean isCustomer);
+
+    void leaveChatSession(Map<String, Object> sessionAttributes, Long chatId, Boolean isCustomer);
 }
