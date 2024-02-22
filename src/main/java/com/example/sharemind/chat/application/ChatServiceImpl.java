@@ -9,7 +9,6 @@ import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
 import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
 import com.example.sharemind.chat.dto.response.ChatNotifyEventResponse;
-import com.example.sharemind.chat.dto.response.ChatUpdateStatusResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
