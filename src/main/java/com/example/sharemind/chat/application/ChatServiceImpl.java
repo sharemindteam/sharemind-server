@@ -414,11 +414,11 @@ public class ChatServiceImpl implements ChatService {
     private void sendReadAllEvent(Long chatId, Long customerId, Boolean isCustomer) {
         if (isCustomer)
             simpMessagingTemplate.convertAndSend(
-                    "/queue/chattings/status/customers/" + customerId,
+                    "/queue/chattings/notifications/customers/" + customerId,
                     ChatNotifyEventResponse.of(chatId, ChatRoomWebsocketStatus.CHAT_READ_ALL));
         else
             simpMessagingTemplate.convertAndSend(
-                    "/queue/chattings/status/counselors/" + counselorService.getCounselorByCustomerId(customerId).getCounselorId(),
+                    "/queue/chattings/notifications/counselors/" + counselorService.getCounselorByCustomerId(customerId).getCounselorId(),
                     ChatNotifyEventResponse.of(chatId, ChatRoomWebsocketStatus.CHAT_READ_ALL));
     }
 
