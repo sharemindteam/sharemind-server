@@ -1,6 +1,8 @@
 package com.example.sharemind.global.config;
 
 import java.util.List;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +46,15 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Integer> countRedisTemplate() {
         RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
+
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+
+        return redisTemplate;
+    }
+
+    @Bean
+    public RedisTemplate<String, Map<Long, Integer>> sessionRedisTemplate() {
+        RedisTemplate<String, Map<Long, Integer>> redisTemplate = new RedisTemplate<>();
 
         redisTemplate.setConnectionFactory(redisConnectionFactory());
 

@@ -1,6 +1,6 @@
 package com.example.sharemind.chat.application;
 
-import com.example.sharemind.chat.content.ChatRoomStatus;
+import com.example.sharemind.chat.content.ChatRoomWebsocketStatus;
 import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
@@ -8,6 +8,7 @@ import com.example.sharemind.chat.domain.ChatNotifyEvent;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
 import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
+import com.example.sharemind.chat.dto.response.ChatNotifyEventResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
@@ -52,6 +53,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatConsultService chatConsultService;
     private final ApplicationEventPublisher publisher;
     private final RedisTemplate<String, List<Long>> redisTemplate;
+    private final RedisTemplate<String, Map<Long, Integer>> sessionRedisTemplate;
     private final ChatTaskScheduler chatTaskScheduler;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatNoticeService chatNoticeService;
@@ -76,8 +78,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void updateReadId(Long chatId, Long customerId, Boolean isCustomer) {
-        Chat chat = getChatByChatId(chatId);
+    public void updateReadId(Chat chat, Long customerId, Boolean isCustomer) {
         validateChat(chat, isCustomer, customerId);
         ChatMessage chatMessage = chatMessageRepository.findTopByChatAndIsCustomerAndIsActivatedTrueOrderByMessageIdDesc(
                 chat, !isCustomer); //customer면 counselor의 가장 위 메세지 아이디를 가져오는거
@@ -92,7 +93,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void validateChatWithWebSocket(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer) {
         Long userId = (Long) sessionAttributes.get("userId");
-        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId;
+        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId.toString();
 
         List<Long> chatRoomIds = redisTemplate.opsForValue()
                 .get(redisKey);
@@ -109,7 +110,7 @@ public class ChatServiceImpl implements ChatService {
 
     private ChatGetConnectResponse getChatIds(Map<String, Object> sessionAttributes, Boolean isCustomer) {
         Long userId = (Long) sessionAttributes.get("userId");
-        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId;
+        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId.toString();
 
         List<Long> chatRoomIds = redisTemplate.opsForValue()
                 .get(redisKey);
@@ -183,7 +184,7 @@ public class ChatServiceImpl implements ChatService {
             }
         }
         return finalChats.stream()
-                .map(chat -> chatConsultService.createChatInfoGetResponse(chat, isCustomer))
+                .map(chat -> chatConsultService.createChatInfoGetResponse(chat, customerId, isCustomer))
                 .collect(Collectors.toList());
     }
 
@@ -240,14 +241,16 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+    public void getAndSendChatStatus(Long chatId, Map<String, Object> sessionAttributes, ChatStatusUpdateRequest chatStatusUpdateRequest,
                                      Boolean isCustomer) {
-        ChatGetStatusResponse chatGetStatusResponse = getChatStatus(chatId, chatStatusUpdateRequest, isCustomer);
+        Long userId = (Long) sessionAttributes.get("userId");
+
+        ChatGetStatusResponse chatGetStatusResponse = getChatStatus(userId, chatId, chatStatusUpdateRequest, isCustomer);
 
         sendChatStatus(chatId, chatGetStatusResponse);
     }
 
-    private ChatGetStatusResponse getChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+    private ChatGetStatusResponse getChatStatus(Long userId, Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
                                                 Boolean isCustomer) {
         Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
@@ -255,7 +258,7 @@ public class ChatServiceImpl implements ChatService {
 
         validateChatStatusRequest(chat, chatStatusUpdateRequest, isCustomer);
 
-        handleStatusRequest(chat, chatStatusUpdateRequest);
+        handleStatusRequest(userId, chat, isCustomer, chatStatusUpdateRequest);
 
         return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
     }
@@ -269,7 +272,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
-    private void handleStatusRequest(Chat chat, ChatStatusUpdateRequest chatStatusUpdateRequest) {
+    private void handleStatusRequest(Long userId, Chat chat, Boolean isCustomer, ChatStatusUpdateRequest chatStatusUpdateRequest) {
 
         ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
         switch (chatWebsocketStatus) {
@@ -301,6 +304,7 @@ public class ChatServiceImpl implements ChatService {
 
                 chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.FINISH);
 
+                removeChatIdInRedis(userId, chat.getChatId(), isCustomer);
                 notifyFinishChat(chat, chat.getConsult());
                 break;
             }
@@ -379,11 +383,78 @@ public class ChatServiceImpl implements ChatService {
 
     private void notifyNewChat(Chat chat, Consult consult) {
         publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
-                consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_CREATE));
+                consult.getCounselor().getCounselorId(), ChatRoomWebsocketStatus.CHAT_ROOM_CREATE));
     }
 
     private void notifyFinishChat(Chat chat, Consult consult) {
         publisher.publishEvent(ChatNotifyEvent.of(chat.getChatId(), consult.getCustomer().getCustomerId(),
-                consult.getCounselor().getCounselorId(), ChatRoomStatus.CHAT_ROOM_FINISH));
+                consult.getCounselor().getCounselorId(), ChatRoomWebsocketStatus.CHAT_ROOM_FINISH));
+    }
+
+    @Override
+    public void setChatInSessionRedis(Long chatId, Long customerId, Boolean isCustomer) {
+        String redisKey = isCustomer
+                ? CUSTOMER_CHATTING_PREFIX + customerId.toString()
+                : COUNSELOR_CHATTING_PREFIX + counselorService.getCounselorByCustomerId(customerId).getCounselorId().toString();
+        Map<Long, Integer> chatIdCounts = sessionRedisTemplate.opsForValue().get(redisKey);
+
+        if (chatIdCounts == null) {
+            chatIdCounts = new HashMap<>();
+        }
+
+        int currentCount = chatIdCounts.getOrDefault(chatId, 0);
+        chatIdCounts.put(chatId, currentCount + 1);
+
+        if (currentCount == 0) {
+            sendReadAllEvent(chatId, customerId, isCustomer);
+        }
+        sessionRedisTemplate.opsForValue().set(redisKey, chatIdCounts);
+    }
+
+    private void sendReadAllEvent(Long chatId, Long customerId, Boolean isCustomer) {
+        if (isCustomer)
+            simpMessagingTemplate.convertAndSend(
+                    "/queue/chattings/status/customers/" + customerId,
+                    ChatNotifyEventResponse.of(chatId, ChatRoomWebsocketStatus.CHAT_READ_ALL));
+        else
+            simpMessagingTemplate.convertAndSend(
+                    "/queue/chattings/status/counselors/" + counselorService.getCounselorByCustomerId(customerId).getCounselorId(),
+                    ChatNotifyEventResponse.of(chatId, ChatRoomWebsocketStatus.CHAT_READ_ALL));
+    }
+
+    @Override
+    public void leaveChatSession(Map<String, Object> sessionAttributes, Long chatId, Boolean isCustomer) {
+        Long userId = (Long) sessionAttributes.get("userId");
+        Long customerId = userId;
+        if (!isCustomer) {
+            Counselor counselor = counselorService.getCounselorByCounselorId(userId);
+            customerId = customerService.getCustomerByCounselor(counselor).getCustomerId();
+        }
+        String redisKey = isCustomer ? CUSTOMER_CHATTING_PREFIX + userId.toString() : COUNSELOR_CHATTING_PREFIX + userId.toString();
+        Map<Long, Integer> chatIdCounts = sessionRedisTemplate.opsForValue().get(redisKey);
+        if (chatIdCounts != null && chatIdCounts.containsKey(chatId)) {
+            int count = chatIdCounts.get(chatId);
+            if (count <= 1) { // 마지막 연결 세션이었을 때
+                chatIdCounts.remove(chatId);
+                updateReadId(getChatByChatId(chatId), customerId, isCustomer);
+            } else {
+                chatIdCounts.put(chatId, count - 1);
+            }
+            if (chatIdCounts.isEmpty()) {
+                sessionRedisTemplate.delete(redisKey);
+            } else {
+                sessionRedisTemplate.opsForValue().set(redisKey, chatIdCounts);
+            }
+        }
+    }
+
+    private void removeChatIdInRedis(Long userId, Long chatId, Boolean isCustomer) {
+        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId.toString();
+
+        List<Long> chatRoomIds = redisTemplate.opsForValue().get(redisKey);
+        if (chatRoomIds != null && chatRoomIds.contains(chatId)) {
+            chatRoomIds.remove(chatId);
+            redisTemplate.opsForValue().set(redisKey, chatRoomIds);
+        }
     }
 }

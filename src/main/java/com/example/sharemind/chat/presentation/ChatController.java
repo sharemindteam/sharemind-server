@@ -74,40 +74,6 @@ public class ChatController {
         return ResponseEntity.ok(chatInfoGetResponses);
     }
 
-    @Operation(summary = "상담사의 채팅 readId 갱신해주는 api", description = "처음 채팅방에 들어갔을 때, 호출해주시면 됩니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "채팅 목록 반환 성공"),
-            @ApiResponse(responseCode = "404", description = "1. 상담사 role을 가지지 않은 사람이 해당 api를 요청할 때"
-                    + "2. 채팅방이 존재하지 않을 때")
-    })
-    @Parameters({
-            @Parameter(name = "chatId", description = "채팅방 id"),
-            @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
-    })
-    @PatchMapping("/counselors/{chatId}")
-    public ResponseEntity<Void> updateCounselorReadId(@PathVariable Long chatId,
-                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        chatService.updateReadId(chatId, customUserDetails.getCustomer().getCustomerId(), false);
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "구매자 채팅 readId 갱신해주는 api", description = "처음 채팅방에 들어갔을 때, 호출해주시면 됩니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "채팅 목록 반환 성공"),
-            @ApiResponse(responseCode = "404", description = "1. 구매자 role을 가지지 않은 사람이 햏당 api를 요청할 때"
-                    + "2. 채팅방이 존재하지 않을 때")
-    })
-    @Parameters({
-            @Parameter(name = "chatId", description = "채팅방 id"),
-            @Parameter(name = "sortType", description = "정렬 방식(LATEST, UNREAD)")
-    })
-    @PatchMapping("/{chatId}")
-    public ResponseEntity<Void> updateCustomerReadId(@PathVariable Long chatId,
-                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        chatService.updateReadId(chatId, customUserDetails.getCustomer().getCustomerId(), true);
-        return ResponseEntity.ok().build();
-    }
-
     @MessageMapping("/api/v1/chat/customers/{chatId}")
     public ResponseEntity<Void> getAndSendCustomerChatStatus(@DestinationVariable Long chatId,
                                                              ChatStatusUpdateRequest chatStatusUpdateRequest,
@@ -117,7 +83,7 @@ public class ChatController {
 
             chatService.validateChatWithWebSocket(chatId, sessionAttributes, true);
 
-            chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, true);
+            chatService.getAndSendChatStatus(chatId, sessionAttributes, chatStatusUpdateRequest, true);
         } catch (ChatException | ConsultException e) {
             simpMessagingTemplate.convertAndSend("/queue/chattings/exception/customers/" + chatId, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -134,7 +100,7 @@ public class ChatController {
 
             chatService.validateChatWithWebSocket(chatId, sessionAttributes, false);
 
-            chatService.getAndSendChatStatus(chatId, chatStatusUpdateRequest, false);
+            chatService.getAndSendChatStatus(chatId, sessionAttributes, chatStatusUpdateRequest, false);
         } catch (ChatException | ConsultException e) {
             simpMessagingTemplate.convertAndSend("/queue/chattings/exception/counselors/" + chatId, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -153,6 +119,13 @@ public class ChatController {
     public ResponseEntity<Void> getAndSendCounselorChatIds(SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
         chatService.getAndSendChatIdsByWebSocket(sessionAttributes, false);
+        return ResponseEntity.ok().build();
+    }
+
+    @MessageMapping("/api/v1/chat/customers/exit")
+    public ResponseEntity<Void> leaveCustomerSession(@DestinationVariable Long chatId, SimpMessageHeaderAccessor headerAccessor) {
+        Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
+        chatService.leaveChatSession(sessionAttributes, chatId, true);
         return ResponseEntity.ok().build();
     }
 }

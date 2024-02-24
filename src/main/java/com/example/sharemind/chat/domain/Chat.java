@@ -54,6 +54,16 @@ public class Chat extends BaseEntity {
         }
     }
 
+    public ChatStatus changeChatStatusForChatList() {
+        if (chatStatus == ChatStatus.SEND_REQUEST)
+            return ChatStatus.WAITING;
+        else if (chatStatus == ChatStatus.FIVE_MINUTE_LEFT || chatStatus == ChatStatus.TIME_OVER)
+            return ChatStatus.ONGOING;
+        else if (chatStatus == ChatStatus.COUNSELOR_CANCEL || chatStatus == ChatStatus.CUSTOMER_CANCEL)
+            return ChatStatus.FINISH;
+        return chatStatus;
+    }
+
     public void checkChatAuthority(Chat chat, Boolean isCustomer, Customer customer) {
         if (isCustomer) {
             if (chat.getConsult().getCustomer() != customer) {

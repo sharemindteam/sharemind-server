@@ -20,13 +20,17 @@ public interface ChatService {
     List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer, Boolean filter,
                                                         String sortType);
 
-    void getAndSendChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest, Boolean isCustomer);
+    void getAndSendChatStatus(Long chatId, Map<String, Object> sessionAttributes, ChatStatusUpdateRequest chatStatusUpdateRequest, Boolean isCustomer);
 
     void validateNotFinishChat(Long chatId);
 
     void validateChat(Chat chat, Boolean isCustomer, Long customerId);
 
-    void updateReadId(Long chatId, Long customerId, Boolean isCustomer);
+    void updateReadId(Chat chat, Long customerId, Boolean isCustomer);
 
     Chat getAndValidateChat(Long chatId, Boolean isCustomer, Long customerId);
+
+    void setChatInSessionRedis(Long chatId, Long customerId, Boolean isCustomer);
+
+    void leaveChatSession(Map<String, Object> sessionAttributes, Long chatId, Boolean isCustomer);
 }

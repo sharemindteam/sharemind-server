@@ -71,6 +71,11 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
         chatService.validateChat(chat, isCustomer, customerId);
 
+        if (messageId == 0) {//처음 들어왔을 때만 갱신
+            chatService.updateReadId(chat, customerId, isCustomer);
+
+            chatService.setChatInSessionRedis(chatId, customerId, isCustomer);
+        }
         List<ChatMessage> chatMessages = getChatMessageByPagination(chat, messageId);
         return chatMessages.stream()
                 .map(chatMessage -> ChatMessageGetResponse.of(chat, chatMessage))

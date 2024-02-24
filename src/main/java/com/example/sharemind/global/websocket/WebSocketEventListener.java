@@ -1,6 +1,6 @@
 package com.example.sharemind.global.websocket;
 
-import com.example.sharemind.chat.content.ChatRoomStatus;
+import com.example.sharemind.chat.content.ChatRoomWebsocketStatus;
 import com.example.sharemind.chat.domain.ChatNotifyEvent;
 import com.example.sharemind.chat.domain.ChatUpdateStatusEvent;
 import com.example.sharemind.chat.dto.response.ChatNotifyEventResponse;
@@ -42,10 +42,10 @@ public class WebSocketEventListener {
                 + chatNotifyEvent.getCounselorId()); //todo: 로깅용으로 찍은 것.. 채팅 연결 후 삭제
         messageSendingOperations.convertAndSend(
                 "/queue/chattings/notifications/customers/" + chatNotifyEvent.getCustomerId(),
-                ChatNotifyEventResponse.of(chatNotifyEvent.getChatId(), ChatRoomStatus.CHAT_ROOM_CREATE));
+                ChatNotifyEventResponse.of(chatNotifyEvent.getChatId(), ChatRoomWebsocketStatus.CHAT_ROOM_CREATE));
         messageSendingOperations.convertAndSend(
                 "/queue/chattings/notifications/counselors/" + chatNotifyEvent.getCounselorId(),
-                ChatNotifyEventResponse.of(chatNotifyEvent.getChatId(), ChatRoomStatus.CHAT_ROOM_CREATE));
+                ChatNotifyEventResponse.of(chatNotifyEvent.getChatId(), ChatRoomWebsocketStatus.CHAT_ROOM_CREATE));
     }
 
     @EventListener
