@@ -58,6 +58,9 @@ public class Post extends BaseEntity {
     @Column(name = "total_like", nullable = false)
     private Long totalLike;
 
+    @Column(name = "total_comment", nullable = false)
+    private Long totalComment;
+
     @Builder
     public Post(Customer customer, ConsultCategory consultCategory, String title, String content,
             Long cost, Boolean isPublic) {
@@ -69,5 +72,6 @@ public class Post extends BaseEntity {
         this.isPublic = isPublic;
         this.postStatus = PostStatus.PROCEEDING;
         this.totalLike = 0L;
+        this.totalComment = 0L;
     }
 }
