@@ -4,6 +4,8 @@ import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.content.ChatWebsocketStatus;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.domain.ChatUpdateStatusEvent;
+import com.example.sharemind.chat.exception.ChatErrorCode;
+import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chat.repository.ChatRepository;
 
 import java.util.Date;
@@ -28,21 +30,20 @@ public class ChatTaskScheduler {
     private final ChatRepository chatRepository;
     private final ChatNoticeService chatNoticeService;
 
-//        private static final int TEN_MINUTE = 60000; //1분
+//    private static final int TEN_MINUTE = 60000; //1분
 //    private static final int TWENTY_FIVE_MINUTE = 120000; //2분
 //    private static final int THIRTY_MINUTE = 240000; //4분 //테스트용으로 남겨둡니다.
-    private static final int TEN_MINUTE = 600000;
+        private static final int TEN_MINUTE = 600000;
     private static final int TWENTY_FIVE_MINUTE = 1500000;
     private static final int THIRTY_MINUTE = 1800000;
     private static final int ONE_DAY = 24 * 60 * 60 * 1000;
 
-    public void checkSendRequest(Chat chat) {
+    public void checkSendRequest(Chat oldChat) {
         scheduler.schedule(() -> {
-
+            Chat chat = chatRepository.findById(oldChat.getChatId()).orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, oldChat.getChatId().toString()));
             if (chat.getChatStatus() == ChatStatus.SEND_REQUEST) {
                 chat.updateChatStatus(ChatStatus.WAITING);
                 chatRepository.save(chat);
-
                 chatNoticeService.updateSendRequestMessageIsActivatedFalse(chat);
 
                 publisher.publishEvent(
@@ -74,9 +75,9 @@ public class ChatTaskScheduler {
     }
 
     @Transactional
-    public void checkAutoRefund(Chat chat) {
+    public void checkAutoRefund(Chat oldChat) {
         scheduler.schedule(() -> {
-
+            Chat chat = chatRepository.findById(oldChat.getChatId()).orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, oldChat.getChatId().toString()));
             if (chat.getAutoRefund()) {
 
                 Consult consult = consultService.getConsultByChat(chat);
