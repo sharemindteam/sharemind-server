@@ -20,7 +20,7 @@ public class ChatMessage extends BaseEntity {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @Column(name = "is_customer", nullable = false)
+    @Column(name = "is_customer")
     private Boolean isCustomer;
 
     @Column(columnDefinition = "TEXT", nullable = false)

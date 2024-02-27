@@ -41,17 +41,16 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
         createChatMessage(chatMessageCreateRequest, chatId, isCustomer);
 
-        sendChatMessage(chatMessageCreateRequest, chatId, isCustomer, nickname);
+        sendChatMessage(chatMessageCreateRequest.getContent(), chatId, isCustomer, nickname);
     }
 
-    private void sendChatMessage(ChatMessageCreateRequest chatMessageCreateRequest, Long chatId, Boolean isCustomer,
+    private void sendChatMessage(String content, Long chatId, Boolean isCustomer,
                                  String nickname) {
-        ChatMessageWebSocketResponse chatMessageWebSocketResponse = ChatMessageWebSocketResponse.of(nickname,
-                chatMessageCreateRequest.getContent(), isCustomer);
+        ChatMessageWebSocketResponse chatMessageWebSocketResponse = ChatMessageWebSocketResponse.of(nickname, content, isCustomer);
         simpMessagingTemplate.convertAndSend("/queue/chatMessages/counselors/" + chatId, chatMessageWebSocketResponse);
         simpMessagingTemplate.convertAndSend("/queue/chatMessages/customers/" + chatId, chatMessageWebSocketResponse);
 
-        log.info("Message [{}] send by member: {} to chatting room: {}", chatMessageCreateRequest.getContent(),
+        log.info("Message [{}] send by member: {} to chatting room: {}", content,
                 nickname, chatId);
     }
 
