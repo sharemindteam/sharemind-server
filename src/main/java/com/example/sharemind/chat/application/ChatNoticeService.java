@@ -56,11 +56,14 @@ public class ChatNoticeService {
     }
 
     private void sendChatNoticeMessage(ChatMessage chatMessage, String opponentNickname, Long chatId) {
-        ChatMessageWebSocketResponse chatMessageWebSocketResponse = ChatMessageWebSocketResponse.of(opponentNickname, chatMessage.getContent(), chatMessage.getIsCustomer());
+        String content = chatMessage.getContent();
+        if (chatMessage.getMessageStatus() == ChatMessageStatus.FINISH)
+            content = chatMessage.getChat().getConsult().getCounselor().getNickname() + content;
+        ChatMessageWebSocketResponse chatMessageWebSocketResponse = ChatMessageWebSocketResponse.of(opponentNickname, content, chatMessage.getIsCustomer());
         simpMessagingTemplate.convertAndSend("/queue/chatMessages/counselors/" + chatId, chatMessageWebSocketResponse);
         simpMessagingTemplate.convertAndSend("/queue/chatMessages/customers/" + chatId, chatMessageWebSocketResponse);
 
-        log.info("Message [{}] send by member: {} to chatting room: {}", chatMessage.getContent(),
+        log.info("Message [{}] send by member: {} to chatting room: {}", content,
                 opponentNickname, chatId);
     }
 

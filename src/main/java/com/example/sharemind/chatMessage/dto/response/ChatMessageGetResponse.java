@@ -55,6 +55,12 @@ public class ChatMessageGetResponse {
                     chatMessage.getMessageId(), chatMessage.getContent(), chatMessage.getUpdatedAt(),
                     chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), String.format("%02d:%02d", minutes, seconds));
         }
+        if (chatMessage.getMessageStatus() == ChatMessageStatus.FINISH) {
+            String nickname = chat.getConsult().getCounselor().getNickname();
+            return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
+                    chatMessage.getMessageId(), nickname + chatMessage.getContent(), chatMessage.getUpdatedAt(),
+                    chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), null);
+        }
         return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
                 chatMessage.getMessageId(), chatMessage.getContent(), chatMessage.getUpdatedAt(),
                 chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), null);
