@@ -1,13 +1,10 @@
 package com.example.sharemind.chat.dto.response;
 
-import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.domain.Chat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
