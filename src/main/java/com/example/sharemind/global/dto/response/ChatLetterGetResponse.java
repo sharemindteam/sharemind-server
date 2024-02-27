@@ -65,7 +65,7 @@ public class ChatLetterGetResponse {
         if (chat.getChatStatus().equals(ChatStatus.FINISH)) {
             reviewCompleted = chat.getConsult().getReview().getIsCompleted();
         }
-        if (chat.getChatStatus().equals(ChatStatus.WAITING)) {
+        if (chatMessage == null) {
             return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
                     chat.changeChatStatusForChatList().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chat.getConsult().getUpdatedAt()), nickname + "님께 고민내용을 남겨주세요. " + nickname + "님이 24시간 내에 채팅 요청을 드립니다.",
                     null, 0, reviewCompleted, chat.getConsult().getConsultId(),
