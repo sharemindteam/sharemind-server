@@ -32,7 +32,7 @@ public class ChatNoticeService {
             chatMessage = new ChatMessage(chat, false, chat.getConsult().getCustomer().getNickname() + "님, 지금 바로 상담을 시작할까요?", chatMessageStatus);
         } else if (chatMessageStatus == ChatMessageStatus.START) {
             updateSendRequestMessageIsActivatedFalse(chat);
-            chatMessage = new ChatMessage(chat, true, "상담이 시작되었어요.\n" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분")), chatMessageStatus);
+            chatMessage = new ChatMessage(chat, null, "상담이 시작되었어요.\n" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분")), chatMessageStatus);
         } else if (chatMessageStatus == ChatMessageStatus.FIVE_MINUTE_LEFT) {
             chatMessage = new ChatMessage(chat, null, "상담 종료까지 5분 남았어요.\n" + chat.getStartedAt().plusMinutes(30).format(DateTimeFormatter.ofPattern("a hh시 mm분")), chatMessageStatus);
         } else if (chatMessageStatus == ChatMessageStatus.TIME_OVER) {
