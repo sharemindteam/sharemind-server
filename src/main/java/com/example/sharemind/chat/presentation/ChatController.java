@@ -2,6 +2,7 @@ package com.example.sharemind.chat.presentation;
 
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
+import com.example.sharemind.chat.dto.response.ChatGetRoomInfoResponse;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
@@ -49,7 +50,7 @@ public class ChatController {
             @RequestParam Boolean filter,
             @RequestParam String sortType,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
+        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatsInfoByCustomerId(
                 customUserDetails.getCustomer().getCustomerId(), false, filter, sortType);
         return ResponseEntity.ok(chatInfoGetResponses);
     }
@@ -69,9 +70,16 @@ public class ChatController {
             @RequestParam Boolean filter,
             @RequestParam String sortType,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
+        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatsInfoByCustomerId(
                 customUserDetails.getCustomer().getCustomerId(), true, filter, sortType);
         return ResponseEntity.ok(chatInfoGetResponses);
+    }
+
+    @GetMapping("/counselors/{chatId}")
+    public ResponseEntity<ChatGetRoomInfoResponse> getCounselorChatInfo(
+            @PathVariable Long chatId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(chatService.getChatInfoByCounselor(chatId, customUserDetails.getCustomer().getCustomerId()));
     }
 
     @MessageMapping("/api/v1/chat/customers/{chatId}")
