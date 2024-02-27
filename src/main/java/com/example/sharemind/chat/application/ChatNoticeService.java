@@ -32,18 +32,18 @@ public class ChatNoticeService {
             chatMessage = new ChatMessage(chat, false, chat.getConsult().getCustomer().getNickname() + "님, 지금 바로 상담을 시작할까요?", chatMessageStatus);
         } else if (chatMessageStatus == ChatMessageStatus.START) {
             updateSendRequestMessageIsActivatedFalse(chat);
-            chatMessage = new ChatMessage(chat, null, "상담이 시작되었어요.\n" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분")), chatMessageStatus);
+            chatMessage = new ChatMessage(chat, true, "상담이 시작되었어요.\n" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분")), chatMessageStatus);
         } else if (chatMessageStatus == ChatMessageStatus.FIVE_MINUTE_LEFT) {
             chatMessage = new ChatMessage(chat, null, "상담 종료까지 5분 남았어요.\n" + chat.getStartedAt().plusMinutes(30).format(DateTimeFormatter.ofPattern("a hh시 mm분")), chatMessageStatus);
         } else if (chatMessageStatus == ChatMessageStatus.TIME_OVER) {
             chatMessage = new ChatMessage(chat, null, "상담 시간이 모두 마무리 되었어요.\n상담이 정상적으로 종료되었다면 상담 종료 버튼을 눌러 주세요.\n*신고접수가 되지 않은 상담 건은 7일 후 자동으로 거래가 확정됩니다.", chatMessageStatus);
         } else if (chatMessageStatus == ChatMessageStatus.FINISH) {
-            chatMessage = new ChatMessage(chat, null, "님과의 상담이 만족스러우셨나요? 후기를 남겨주시면 더 나은 서비스를 위해 큰 도움이 되어요.", chatMessageStatus);
+            chatMessage = new ChatMessage(chat, true, "님과의 상담이 만족스러우셨나요? 후기를 남겨주시면 더 나은 서비스를 위해 큰 도움이 되어요.", chatMessageStatus);
         }
         if (chatMessage != null) {
             chatMessageRepository.save(chatMessage);
-            String opponentNickname = getOpponentNickname(chat, chatMessage.getIsCustomer());
-            sendChatNoticeMessage(chatMessage, opponentNickname, chat.getChatId());
+//            String opponentNickname = getOpponentNickname(chat, chatMessage.getIsCustomer());
+//            sendChatNoticeMessage(chatMessage, opponentNickname, chat.getChatId()); //todo: 프론트 안읽은 메세지 처리할 때 다시 수정 음.. 더 좋은 방법 있는지 생각해보기ㅜㅜ
         }
     }
 
