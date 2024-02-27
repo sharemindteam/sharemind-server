@@ -2,11 +2,15 @@ package com.example.sharemind.chat.presentation;
 
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
+import com.example.sharemind.chat.dto.response.ChatGetRoomInfoResponse;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.global.dto.response.ChatLetterGetResponse;
+import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.*;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,7 +53,7 @@ public class ChatController {
             @RequestParam Boolean filter,
             @RequestParam String sortType,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
+        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatsInfoByCustomerId(
                 customUserDetails.getCustomer().getCustomerId(), false, filter, sortType);
         return ResponseEntity.ok(chatInfoGetResponses);
     }
@@ -69,9 +73,28 @@ public class ChatController {
             @RequestParam Boolean filter,
             @RequestParam String sortType,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatInfoByCustomerId(
+        List<ChatLetterGetResponse> chatInfoGetResponses = chatService.getChatsInfoByCustomerId(
                 customUserDetails.getCustomer().getCustomerId(), true, filter, sortType);
         return ResponseEntity.ok(chatInfoGetResponses);
+    }
+
+    @Operation(summary = "상담사 사이드 채팅방 정보 반환", description = "상담사 사이드에서 필요한 채팅방 정보 반환하는 api" +
+            "주소 형식: /api/v1/chats/counselors/{chatId}")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "채팅 정보 반환 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 채팅 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "chatId", description = "채팅 아이디"),
+    })
+    @GetMapping("/counselors/{chatId}")
+    public ResponseEntity<ChatGetRoomInfoResponse> getCounselorChatInfo(
+            @PathVariable Long chatId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(chatService.getChatInfoByCounselor(chatId, customUserDetails.getCustomer().getCustomerId()));
     }
 
     @MessageMapping("/api/v1/chat/customers/{chatId}")

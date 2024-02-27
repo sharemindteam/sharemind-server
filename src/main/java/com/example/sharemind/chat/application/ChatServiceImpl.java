@@ -7,6 +7,7 @@ import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chat.domain.ChatNotifyEvent;
 import com.example.sharemind.chat.dto.request.ChatStatusUpdateRequest;
 import com.example.sharemind.chat.dto.response.ChatGetConnectResponse;
+import com.example.sharemind.chat.dto.response.ChatGetRoomInfoResponse;
 import com.example.sharemind.chat.dto.response.ChatGetStatusResponse;
 import com.example.sharemind.chat.dto.response.ChatNotifyEventResponse;
 import com.example.sharemind.chat.exception.ChatErrorCode;
@@ -152,8 +153,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatLetterGetResponse> getChatInfoByCustomerId(Long customerId, Boolean isCustomer, Boolean filter,
-                                                               String chatSortType) {
+    public List<ChatLetterGetResponse> getChatsInfoByCustomerId(Long customerId, Boolean isCustomer, Boolean filter,
+                                                                String chatSortType) {
         ChatLetterSortType sortType = ChatLetterSortType.getSortTypeByName(chatSortType);
         List<Consult> consults;
 
@@ -446,6 +447,15 @@ public class ChatServiceImpl implements ChatService {
                 sessionRedisTemplate.opsForValue().set(redisKey, chatIdCounts);
             }
         }
+    }
+
+    @Override
+    public ChatGetRoomInfoResponse getChatInfoByCounselor(Long chatId, Long customerId) {
+
+        Chat chat = getChatByChatId(chatId);
+        validateChat(chat, false, customerId);
+
+        return ChatGetRoomInfoResponse.of(chat);
     }
 
     private void removeChatIdInRedis(Long userId, Long chatId, Boolean isCustomer) {
