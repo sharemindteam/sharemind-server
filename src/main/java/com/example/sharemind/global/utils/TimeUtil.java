@@ -32,4 +32,12 @@ public class TimeUtil {
             return updatedAt.format(DateTimeFormatter.ofPattern("MM월 dd일"));
         }
     }
+
+    public static String getChatSendRequestLeftTime(LocalDateTime updatedAt) {
+        long gapSeconds = ChronoUnit.SECONDS.between(updatedAt, LocalDateTime.now());
+        long totalSeconds = 600 - gapSeconds;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
 }
