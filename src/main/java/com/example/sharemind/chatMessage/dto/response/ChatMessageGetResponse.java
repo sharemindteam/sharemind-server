@@ -4,11 +4,11 @@ import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
 import com.example.sharemind.consult.domain.Consult;
+import com.example.sharemind.global.utils.TimeUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -47,13 +47,9 @@ public class ChatMessageGetResponse {
         Consult consult = chat.getConsult();
 
         if (chatMessage.getMessageStatus() == ChatMessageStatus.SEND_REQUEST) {
-            long gapSeconds = ChronoUnit.SECONDS.between(chatMessage.getCreatedAt(), LocalDateTime.now());
-            long totalSeconds = 600 - gapSeconds;
-            long minutes = totalSeconds / 60;
-            long seconds = totalSeconds % 60;
             return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
                     chatMessage.getMessageId(), chatMessage.getContent(), chatMessage.getUpdatedAt(),
-                    chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), String.format("%02d:%02d", minutes, seconds));
+                    chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), TimeUtil.getChatSendRequestLeftTime(chatMessage.getCreatedAt()));
         }
         if (chatMessage.getMessageStatus() == ChatMessageStatus.FINISH) {
             String nickname = chat.getConsult().getCounselor().getNickname();
