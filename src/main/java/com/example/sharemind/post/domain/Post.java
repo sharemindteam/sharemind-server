@@ -76,6 +76,14 @@ public class Post extends BaseEntity {
         this.postStatus = PostStatus.PROCEEDING;
         this.totalLike = 0L;
         this.totalComment = 0L;
-        this.isPaid = false;
+        setIsPaid(isPublic);
+    }
+
+    private void setIsPaid(Boolean isPublic) {
+        if (isPublic) {
+            this.isPaid = true;
+        } else {
+            this.isPaid = false;
+        }
     }
 }
