@@ -9,4 +9,6 @@ public interface PostService {
     void createPost(PostCreateRequest postCreateRequest, Long customerId);
 
     List<Post> getUnpaidPrivatePosts();
+
+    Post getPostByPostId(Long postId);
 }
