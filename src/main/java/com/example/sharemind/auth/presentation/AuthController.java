@@ -153,8 +153,8 @@ public class AuthController {
             )
     })
     @PatchMapping("/find-id")
-    public ResponseEntity<Void> findIdByRecoveryEmail(@Valid @RequestBody AuthFindRequest authFindRequest) {
-        authService.sendIdByRecoveryEmail(authFindRequest);
+    public ResponseEntity<Void> findIdByRecoveryEmail(@Valid @RequestBody AuthFindIdRequest authFindIdRequest) {
+        authService.sendIdByRecoveryEmail(authFindIdRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -172,8 +172,8 @@ public class AuthController {
             )
     })
     @PatchMapping("/find-password")
-    public ResponseEntity<Void> findPasswordByRecoveryEmail(@Valid @RequestBody AuthFindRequest authFindRequest) {
-        authService.updateAndSendPasswordByRecoveryEmail(authFindRequest);
+    public ResponseEntity<Void> findPasswordByRecoveryEmail(@Valid @RequestBody AuthFindPasswordRequest authFindPasswordRequest) {
+        authService.updateAndSendPasswordByRecoveryEmail(authFindPasswordRequest);
         return ResponseEntity.ok().build();
     }
 

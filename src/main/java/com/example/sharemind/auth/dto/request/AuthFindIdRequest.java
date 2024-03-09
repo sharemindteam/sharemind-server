@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class AuthFindRequest {
+public class AuthFindIdRequest {
 
     @Schema(description = "복구 이메일 주소", example = "abc@gmail.com")
     @NotBlank(message = "복구 이메일은 공백일 수 없습니다.")
