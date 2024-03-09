@@ -73,6 +73,10 @@ public class Post extends BaseEntity {
         setIsPaid(isPublic);
     }
 
+    public void updateIsPaid() {
+        this.isPaid = true;
+    }
+
     private void setIsPaid(Boolean isPublic) {
         if (isPublic) {
             this.isPaid = true;
