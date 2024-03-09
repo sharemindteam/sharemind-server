@@ -54,8 +54,8 @@ public class AdminController {
             @Parameter(name = "consultId", description = "상담 아이디")
     })
     @PatchMapping("/unpaid-consults/{consultId}")
-    public ResponseEntity<Void> updateIsPaid(@PathVariable Long consultId) {
-        adminService.updateIsPaid(consultId);
+    public ResponseEntity<Void> updateConsultIsPaid(@PathVariable Long consultId) {
+        adminService.updateConsultIsPaid(consultId);
         return ResponseEntity.ok().build();
     }
 
@@ -161,5 +161,26 @@ public class AdminController {
     @GetMapping("/unpaid-posts")
     public ResponseEntity<List<PostGetUnpaidPrivateResponse>> getUnpaidPrivatePosts() {
         return ResponseEntity.ok(adminService.getUnpaidPrivatePosts());
+    }
+
+    @Operation(summary = "일대다 비공개 상담 결제 여부 수정", description = "결제 여부(isPaid)가 false인 일대다 상담을 true로 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "이미 결제 완료된 상담",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 일대다 상담 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 상담 아이디")
+    })
+    @PatchMapping("/unpaid-posts/{postId}")
+    public ResponseEntity<Void> updatePostIsPaid(@PathVariable Long postId) {
+        adminService.updatePostIsPaid(postId);
+        return ResponseEntity.ok().build();
     }
 }
