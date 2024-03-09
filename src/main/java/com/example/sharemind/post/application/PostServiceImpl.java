@@ -2,7 +2,6 @@ package com.example.sharemind.post.application;
 
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
-import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +20,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void createPost(PostCreateRequest postCreateRequest, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
-                postCreateRequest.getConsultCategory());
 
-        postRepository.save(postCreateRequest.toEntity(customer, consultCategory));
+        postRepository.save(postCreateRequest.toEntity(customer));
     }
 }

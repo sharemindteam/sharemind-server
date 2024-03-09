@@ -34,15 +34,13 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "consult_category", nullable = false)
+    @Column(name = "consult_category")
     @Enumerated(EnumType.STRING)
     private ConsultCategory consultCategory;
 
-    @Column(nullable = false)
     private String title;
 
     @Size(max = 1000, message = "상담 내용은 최대 1000자입니다.")
-    @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
@@ -65,15 +63,11 @@ public class Post extends BaseEntity {
     private Boolean isPaid;
 
     @Builder
-    public Post(Customer customer, ConsultCategory consultCategory, String title, String content,
-            Long cost, Boolean isPublic) {
+    public Post(Customer customer, Long cost, Boolean isPublic) {
         this.customer = customer;
-        this.consultCategory = consultCategory;
-        this.title = title;
-        this.content = content;
         this.cost = cost;
         this.isPublic = isPublic;
-        this.postStatus = PostStatus.PROCEEDING;
+        this.postStatus = PostStatus.WAITING;
         this.totalLike = 0L;
         this.totalComment = 0L;
         setIsPaid(isPublic);

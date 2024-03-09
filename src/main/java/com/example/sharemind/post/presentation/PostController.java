@@ -28,15 +28,15 @@ public class PostController {
 
     private final PostService postService;
 
-    @Operation(summary = "일대다 상담 질문 생성", description = "일대다 상담 질문 생성")
+    @Operation(summary = "일대다 상담 질문 신청", description = "일대다 상담 질문 신청")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "생성 성공"),
+            @ApiResponse(responseCode = "201", description = "신청 성공"),
             @ApiResponse(responseCode = "400",
-                    description = "1. 요청 값 중 공백이 존재\n 2. 질문 글자수 초과",
+                    description = "요청 값 중 공백이 존재",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
-            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 회원\n 2. 존재하지 않는 상담 카테고리로 요청됨\n",
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
