@@ -28,6 +28,9 @@ import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
 import com.example.sharemind.payment.exception.PaymentException;
 import com.example.sharemind.post.application.PostService;
+import com.example.sharemind.post.domain.Post;
+import com.example.sharemind.post.exception.PostErrorCode;
+import com.example.sharemind.post.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +58,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional
-    public void updateIsPaid(Long consultId) {
+    public void updateConsultIsPaid(Long consultId) {
         Consult consult = consultService.getConsultByConsultId(consultId);
         if (consult.getPayment().getIsPaid()) {
             throw new ConsultException(ConsultErrorCode.CONSULT_ALREADY_PAID, consultId.toString());
@@ -148,5 +151,16 @@ public class AdminServiceImpl implements AdminService {
         return postService.getUnpaidPrivatePosts().stream()
                 .map(PostGetUnpaidPrivateResponse::of)
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updatePostIsPaid(Long postId) {
+        Post post = postService.getPostByPostId(postId);
+        if (post.getIsPaid()) {
+            throw new PostException(PostErrorCode.POST_ALREADY_PAID, postId.toString());
+        }
+
+        post.updateIsPaid();
     }
 }
