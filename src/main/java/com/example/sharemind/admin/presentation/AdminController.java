@@ -4,6 +4,7 @@ import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
+import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @Operation(summary = "미결제 상담 리스트 조회", description = "결제 여부(isPaid)가 false인 consult 리스트 조회")
+    @Operation(summary = "미결제 상담(편지/채팅) 리스트 조회", description = "결제 여부(isPaid)가 false인 consult 리스트 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
@@ -37,7 +38,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUnpaidConsults());
     }
 
-    @Operation(summary = "상담 결제 여부 수정", description = "결제 여부(isPaid)가 false인 consult를 true로 수정")
+    @Operation(summary = "상담(편지/채팅) 결제 여부 수정", description = "결제 여부(isPaid)가 false인 consult를 true로 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "400", description = "이미 결제 완료된 상담",
@@ -151,5 +152,14 @@ public class AdminController {
     public ResponseEntity<Void> updateSettlementComplete(@PathVariable Long paymentId) {
         adminService.updateSettlementComplete(paymentId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "미결제 일대다 상담 리스트 조회", description = "결제 여부(isPaid)가 false인 일대다 상담 리스트 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/unpaid-posts")
+    public ResponseEntity<List<PostGetUnpaidPrivateResponse>> getUnpaidPrivatePosts() {
+        return ResponseEntity.ok(adminService.getUnpaidPrivatePosts());
     }
 }
