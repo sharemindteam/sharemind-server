@@ -2,8 +2,10 @@ package com.example.sharemind.post.application;
 
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
+import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
@@ -37,5 +39,17 @@ public class PostServiceImpl implements PostService {
     public Post getPostByPostId(Long postId) {
         return postRepository.findByPostIdAndIsActivatedIsTrue(postId).orElseThrow(
                 () -> new PostException(PostErrorCode.POST_NOT_FOUND, postId.toString()));
+    }
+
+    @Transactional
+    @Override
+    public void updatePost(PostUpdateRequest postUpdateRequest, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Post post = getPostByPostId(postUpdateRequest.getPostId());
+        ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
+                postUpdateRequest.getConsultCategory());
+
+        post.updatePost(consultCategory, postUpdateRequest.getTitle(),
+                postUpdateRequest.getContent(), postUpdateRequest.getIsCompleted(), customer);
     }
 }
