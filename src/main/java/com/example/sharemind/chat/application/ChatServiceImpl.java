@@ -468,7 +468,6 @@ public class ChatServiceImpl implements ChatService {
 
     private void removeChatIdWithKey(Long chatId, String redisKey) {
         List<Long> chatRoomIds = redisTemplate.opsForValue().get(redisKey);
-        System.out.println("here: " + chatRoomIds);
         if (chatRoomIds != null && chatRoomIds.contains(chatId)) {
             chatRoomIds.remove(chatId);
             redisTemplate.opsForValue().set(redisKey, chatRoomIds);
