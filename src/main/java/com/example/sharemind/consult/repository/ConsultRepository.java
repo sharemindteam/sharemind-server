@@ -20,11 +20,11 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
     List<Consult> findAllByIsPaidIsFalseAndIsActivatedIsTrue();
 
     @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat " +
-            "WHERE c.customer.customerId = :customerId AND c.isActivated = true")
+            "WHERE c.customer.customerId = :customerId AND c.isActivated = true AND c.consultStatus != 'FINISH'")
     List<Long> findChatIdsByCustomerId(Long customerId); //todo: 쿼리 최적화 필요
 
     @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat " +
-            "WHERE c.counselor.counselorId = :counselorId AND c.isActivated = true")
+            "WHERE c.counselor.counselorId = :counselorId AND c.isActivated = true AND c.consultStatus != 'FINISH'")
     List<Long> findChatIdsByCounselorId(Long counselorId);
 
     @Query("SELECT c FROM Consult c JOIN FETCH c.payment p " +
