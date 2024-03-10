@@ -3,6 +3,7 @@ package com.example.sharemind.admin.application;
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
+import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 public interface AdminService {
     List<ConsultGetUnpaidResponse> getUnpaidConsults();
 
-    void updateIsPaid(Long consultId);
+    void updateConsultIsPaid(Long consultId);
 
     List<CounselorGetProfileResponse> getPendingCounselors();
 
@@ -23,4 +24,8 @@ public interface AdminService {
     List<PaymentGetSettlementOngoingResponse> getSettlementOngoingPayments();
 
     void updateSettlementComplete(Long paymentId);
+
+    List<PostGetUnpaidPrivateResponse> getUnpaidPrivatePosts();
+
+    void updatePostIsPaid(Long postId);
 }
