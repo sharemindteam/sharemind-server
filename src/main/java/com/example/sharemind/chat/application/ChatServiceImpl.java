@@ -244,14 +244,12 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void getAndSendChatStatus(Long chatId, Map<String, Object> sessionAttributes, ChatStatusUpdateRequest chatStatusUpdateRequest,
                                      Boolean isCustomer) {
-        Long userId = (Long) sessionAttributes.get("userId");
-
-        ChatGetStatusResponse chatGetStatusResponse = getChatStatus(userId, chatId, chatStatusUpdateRequest, isCustomer);
+        ChatGetStatusResponse chatGetStatusResponse = getChatStatus(chatId, chatStatusUpdateRequest, isCustomer);
 
         sendChatStatus(chatId, chatGetStatusResponse);
     }
 
-    private ChatGetStatusResponse getChatStatus(Long userId, Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+    private ChatGetStatusResponse getChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
                                                 Boolean isCustomer) {
         Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
@@ -259,7 +257,7 @@ public class ChatServiceImpl implements ChatService {
 
         validateChatStatusRequest(chat, chatStatusUpdateRequest, isCustomer);
 
-        handleStatusRequest(userId, chat, isCustomer, chatStatusUpdateRequest);
+        handleStatusRequest(chat, chatStatusUpdateRequest);
 
         return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
     }
@@ -273,7 +271,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
-    private void handleStatusRequest(Long userId, Chat chat, Boolean isCustomer, ChatStatusUpdateRequest chatStatusUpdateRequest) {
+    private void handleStatusRequest(Chat chat, ChatStatusUpdateRequest chatStatusUpdateRequest) {
 
         ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
         switch (chatWebsocketStatus) {
@@ -305,7 +303,7 @@ public class ChatServiceImpl implements ChatService {
 
                 chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.FINISH);
 
-                removeChatIdInRedis(userId, chat.getChatId(), isCustomer);
+                removeChatIdInRedis(chat.getChatId());
                 notifyFinishChat(chat, chat.getConsult());
                 break;
             }
@@ -413,6 +411,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private void sendReadAllEvent(Long chatId, Long customerId, Boolean isCustomer) {
+
         if (isCustomer)
             simpMessagingTemplate.convertAndSend(
                     "/queue/chattings/notifications/customers/" + customerId,
@@ -458,9 +457,16 @@ public class ChatServiceImpl implements ChatService {
         return ChatGetRoomInfoResponse.of(chat);
     }
 
-    private void removeChatIdInRedis(Long userId, Long chatId, Boolean isCustomer) {
-        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId.toString();
+    private void removeChatIdInRedis(Long chatId) {
+        Chat chat = getChatByChatId(chatId);
+        String customerKey = CUSTOMER_PREFIX + chat.getConsult().getCustomer().getCustomerId();
+        String counselorKey = COUNSELOR_PREFIX + chat.getConsult().getCounselor().getCounselorId();
 
+        removeChatIdWithKey(chatId, customerKey);
+        removeChatIdWithKey(chatId, counselorKey);
+    }
+
+    private void removeChatIdWithKey(Long chatId, String redisKey) {
         List<Long> chatRoomIds = redisTemplate.opsForValue().get(redisKey);
         if (chatRoomIds != null && chatRoomIds.contains(chatId)) {
             chatRoomIds.remove(chatId);
