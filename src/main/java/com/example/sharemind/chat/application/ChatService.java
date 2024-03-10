@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ChatService {
-    Chat createChat(Consult consult);
+    void createChat(Consult consult);
 
     Chat getChatByChatId(Long chatId);
 

@@ -60,16 +60,17 @@ public class ChatServiceImpl implements ChatService {
     private final ChatNoticeService chatNoticeService;
 
     @Override
-    public Chat createChat(Consult consult) {
+    public void createChat(Consult consult) {
         Chat chat = Chat.newInstance();
         chatRepository.save(chat);
+
+        consult.updateIsPaidAndChat(chat);
 
         updateChatIdsRedis(chat, consult);
 
         notifyNewChat(chat, consult);
 
         chatTaskScheduler.checkAutoRefund(chat);
-        return chat;
     }
 
     @Override
