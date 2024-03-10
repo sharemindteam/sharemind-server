@@ -305,7 +305,7 @@ public class ChatServiceImpl implements ChatService {
 
                 chatNoticeService.createChatNoticeMessage(chat, ChatMessageStatus.FINISH);
 
-                removeChatIdInRedis(userId, chat.getChatId(), isCustomer);
+                removeChatIdInRedis(chat.getChatId());
                 notifyFinishChat(chat, chat.getConsult());
                 break;
             }
@@ -413,6 +413,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private void sendReadAllEvent(Long chatId, Long customerId, Boolean isCustomer) {
+
         if (isCustomer)
             simpMessagingTemplate.convertAndSend(
                     "/queue/chattings/notifications/customers/" + customerId,
@@ -458,10 +459,18 @@ public class ChatServiceImpl implements ChatService {
         return ChatGetRoomInfoResponse.of(chat);
     }
 
-    private void removeChatIdInRedis(Long userId, Long chatId, Boolean isCustomer) {
-        String redisKey = isCustomer ? CUSTOMER_PREFIX + userId.toString() : COUNSELOR_PREFIX + userId.toString();
+    private void removeChatIdInRedis(Long chatId) {
+        Chat chat = getChatByChatId(chatId);
+        String customerKey = CUSTOMER_PREFIX + chat.getConsult().getCustomer().getCustomerId();
+        String counselorKey = COUNSELOR_PREFIX + chat.getConsult().getCounselor().getCounselorId();
 
+        removeChatIdWithKey(chatId, customerKey);
+        removeChatIdWithKey(chatId, counselorKey);
+    }
+
+    private void removeChatIdWithKey(Long chatId, String redisKey) {
         List<Long> chatRoomIds = redisTemplate.opsForValue().get(redisKey);
+        System.out.println("here: " + chatRoomIds);
         if (chatRoomIds != null && chatRoomIds.contains(chatId)) {
             chatRoomIds.remove(chatId);
             redisTemplate.opsForValue().set(redisKey, chatRoomIds);
