@@ -244,14 +244,12 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void getAndSendChatStatus(Long chatId, Map<String, Object> sessionAttributes, ChatStatusUpdateRequest chatStatusUpdateRequest,
                                      Boolean isCustomer) {
-        Long userId = (Long) sessionAttributes.get("userId");
-
-        ChatGetStatusResponse chatGetStatusResponse = getChatStatus(userId, chatId, chatStatusUpdateRequest, isCustomer);
+        ChatGetStatusResponse chatGetStatusResponse = getChatStatus(chatId, chatStatusUpdateRequest, isCustomer);
 
         sendChatStatus(chatId, chatGetStatusResponse);
     }
 
-    private ChatGetStatusResponse getChatStatus(Long userId, Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
+    private ChatGetStatusResponse getChatStatus(Long chatId, ChatStatusUpdateRequest chatStatusUpdateRequest,
                                                 Boolean isCustomer) {
         Chat chat = chatRepository.findByChatIdAndIsActivatedIsTrue(chatId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_NOT_FOUND, chatId.toString()));
@@ -259,7 +257,7 @@ public class ChatServiceImpl implements ChatService {
 
         validateChatStatusRequest(chat, chatStatusUpdateRequest, isCustomer);
 
-        handleStatusRequest(userId, chat, isCustomer, chatStatusUpdateRequest);
+        handleStatusRequest(chat, chatStatusUpdateRequest);
 
         return ChatGetStatusResponse.of(consult, chatStatusUpdateRequest.getChatWebsocketStatus());
     }
@@ -273,7 +271,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
-    private void handleStatusRequest(Long userId, Chat chat, Boolean isCustomer, ChatStatusUpdateRequest chatStatusUpdateRequest) {
+    private void handleStatusRequest(Chat chat, ChatStatusUpdateRequest chatStatusUpdateRequest) {
 
         ChatWebsocketStatus chatWebsocketStatus = chatStatusUpdateRequest.getChatWebsocketStatus();
         switch (chatWebsocketStatus) {
