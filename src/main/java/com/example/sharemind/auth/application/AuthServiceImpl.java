@@ -158,17 +158,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void sendIdByRecoveryEmail(AuthFindRequest authFindRequest) {
-        Customer customer = customerService.getCustomerByRecoveryEmail(authFindRequest.getRecoveryEmail());
-        emailService.sendIdEmail(authFindRequest.getRecoveryEmail(), customer.getEmail());
+    public void sendIdByRecoveryEmail(AuthFindIdRequest authFindIdRequest) {
+        Customer customer = customerService.getCustomerByRecoveryEmail(authFindIdRequest.getRecoveryEmail());
+        emailService.sendIdEmail(authFindIdRequest.getRecoveryEmail(), customer.getEmail());
     }
 
     @Transactional
     @Override
-    public void updateAndSendPasswordByRecoveryEmail(AuthFindRequest authFindRequest) {
-        Customer customer = customerService.getCustomerByRecoveryEmail(authFindRequest.getRecoveryEmail());
+    public void updateAndSendPasswordByRecoveryEmail(AuthFindPasswordRequest authFindPasswordRequest) {
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(authFindPasswordRequest.getEmail())
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, authFindPasswordRequest.getEmail()));
         String newPassword = PasswordGenerator.generateTemporaryPassword();
         customer.updatePassword(passwordEncoder.encode(newPassword));
-        emailService.sendNewPasswordEmail(authFindRequest.getRecoveryEmail(), newPassword);
+        emailService.sendNewPasswordEmail(authFindPasswordRequest.getEmail(), newPassword);
     }
 }

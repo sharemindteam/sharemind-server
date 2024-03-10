@@ -22,7 +22,7 @@ public interface AuthService {
 
     void signOut(AuthSignOutRequest authSignOutRequest);
 
-    void sendIdByRecoveryEmail(AuthFindRequest authFindRequest);
+    void sendIdByRecoveryEmail(AuthFindIdRequest authFindIdRequest);
 
-    void updateAndSendPasswordByRecoveryEmail(AuthFindRequest authFindRequest);
+    void updateAndSendPasswordByRecoveryEmail(AuthFindPasswordRequest authFindPasswordRequest);
 }
