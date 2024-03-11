@@ -5,7 +5,6 @@ import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.chat.application.ChatService;
-import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.exception.ConsultErrorCode;
@@ -70,9 +69,7 @@ public class AdminServiceImpl implements AdminService {
 
                 consult.updateIsPaidAndLetter(letter);
             }
-            case CHAT -> {
-                chatService.createChat(consult);
-            }
+            case CHAT -> chatService.createChat(consult);
         }
     }
 
