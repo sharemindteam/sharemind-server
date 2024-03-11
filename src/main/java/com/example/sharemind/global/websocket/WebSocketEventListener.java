@@ -47,10 +47,10 @@ public class WebSocketEventListener {
         Chat chat = chatService.getChatByChatId(chatNotifyEvent.getChatId());
         messageSendingOperations.convertAndSend(
                 "/queue/chattings/notifications/customers/" + chatNotifyEvent.getCustomerId(),
-                ChatNotifyEventResponse.of(chat, ChatRoomWebsocketStatus.CHAT_ROOM_CREATE));
+                ChatNotifyEventResponse.of(chat, ChatRoomWebsocketStatus.CHAT_ROOM_CREATE, true));
         messageSendingOperations.convertAndSend(
                 "/queue/chattings/notifications/counselors/" + chatNotifyEvent.getCounselorId(),
-                ChatNotifyEventResponse.of(chat, ChatRoomWebsocketStatus.CHAT_ROOM_CREATE));
+                ChatNotifyEventResponse.of(chat, ChatRoomWebsocketStatus.CHAT_ROOM_CREATE, false));
     }
 
     @EventListener
