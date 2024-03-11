@@ -4,6 +4,8 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.content.PostStatus;
+import com.example.sharemind.post.exception.PostErrorCode;
+import com.example.sharemind.post.exception.PostException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -62,6 +64,9 @@ public class Post extends BaseEntity {
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
+    @Column(name = "is_completed")
+    private Boolean isCompleted;
+
     @Builder
     public Post(Customer customer, Long cost, Boolean isPublic) {
         this.customer = customer;
@@ -77,11 +82,38 @@ public class Post extends BaseEntity {
         this.isPaid = true;
     }
 
+    public void updatePost(ConsultCategory consultCategory, String title, String content,
+            Boolean isCompleted, Customer customer) {
+        checkUpdatability();
+        checkWriteAuthority(customer);
+
+        this.consultCategory = consultCategory;
+        this.title = title;
+        this.content = content;
+        this.isCompleted = isCompleted;
+
+        if (isCompleted) {
+            this.postStatus = PostStatus.PROCEEDING;
+        }
+    }
+
     private void setIsPaid(Boolean isPublic) {
         if (isPublic) {
             this.isPaid = true;
         } else {
             this.isPaid = false;
+        }
+    }
+
+    private void checkWriteAuthority(Customer customer) {
+        if (!customer.getCustomerId().equals(this.customer.getCustomerId())) {
+            throw new PostException(PostErrorCode.POST_MODIFY_DENIED);
+        }
+    }
+
+    private void checkUpdatability() {
+        if (this.isCompleted.equals(true)) {
+            throw new PostException(PostErrorCode.POST_ALREADY_COMPLETED);
         }
     }
 }
