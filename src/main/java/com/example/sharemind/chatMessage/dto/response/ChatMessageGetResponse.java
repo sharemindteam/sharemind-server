@@ -3,6 +3,7 @@ package com.example.sharemind.chatMessage.dto.response;
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
+import com.example.sharemind.chatMessage.utils.ChatMessageUtil;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.global.utils.TimeUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -52,9 +53,8 @@ public class ChatMessageGetResponse {
                     chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), TimeUtil.getChatSendRequestLeftTime(chatMessage.getCreatedAt()));
         }
         if (chatMessage.getMessageStatus() == ChatMessageStatus.FINISH) {
-            String nickname = chat.getConsult().getCounselor().getNickname();
             return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                    chatMessage.getMessageId(), nickname + chatMessage.getContent(), chatMessage.getUpdatedAt(),
+                    chatMessage.getMessageId(), ChatMessageUtil.getFinishMessage(chat, chatMessage.getContent()), chatMessage.getUpdatedAt(),
                     chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), null);
         }
         return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),

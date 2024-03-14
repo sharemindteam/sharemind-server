@@ -71,10 +71,10 @@ public class ChatConsultService {
         List<ChatLetterGetResponse> chatLetterGetResponses = new ArrayList<>();
 
         for (Chat chat : recentChats) {
-            chatLetterGetResponses.add(createChatInfoGetResponse(chat, customer.getCustomerId(), true));
+            chatLetterGetResponses.add(createChatInfoGetResponse(chat, customer.getCustomerId(), isCustomer));
         }
         for (Chat chat : waitingChats) {
-            chatLetterGetResponses.add(createChatInfoGetResponse(chat, customer.getCustomerId(), true));
+            chatLetterGetResponses.add(createChatInfoGetResponse(chat, customer.getCustomerId(), isCustomer));
         }
         chatLetterGetResponses.sort(Comparator.comparing(ChatLetterGetResponse::getLatestMessageUpdatedAt).reversed());
         return chatLetterGetResponses.stream().limit(count).toList();

@@ -2,7 +2,9 @@ package com.example.sharemind.global.dto.response;
 
 import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.domain.Chat;
+import com.example.sharemind.chatMessage.content.ChatMessageStatus;
 import com.example.sharemind.chatMessage.domain.ChatMessage;
+import com.example.sharemind.chatMessage.utils.ChatMessageUtil;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.utils.*;
 import com.example.sharemind.letter.dto.response.LetterGetResponse;
@@ -62,18 +64,22 @@ public class ChatLetterGetResponse {
     public static ChatLetterGetResponse of(String nickname, int unreadMessageCount, Chat chat, Counselor counselor,
                                            ChatMessage chatMessage) {
         Boolean reviewCompleted = null;
-        if (chat.getChatStatus().equals(ChatStatus.FINISH)) {
-            reviewCompleted = chat.getConsult().getReview().getIsCompleted();
-        }
+
         if (chatMessage == null) {
             return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
-                    chat.changeChatStatusForChatList().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chat.getConsult().getUpdatedAt()), nickname + "님께 고민내용을 남겨주세요. " + nickname + "님이 24시간 내에 채팅 요청을 드립니다.",
+                    chat.changeChatStatusForChatList().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chat.getConsult().getUpdatedAt()), counselor.getNickname() + "님께 고민내용을 남겨주세요. " + counselor.getNickname() + "님이 24시간 내에 채팅 요청을 드립니다.",
                     null, 0, reviewCompleted, chat.getConsult().getConsultId(),
                     IS_CHAT);
         }
+        String chatMessageContent = chatMessage.getContent();
+        if (chat.getChatStatus().equals(ChatStatus.FINISH)) {
+            reviewCompleted = chat.getConsult().getReview().getIsCompleted();
+        }
+        if (chatMessage.getMessageStatus().equals(ChatMessageStatus.FINISH))
+            chatMessageContent = ChatMessageUtil.getFinishMessage(chat, chatMessageContent);
         return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
                 chat.changeChatStatusForChatList().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
-                chatMessage.getContent(), chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted,
+                chatMessageContent, chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted,
                 chat.getConsult().getConsultId(), IS_CHAT);
     }
 }
