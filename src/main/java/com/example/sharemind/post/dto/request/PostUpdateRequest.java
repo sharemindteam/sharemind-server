@@ -19,6 +19,7 @@ public class PostUpdateRequest {
 
     @Schema(description = "상담 제목", example = "남자친구의 심리가 궁금해요")
     @NotBlank(message = "상담 제목은 공백일 수 없습니다.")
+    @Size(max = 50, message = "제목은 최대 50자입니다.")
     private String title;
 
     @Schema(description = "상담 내용", example = "안녕하세요 어쩌구저쩌구~")

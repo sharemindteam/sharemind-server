@@ -40,6 +40,7 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConsultCategory consultCategory;
 
+    @Size(max = 50, message = "제목은 최대 50자입니다.")
     private String title;
 
     @Size(max = 1000, message = "상담 내용은 최대 1000자입니다.")
