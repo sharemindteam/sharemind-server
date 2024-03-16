@@ -62,6 +62,9 @@ public class Post extends BaseEntity {
     @Column(name = "total_comment", nullable = false)
     private Long totalComment;
 
+    @Column(name = "total_scrap", nullable = false)
+    private Long totalScrap;
+
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
@@ -76,6 +79,7 @@ public class Post extends BaseEntity {
         this.postStatus = PostStatus.WAITING;
         this.totalLike = 0L;
         this.totalComment = 0L;
+        this.totalScrap = 0L;
         setIsPaid(isPublic);
     }
 
