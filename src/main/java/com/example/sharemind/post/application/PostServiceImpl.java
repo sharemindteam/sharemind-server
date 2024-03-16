@@ -7,6 +7,7 @@ import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
+import com.example.sharemind.post.dto.response.PostGetResponse;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
@@ -60,5 +61,10 @@ public class PostServiceImpl implements PostService {
 
         return post.getIsCompleted() ? PostGetIsSavedResponse.of(post)
                 : PostGetIsSavedResponse.of();
+    }
+
+    @Override
+    public PostGetResponse getPost(Long postId) {
+        return PostGetResponse.of(getPostByPostId(postId));
     }
 }
