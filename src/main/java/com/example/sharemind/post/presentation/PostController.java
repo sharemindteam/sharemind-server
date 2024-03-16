@@ -6,6 +6,7 @@ import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
+import com.example.sharemind.post.dto.response.PostGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -94,5 +95,21 @@ public class PostController {
     @GetMapping("/drafts/{postId}")
     public ResponseEntity<PostGetIsSavedResponse> getIsSaved(@PathVariable Long postId) {
         return ResponseEntity.ok(postService.getIsSaved(postId));
+    }
+
+    @Operation(summary = "일대다 상담 질문 단건 조회", description = "일대다 상담 질문 단건 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 일대다 질문 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 질문 아이디")
+    })
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostGetResponse> getPost(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.getPost(postId));
     }
 }
