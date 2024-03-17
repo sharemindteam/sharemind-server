@@ -61,8 +61,11 @@ public class PostServiceImpl implements PostService {
     public PostGetIsSavedResponse getIsSaved(Long postId) {
         Post post = getPostByPostId(postId);
 
-        return post.getIsCompleted() ? PostGetIsSavedResponse.of(post)
-                : PostGetIsSavedResponse.of();
+        if ((post.getIsCompleted() != null) && !post.getIsCompleted()) {
+            return PostGetIsSavedResponse.of(post);
+        } else {
+            return PostGetIsSavedResponse.of();
+        }
     }
 
     @Override
