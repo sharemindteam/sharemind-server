@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
+    private static final int POST_CUSTOMER_PAGE_SIZE = 4;
+
     private final PostRepository postRepository;
     private final CustomerService customerService;
 
@@ -66,5 +68,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostGetResponse getPost(Long postId) {
         return PostGetResponse.of(getPostByPostId(postId));
+    }
+
+    @Override
+    public List<PostGetResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+        return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
+                POST_CUSTOMER_PAGE_SIZE).stream()
+                .map(PostGetResponse::of)
+                .toList();
     }
 }
