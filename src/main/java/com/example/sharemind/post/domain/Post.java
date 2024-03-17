@@ -117,7 +117,7 @@ public class Post extends BaseEntity {
     }
 
     private void checkUpdatability() {
-        if (this.isCompleted.equals(true)) {
+        if (this.isCompleted != null && this.isCompleted.equals(true)) {
             throw new PostException(PostErrorCode.POST_ALREADY_COMPLETED);
         }
     }
