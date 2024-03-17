@@ -16,11 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Post Controller", description = "일대다 상담 질문 컨트롤러")
 @RestController
@@ -72,5 +70,10 @@ public class PostController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         postService.updatePost(postUpdateRequest, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/counselors/random")
+    public ResponseEntity<List<Long>> getRandomPosts() {
+        return ResponseEntity.ok(postService.getRandomPosts());
     }
 }
