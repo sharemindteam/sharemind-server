@@ -1,4 +1,5 @@
 package com.example.sharemind.post.dto.response;
+
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,9 +47,12 @@ public class PostGetResponse {
     }
 
     public static PostGetResponse of(Post post) {
+        String consultCategory = post.getConsultCategory() == null ? null
+                : post.getConsultCategory().getDisplayName();
+
         return PostGetResponse.builder()
                 .postId(post.getPostId())
-                .consultCategory(post.getConsultCategory().getDisplayName())
+                .consultCategory(consultCategory)
                 .title(post.getTitle())
                 .content(post.getContent())
                 .isPublic(post.getIsPublic())
