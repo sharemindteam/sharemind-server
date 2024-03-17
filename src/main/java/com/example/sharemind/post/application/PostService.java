@@ -3,6 +3,7 @@ package com.example.sharemind.post.application;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
+
 import java.util.List;
 
 public interface PostService {
@@ -14,4 +15,6 @@ public interface PostService {
     Post getPostByPostId(Long postId);
 
     void updatePost(PostUpdateRequest postUpdateRequest, Long customerId);
+
+    List<Long> getRandomPosts();
 }

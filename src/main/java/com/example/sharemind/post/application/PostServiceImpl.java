@@ -52,4 +52,9 @@ public class PostServiceImpl implements PostService {
         post.updatePost(consultCategory, postUpdateRequest.getTitle(),
                 postUpdateRequest.getContent(), postUpdateRequest.getIsCompleted(), customer);
     }
+
+    @Override
+    public List<Long> getRandomPosts() {
+        return postRepository.findRandomProceedingPostIds();
+    }
 }
