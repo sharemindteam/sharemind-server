@@ -7,9 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum PostStatus {
 
-    WAITING("상담 대기"),
-    PROCEEDING("상담 진행 중"),
-    COMPLETED("상담 마감"),
+    WAITING("답변 대기"),
+    PROCEEDING("답변 진행 중"),
+    COMPLETED("답변 완료"),
+    CANCELLED("상담 취소"),
     REPORTED("신고로 인한 게시 중단");
 
     private final String displayName;

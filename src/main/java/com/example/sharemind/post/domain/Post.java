@@ -40,6 +40,7 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConsultCategory consultCategory;
 
+    @Size(max = 50, message = "제목은 최대 50자입니다.")
     private String title;
 
     @Size(max = 1000, message = "상담 내용은 최대 1000자입니다.")
@@ -61,6 +62,9 @@ public class Post extends BaseEntity {
     @Column(name = "total_comment", nullable = false)
     private Long totalComment;
 
+    @Column(name = "total_scrap", nullable = false)
+    private Long totalScrap;
+
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
@@ -75,6 +79,7 @@ public class Post extends BaseEntity {
         this.postStatus = PostStatus.WAITING;
         this.totalLike = 0L;
         this.totalComment = 0L;
+        this.totalScrap = 0L;
         setIsPaid(isPublic);
     }
 
@@ -112,7 +117,7 @@ public class Post extends BaseEntity {
     }
 
     private void checkUpdatability() {
-        if (this.isCompleted.equals(true)) {
+        if (this.isCompleted != null && this.isCompleted.equals(true)) {
             throw new PostException(PostErrorCode.POST_ALREADY_COMPLETED);
         }
     }
