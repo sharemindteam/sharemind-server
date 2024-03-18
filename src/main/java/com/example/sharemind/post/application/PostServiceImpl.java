@@ -92,11 +92,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostGetResponse getCounselorPostContent(Long postId) {
+        Post post = getProceedingPost(postId);
+
+        return PostGetResponse.of(post);
+    }
+
+    @Override
+    public Post getProceedingPost(Long postId) {
         Post post = getPostByPostId(postId);
 
         checkPostProceeding(post);
-
-        return PostGetResponse.of(post);
+        return post;
     }
 
     private void checkPostProceeding(Post post) {

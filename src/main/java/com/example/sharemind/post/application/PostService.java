@@ -26,4 +26,6 @@ public interface PostService {
     List<Long> getRandomPosts();
 
     PostGetResponse getCounselorPostContent(Long postId);
+
+    Post getProceedingPost(Long postId);
 }
