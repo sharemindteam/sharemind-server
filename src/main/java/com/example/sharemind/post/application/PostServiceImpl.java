@@ -6,6 +6,8 @@ import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
+import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
+import com.example.sharemind.post.dto.response.PostGetResponse;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
+
+    private static final int POST_CUSTOMER_PAGE_SIZE = 4;
 
     private final PostRepository postRepository;
     private final CustomerService customerService;
@@ -51,5 +55,32 @@ public class PostServiceImpl implements PostService {
 
         post.updatePost(consultCategory, postUpdateRequest.getTitle(),
                 postUpdateRequest.getContent(), postUpdateRequest.getIsCompleted(), customer);
+    }
+
+    @Override
+    public PostGetIsSavedResponse getIsSaved(Long postId) {
+        Post post = getPostByPostId(postId);
+
+        if ((post.getIsCompleted() != null) && !post.getIsCompleted()) {
+            return PostGetIsSavedResponse.of(post);
+        } else {
+            return PostGetIsSavedResponse.of();
+        }
+    }
+
+    @Override
+    public PostGetResponse getPost(Long postId) {
+        return PostGetResponse.of(getPostByPostId(postId));
+    }
+
+    @Override
+    public List<PostGetResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+        return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
+                        POST_CUSTOMER_PAGE_SIZE).stream()
+                .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
+                        ? PostGetResponse.ofIsNotCompleted(post) : PostGetResponse.of(post))
+                .toList();
     }
 }
