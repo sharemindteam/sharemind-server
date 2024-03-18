@@ -138,4 +138,9 @@ public class PostController {
     public ResponseEntity<List<Long>> getRandomPosts() {
         return ResponseEntity.ok(postService.getRandomPosts());
     }
+
+    @GetMapping("/counselors/contents/{postId}")
+    public ResponseEntity<PostGetResponse> getPostInfo(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.getCounselorPostContent(postId));
+    }
 }

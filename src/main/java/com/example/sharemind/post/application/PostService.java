@@ -24,4 +24,6 @@ public interface PostService {
     List<PostGetResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
 
     List<Long> getRandomPosts();
+
+    PostGetResponse getCounselorPostContent(Long postId);
 }

@@ -3,6 +3,7 @@ package com.example.sharemind.post.application;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
+import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
@@ -87,5 +88,19 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Long> getRandomPosts() {
         return postRepository.findRandomProceedingPostIds();
+    }
+
+    @Override
+    public PostGetResponse getCounselorPostContent(Long postId) {
+        Post post = getPostByPostId(postId);
+
+        checkPostProceeding(post);
+
+        return PostGetResponse.of(post);
+    }
+
+    private void checkPostProceeding(Post post) {
+        if (post.getPostStatus() != PostStatus.PROCEEDING)
+            throw new PostException(PostErrorCode.POST_NOT_PROCEEDING, post.getPostId().toString());
     }
 }
