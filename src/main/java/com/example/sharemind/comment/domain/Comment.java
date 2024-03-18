@@ -6,6 +6,7 @@ import com.example.sharemind.post.domain.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +36,13 @@ public class Comment extends BaseEntity {
 
     @Column(name = "total_like", nullable = false)
     private Long totalLike;
+
+    @Builder
+    public Comment(Post post, Counselor counselor, String content) {
+        this.post = post;
+        this.counselor = counselor;
+        this.content = content;
+        isChosen = false;
+        totalLike = 0L;
+    }
 }
