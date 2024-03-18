@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentGetResponse> getCommentsByPost(Long postId) {
         Post post = postService.getProceedingPost(postId);
 
-        List<Comment> comments = commentRepository.findByPostAndActivatedIsTrue(post);
+        List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         return comments.stream()
                 .map(CommentGetResponse::of)
                 .toList();
@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.save(commentCreateRequest.toEntity(post, counselor));
 
-        List<Comment> comments = commentRepository.findByPostAndActivatedIsTrue(post);
+        List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         if (comments.size() == MAX_COMMENTS)
             post.updatePostStatus(PostStatus.COMPLETED);
     }
