@@ -61,4 +61,17 @@ public class PostGetResponse {
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
                 .build();
     }
+
+    public static PostGetResponse ofIsNotCompleted(Post post) {
+        return PostGetResponse.builder()
+                .postId(post.getPostId())
+                .consultCategory(null)
+                .title(null)
+                .content(null)
+                .isPublic(post.getIsPublic())
+                .totalLike(post.getTotalLike())
+                .totalScrap(post.getTotalScrap())
+                .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
+                .build();
+    }
 }

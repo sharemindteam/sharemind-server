@@ -78,8 +78,9 @@ public class PostServiceImpl implements PostService {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
-                POST_CUSTOMER_PAGE_SIZE).stream()
-                .map(PostGetResponse::of)
+                        POST_CUSTOMER_PAGE_SIZE).stream()
+                .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
+                        ? PostGetResponse.ofIsNotCompleted(post) : PostGetResponse.of(post))
                 .toList();
     }
 }
