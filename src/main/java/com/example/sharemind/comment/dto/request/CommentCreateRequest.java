@@ -21,7 +21,7 @@ public class CommentCreateRequest {
         return Comment.builder()
                 .post(post)
                 .counselor(counselor)
-                .content(getContent())
+                .content(content)
                 .build();
     }
 }
