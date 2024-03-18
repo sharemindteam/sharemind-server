@@ -7,6 +7,7 @@ import com.example.sharemind.comment.repository.CommentRepository;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.post.application.PostService;
+import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class CommentServiceImpl implements CommentService {
     private final CounselorService counselorService;
     private final CommentRepository commentRepository;
 
+    private static final Integer MAX_COMMENTS = 5;
+
     @Override
     public List<CommentGetResponse> getCommentsByPost(Long postId) {
         Post post = postService.getProceedingPost(postId);
@@ -38,6 +41,11 @@ public class CommentServiceImpl implements CommentService {
     public void createComment(CommentCreateRequest commentCreateRequest, Long customerId) {
         Post post = postService.getProceedingPost(commentCreateRequest.getPostId());
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+
         commentRepository.save(commentCreateRequest.toEntity(post, counselor));
+
+        List<Comment> comments = commentRepository.findByPostAndActivatedIsTrue(post);
+        if (comments.size() == MAX_COMMENTS)
+            post.updatePostStatus(PostStatus.COMPLETED);
     }
 }

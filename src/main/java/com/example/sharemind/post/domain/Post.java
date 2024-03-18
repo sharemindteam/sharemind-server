@@ -87,6 +87,10 @@ public class Post extends BaseEntity {
         this.isPaid = true;
     }
 
+    public void updatePostStatus(PostStatus postStatus){
+        this.postStatus = postStatus;
+    }
+
     public void updatePost(ConsultCategory consultCategory, String title, String content,
             Boolean isCompleted, Customer customer) {
         checkUpdatability();
