@@ -69,8 +69,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostGetResponse getPost(Long postId) {
-        return PostGetResponse.of(getPostByPostId(postId));
+    public PostGetResponse getPost(Long postId, Long customerId) {
+        Post post = getPostByPostId(postId);
+
+        if (customerId != 0) {
+            customerService.getCustomerByCustomerId(customerId);
+        }
+        post.checkReadAuthority(customerId);
+
+        return PostGetResponse.of(post);
     }
 
     @Override
