@@ -12,9 +12,6 @@ public class PostGetResponse {
     @Schema(description = "일대다 질문 아이디")
     private final Long postId;
 
-    @Schema(description = "상담 카테고리", example = "연애갈등")
-    private final String consultCategory;
-
     @Schema(description = "제목")
     private final String title;
 
@@ -30,34 +27,34 @@ public class PostGetResponse {
     @Schema(description = "스크랩 수")
     private final Long totalScrap;
 
+    @Schema(description = "답변 수")
+    private final Long totalComment;
+
     @Schema(description = "마지막 업데이트 일시", example = "8분 전")
     private final String updatedAt;
 
     @Builder
-    public PostGetResponse(Long postId, String consultCategory, String title, String content,
-            Boolean isPublic, Long totalLike, Long totalScrap, String updatedAt) {
+    public PostGetResponse(Long postId, String title, String content, Boolean isPublic,
+            Long totalLike, Long totalScrap, Long totalComment, String updatedAt) {
         this.postId = postId;
-        this.consultCategory = consultCategory;
         this.title = title;
         this.content = content;
         this.isPublic = isPublic;
         this.totalLike = totalLike;
         this.totalScrap = totalScrap;
+        this.totalComment = totalComment;
         this.updatedAt = updatedAt;
     }
 
     public static PostGetResponse of(Post post) {
-        String consultCategory = post.getConsultCategory() == null ? null
-                : post.getConsultCategory().getDisplayName();
-
         return PostGetResponse.builder()
                 .postId(post.getPostId())
-                .consultCategory(consultCategory)
                 .title(post.getTitle())
                 .content(post.getContent())
                 .isPublic(post.getIsPublic())
                 .totalLike(post.getTotalLike())
                 .totalScrap(post.getTotalScrap())
+                .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
                 .build();
     }
@@ -65,12 +62,12 @@ public class PostGetResponse {
     public static PostGetResponse ofIsNotCompleted(Post post) {
         return PostGetResponse.builder()
                 .postId(post.getPostId())
-                .consultCategory(null)
                 .title(null)
                 .content(null)
                 .isPublic(post.getIsPublic())
                 .totalLike(post.getTotalLike())
                 .totalScrap(post.getTotalScrap())
+                .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
                 .build();
     }
