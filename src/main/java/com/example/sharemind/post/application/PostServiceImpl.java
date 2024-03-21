@@ -75,7 +75,7 @@ public class PostServiceImpl implements PostService {
         if (customerId != 0) {
             customerService.getCustomerByCustomerId(customerId);
         }
-        post.checkReadAuthority(customerId);
+        post.checkReadAuthority(customerId); // TODO: 비공개 상담에 답변 단 판매자도 볼 수 있게 해야함
 
         return PostGetResponse.of(post);
     }
