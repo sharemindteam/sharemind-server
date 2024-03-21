@@ -6,6 +6,7 @@ import com.example.sharemind.global.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -54,6 +55,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/counselors/all/**", "/api/v1/searchWords/results", "/api/v1/reviews/all/**").permitAll()
                                 .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html",
                                         "/counselor.html").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}").permitAll()
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
                                 .requestMatchers("/api/v1/letters/counselors/**", "/api/v1/reviews/counselors**").hasRole(ROLE_COUNSELOR)
                                 .requestMatchers("/api/v1/chats/counselors/**").hasRole(ROLE_COUNSELOR)
