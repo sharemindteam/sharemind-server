@@ -1,5 +1,9 @@
 package com.example.sharemind.post.application;
 
+import com.example.sharemind.comment.domain.Comment;
+import com.example.sharemind.comment.repository.CommentRepository;
+import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
@@ -24,8 +28,10 @@ public class PostServiceImpl implements PostService {
 
     private static final int POST_CUSTOMER_PAGE_SIZE = 4;
 
-    private final PostRepository postRepository;
     private final CustomerService customerService;
+    private final CounselorService counselorService;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     @Override
@@ -110,6 +116,17 @@ public class PostServiceImpl implements PostService {
 
         checkPostProceeding(post);
         return post;
+    }
+
+    @Override
+    public Boolean checkCounselorReadAuthority(Long postId, Long customerId){
+        Post post = getPostByPostId(postId);
+
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+
+        Comment comment = commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor);
+
+        return comment != null;
     }
 
     private void checkPostProceeding(Post post) {

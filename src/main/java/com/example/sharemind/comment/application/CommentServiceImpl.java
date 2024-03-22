@@ -3,6 +3,8 @@ package com.example.sharemind.comment.application;
 import com.example.sharemind.comment.domain.Comment;
 import com.example.sharemind.comment.dto.request.CommentCreateRequest;
 import com.example.sharemind.comment.dto.response.CommentGetResponse;
+import com.example.sharemind.comment.exception.CommentErrorCode;
+import com.example.sharemind.comment.exception.CommentException;
 import com.example.sharemind.comment.repository.CommentRepository;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
@@ -27,8 +29,8 @@ public class CommentServiceImpl implements CommentService {
     private static final Integer MAX_COMMENTS = 5;
 
     @Override
-    public List<CommentGetResponse> getCommentsByPost(Long postId) {
-        Post post = postService.getProceedingPost(postId);
+    public List<CommentGetResponse> getCommentsByPost(Long postId, Long customerId) {
+        Post post = checkAndGetCounselorPost(postId, customerId);
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         return comments.stream()
@@ -39,13 +41,22 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void createComment(CommentCreateRequest commentCreateRequest, Long customerId) {
-        Post post = postService.getProceedingPost(commentCreateRequest.getPostId());
+        Post post = checkAndGetCounselorPost(commentCreateRequest.getPostId(), customerId);
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+
+        if (commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null)
+            throw new CommentException(CommentErrorCode.COMMENT_ALREADY_REGISTERED, counselor.getNickname());
 
         commentRepository.save(commentCreateRequest.toEntity(post, counselor));
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         if (comments.size() == MAX_COMMENTS)
             post.updatePostStatus(PostStatus.COMPLETED);
+    }
+
+    private Post checkAndGetCounselorPost(Long postId, Long customerId) {
+        if (postService.checkCounselorReadAuthority(postId, customerId))
+            return postService.getPostByPostId(postId);
+        return postService.getProceedingPost(postId);
     }
 }
