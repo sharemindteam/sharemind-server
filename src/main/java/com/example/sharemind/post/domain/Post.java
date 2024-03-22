@@ -102,6 +102,12 @@ public class Post extends BaseEntity {
         }
     }
 
+    public void checkReadAuthority(Long customerId) {
+        if (!this.isPublic && !this.customer.getCustomerId().equals(customerId)) {
+            throw new PostException(PostErrorCode.POST_ACCESS_DENIED);
+        }
+    }
+
     private void setIsPaid(Boolean isPublic) {
         if (isPublic) {
             this.isPaid = true;
