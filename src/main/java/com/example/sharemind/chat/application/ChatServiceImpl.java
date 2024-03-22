@@ -194,7 +194,7 @@ public class ChatServiceImpl implements ChatService {
         Map<Chat, LocalDateTime> latestMessageTime = new HashMap<>();
         for (Chat chat : chats) {
             ChatMessage latestMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
-            latestMessageTime.put(chat, latestMessage != null ? latestMessage.getUpdatedAt() : LocalDateTime.MIN);
+            latestMessageTime.put(chat, latestMessage != null ? latestMessage.getUpdatedAt() : chat.getUpdatedAt());
         }
 
         return chats.stream()

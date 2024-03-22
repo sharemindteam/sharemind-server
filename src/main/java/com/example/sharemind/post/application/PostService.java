@@ -19,7 +19,7 @@ public interface PostService {
 
     PostGetIsSavedResponse getIsSaved(Long postId);
 
-    PostGetResponse getPost(Long postId);
+    PostGetResponse getPost(Long postId, Long customerId);
 
     List<PostGetResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
 
