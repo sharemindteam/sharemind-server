@@ -53,7 +53,7 @@ public class CommentController {
             - 상담사 사이드 일대다 상담 댓글 작성 API
             - 주소 형식: /api/v1/comments/counselors""")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "201", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담 3. 이미 답변을 작성한 상담",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
