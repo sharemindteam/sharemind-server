@@ -104,8 +104,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostGetResponse getCounselorPostContent(Long postId) {
-        Post post = getProceedingPost(postId);
+    public PostGetResponse getCounselorPostContent(Long postId, Long customerId) {
+
+        Post post = checkAndGetCounselorPost(postId, customerId);
 
         return PostGetResponse.of(post);
     }
@@ -116,6 +117,13 @@ public class PostServiceImpl implements PostService {
 
         checkPostProceeding(post);
         return post;
+    }
+
+    @Override
+    public Post checkAndGetCounselorPost(Long postId, Long customerId) {
+        if (checkCounselorReadAuthority(postId, customerId))
+            return getPostByPostId(postId);
+        return getProceedingPost(postId);
     }
 
     @Override

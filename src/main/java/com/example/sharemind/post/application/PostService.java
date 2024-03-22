@@ -25,9 +25,11 @@ public interface PostService {
 
     List<Long> getRandomPosts();
 
-    PostGetResponse getCounselorPostContent(Long postId);
+    PostGetResponse getCounselorPostContent(Long postId, Long customerId);
 
     Post getProceedingPost(Long postId);
+
+    Post checkAndGetCounselorPost(Long postId, Long customerId);
 
     Boolean checkCounselorReadAuthority(Long postId, Long customerId);
 }

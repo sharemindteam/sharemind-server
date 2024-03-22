@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentGetResponse> getCommentsByPost(Long postId, Long customerId) {
-        Post post = checkAndGetCounselorPost(postId, customerId);
+        Post post = postService.checkAndGetCounselorPost(postId, customerId);
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         return comments.stream()
@@ -41,7 +41,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void createComment(CommentCreateRequest commentCreateRequest, Long customerId) {
-        Post post = checkAndGetCounselorPost(commentCreateRequest.getPostId(), customerId);
+        Post post = postService.checkAndGetCounselorPost(commentCreateRequest.getPostId(), customerId);
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
         if (commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null)
@@ -52,11 +52,5 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         if (comments.size() == MAX_COMMENTS)
             post.updatePostStatus(PostStatus.COMPLETED);
-    }
-
-    private Post checkAndGetCounselorPost(Long postId, Long customerId) {
-        if (postService.checkCounselorReadAuthority(postId, customerId))
-            return postService.getPostByPostId(postId);
-        return postService.getProceedingPost(postId);
     }
 }

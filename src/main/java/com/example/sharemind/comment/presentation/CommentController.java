@@ -6,6 +6,7 @@ import com.example.sharemind.comment.dto.response.CommentGetResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,6 @@ public class CommentController {
     public ResponseEntity<Void> createComments(@RequestBody CommentCreateRequest commentCreateRequest,
            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         commentService.createComment(commentCreateRequest, customUserDetails.getCustomer().getCustomerId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
