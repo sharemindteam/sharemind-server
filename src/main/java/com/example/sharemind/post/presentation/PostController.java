@@ -17,8 +17,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -136,11 +138,35 @@ public class PostController {
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId""")
     })
     @GetMapping("/customers")
-    public ResponseEntity<List<PostGetListResponse>> getPostsByCustomer(@RequestParam Boolean filter,
+    public ResponseEntity<List<PostGetListResponse>> getPostsByCustomer(
+            @RequestParam Boolean filter,
             @RequestParam Long postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPostsByCustomer(filter, postId,
                 customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "구매자 사이드 공개상담 탭 일대다 상담 리스트 기본순 조회", description = """
+            - 구매자 사이드의 공개상담 탭에서 답변 완료된 일대다 상담 질문 리스트 기본순 조회
+            - 주소 형식: /api/v1/posts/customers/public?postId=0&updatedAt=2024-03-22T00:47:59""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = """
+                    - 조회 결과는 4개씩 반환하며, postId와 updatedAt으로 구분
+                    1. 최초 조회 요청이면 postId는 0
+                    2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId"""),
+            @Parameter(name = "updatedAt", description = """
+                    1. 최초 조회 요청이면 지금 시간
+                    2. 2번째 요청부터 updatedAt 직전 요청의 조회 결과 4개 중 마지막 updatedAtForPaging
+                    3. 형식 예시에 적어둔 것과 꼭 맞춰주셔야 합니다"""),
+    })
+    @GetMapping("/customers/public")
+    public ResponseEntity<List<PostGetListResponse>> getPublicPostsByCustomer(
+            @RequestParam Long postId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime updatedAt) {
+        return ResponseEntity.ok(postService.getPublicPostsByCustomer(postId, updatedAt));
     }
 
     @Operation(summary = "상담사 랜덤 일대다 상담 ID 리스트 반환", description = """
@@ -171,7 +197,8 @@ public class PostController {
     })
     @GetMapping("/counselors/{postId}")
     public ResponseEntity<PostGetResponse> getPostInfo(@PathVariable Long postId,
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(postService.getCounselorPostContent(postId, customUserDetails.getCustomer().getCustomerId()));
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(postService.getCounselorPostContent(postId,
+                customUserDetails.getCustomer().getCustomerId()));
     }
 }
