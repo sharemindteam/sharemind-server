@@ -6,6 +6,7 @@ import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.domain.QPost;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +30,19 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 ).orderBy(post.postId.desc()).limit(size).fetch();
     }
 
+    @Override
+    public List<Post> findAllByIsPublicAndIsActivatedIsTrue(Long postId, LocalDateTime updatedAt,
+            int size) {
+        return jpaQueryFactory
+                .selectFrom(post)
+                .where(
+                        post.isPublic.isTrue(),
+                        post.postStatus.eq(PostStatus.COMPLETED),
+                        post.isActivated.isTrue(),
+                        lessThanUpdatedAtAndPostId(postId, updatedAt)
+                ).orderBy(post.updatedAt.desc(), post.postId.desc()).limit(size).fetch();
+    }
+
     private BooleanExpression postStatusIn(Boolean filter) {
         return filter ? post.postStatus.in(PostStatus.WAITING, PostStatus.PROCEEDING,
                 PostStatus.REPORTED) : null;
@@ -36,5 +50,10 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
     private BooleanExpression lessThanPostId(Long postId) {
         return postId != 0 ? post.postId.lt(postId) : null;
+    }
+
+    private BooleanExpression lessThanUpdatedAtAndPostId(Long postId, LocalDateTime updatedAt) {
+        return postId != 0 ? post.updatedAt.lt(updatedAt)
+                .or(post.updatedAt.eq(updatedAt).and(post.postId.lt(postId))) : null;
     }
 }
