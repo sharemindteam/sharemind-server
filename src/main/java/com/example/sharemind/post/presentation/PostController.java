@@ -7,6 +7,7 @@ import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
 import com.example.sharemind.post.dto.response.PostGetListResponse;
+import com.example.sharemind.post.dto.response.PostGetPopularityResponse;
 import com.example.sharemind.post.dto.response.PostGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -167,6 +168,16 @@ public class PostController {
             @RequestParam Long postId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime updatedAt) {
         return ResponseEntity.ok(postService.getPublicPostsByCustomer(postId, updatedAt));
+    }
+
+    @Operation(summary = "구매자 사이드 공개상담 탭 일대다 상담 리스트 인기순 조회", description = """
+            - 구매자 사이드의 공개상담 탭에서 답변 완료된 일대다 상담 질문 리스트 인기순 조회""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/customers/public/likes")
+    public ResponseEntity<List<PostGetPopularityResponse>> getPopularityPosts() {
+        return ResponseEntity.ok(postService.getPopularityPosts());
     }
 
     @Operation(summary = "상담사 랜덤 일대다 상담 ID 리스트 반환", description = """
