@@ -87,7 +87,7 @@ public class Post extends BaseEntity {
         this.isPaid = true;
     }
 
-    public void updatePostStatus(PostStatus postStatus){
+    public void updatePostStatus(PostStatus postStatus) {
         this.postStatus = postStatus;
     }
 
@@ -110,6 +110,11 @@ public class Post extends BaseEntity {
         if (!this.isPublic && !this.customer.getCustomerId().equals(customerId)) {
             throw new PostException(PostErrorCode.POST_ACCESS_DENIED);
         }
+    }
+
+    public void checkPostProceeding() {
+        if (this.getPostStatus() != PostStatus.PROCEEDING)
+            throw new PostException(PostErrorCode.POST_NOT_PROCEEDING, this.getPostId().toString());
     }
 
     private void setIsPaid(Boolean isPublic) {

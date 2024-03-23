@@ -27,9 +27,5 @@ public interface PostService {
 
     PostGetResponse getCounselorPostContent(Long postId, Long customerId);
 
-    Post getProceedingPost(Long postId);
-
     Post checkAndGetCounselorPost(Long postId, Long customerId);
-
-    Boolean checkCounselorReadAuthority(Long postId, Long customerId);
 }
