@@ -2,7 +2,9 @@ package com.example.sharemind.post.dto.response;
 
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -33,9 +35,14 @@ public class PostGetListResponse {
     @Schema(description = "마지막 업데이트 일시", example = "8분 전")
     private final String updatedAt;
 
+    @Schema(description = "페이지네이션 위한 업데이트 일시")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private final LocalDateTime updatedAtForPaging;
+
     @Builder
     public PostGetListResponse(Long postId, String title, String content, Boolean isPublic,
-            Long totalLike, Long totalScrap, Long totalComment, String updatedAt) {
+            Long totalLike, Long totalScrap, Long totalComment, String updatedAt,
+            LocalDateTime updatedAtForPaging) {
         this.postId = postId;
         this.title = title;
         this.content = content;
@@ -44,6 +51,7 @@ public class PostGetListResponse {
         this.totalScrap = totalScrap;
         this.totalComment = totalComment;
         this.updatedAt = updatedAt;
+        this.updatedAtForPaging = updatedAtForPaging;
     }
 
     public static PostGetListResponse of(Post post) {
@@ -56,6 +64,7 @@ public class PostGetListResponse {
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
+                .updatedAtForPaging(post.getUpdatedAt())
                 .build();
     }
 
@@ -69,6 +78,7 @@ public class PostGetListResponse {
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
+                .updatedAtForPaging(post.getUpdatedAt())
                 .build();
     }
 }
