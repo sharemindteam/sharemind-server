@@ -62,6 +62,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/chatMessages/counselors/**").hasRole(ROLE_COUNSELOR)
                                 .requestMatchers("/api/v1/consults/counselors").hasRole(ROLE_COUNSELOR)
                                 .requestMatchers("/api/v1/payments/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/posts/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/comments/counselors/**").hasRole(ROLE_COUNSELOR)
                                 .requestMatchers(("/api/v1/counselors/account")).hasRole(ROLE_COUNSELOR)
                                 .anyRequest().authenticated()
                 )

@@ -1,5 +1,9 @@
 package com.example.sharemind.post.application;
 
+import com.example.sharemind.comment.domain.Comment;
+import com.example.sharemind.comment.repository.CommentRepository;
+import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
@@ -23,8 +27,10 @@ public class PostServiceImpl implements PostService {
 
     private static final int POST_CUSTOMER_PAGE_SIZE = 4;
 
-    private final PostRepository postRepository;
     private final CustomerService customerService;
+    private final CounselorService counselorService;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     @Override
@@ -89,5 +95,42 @@ public class PostServiceImpl implements PostService {
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
                         ? PostGetResponse.ofIsNotCompleted(post) : PostGetResponse.of(post))
                 .toList();
+    }
+
+    @Override
+    public List<Long> getRandomPosts() {
+        return postRepository.findRandomProceedingPostIds();
+    }
+
+    @Override
+    public PostGetResponse getCounselorPostContent(Long postId, Long customerId) {
+
+        Post post = checkAndGetCounselorPost(postId, customerId);
+
+        return PostGetResponse.of(post);
+    }
+
+    private Post getProceedingPost(Long postId) {
+        Post post = getPostByPostId(postId);
+
+        post.checkPostProceeding();
+        return post;
+    }
+
+    @Override
+    public Post checkAndGetCounselorPost(Long postId, Long customerId) {
+        if (checkCounselorReadAuthority(postId, customerId))
+            return getPostByPostId(postId);
+        return getProceedingPost(postId);
+    }
+
+    private Boolean checkCounselorReadAuthority(Long postId, Long customerId){
+        Post post = getPostByPostId(postId);
+
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+
+        Comment comment = commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor);
+
+        return comment != null;
     }
 }

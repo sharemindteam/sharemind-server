@@ -21,14 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @Tag(name = "Post Controller", description = "일대다 상담 질문 컨트롤러")
 @RestController
@@ -145,5 +139,37 @@ public class PostController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPostsByCustomer(filter, postId,
                 customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "상담사 랜덤 일대다 상담 ID 리스트 반환", description = """
+            - 상담사 일대다 상담 답변을 위한 진행중인 상담 ID 리스트를 랜덤으로 50개 반환하는 API
+            - 없을 경우 빈 리스트를 반환
+            - 주소 형식: /api/v1/posts/counselors/random""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+    })
+    @GetMapping("/counselors/random")
+    public ResponseEntity<List<Long>> getRandomPosts() {
+        return ResponseEntity.ok(postService.getRandomPosts());
+    }
+
+    @Operation(summary = "상담사 사이드 일대다 상담 질문 단건 조회", description = """
+            - 상담사가 일대다 상담 질문에 대답하기 위한 상담 질문 단건 조회
+            - 주소 형식: /api/v1/posts/counselors/1""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = """
+                    - 일대다 상담 ID""")
+    })
+    @GetMapping("/counselors/{postId}")
+    public ResponseEntity<PostGetResponse> getPostInfo(@PathVariable Long postId,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(postService.getCounselorPostContent(postId, customUserDetails.getCustomer().getCustomerId()));
     }
 }
