@@ -16,6 +16,7 @@ import com.example.sharemind.post.dto.response.PostGetResponse;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -88,13 +89,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId) {
+    public List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId,
+            Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
                         POST_CUSTOMER_PAGE_SIZE).stream()
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
                         ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post))
+                .toList();
+    }
+
+    @Override
+    public List<PostGetListResponse> getPublicPostsByCustomer(Long postId,
+            LocalDateTime updatedAt) {
+        return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, updatedAt,
+                POST_CUSTOMER_PAGE_SIZE).stream()
+                .map(PostGetListResponse::of)
                 .toList();
     }
 
@@ -112,17 +123,20 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post checkAndGetCounselorPost(Long postId, Long customerId) {
-        if (checkCounselorReadAuthority(postId, customerId))
+        if (checkCounselorReadAuthority(postId, customerId)) {
             return getPostByPostId(postId);
+        }
+
         return getProceedingPost(postId);
     }
 
-    private Boolean checkCounselorReadAuthority(Long postId, Long customerId){
+    private Boolean checkCounselorReadAuthority(Long postId, Long customerId) {
         Post post = getPostByPostId(postId);
 
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
-        Comment comment = commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor);
+        Comment comment = commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post,
+                counselor);
 
         return comment != null;
     }
