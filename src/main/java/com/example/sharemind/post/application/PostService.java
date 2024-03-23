@@ -5,6 +5,7 @@ import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
 import com.example.sharemind.post.dto.response.PostGetListResponse;
+import com.example.sharemind.post.dto.response.PostGetPopularityResponse;
 import com.example.sharemind.post.dto.response.PostGetResponse;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +27,8 @@ public interface PostService {
     List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
 
     List<PostGetListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime updatedAt);
+
+    List<PostGetPopularityResponse> getPopularityPosts();
 
     List<Long> getRandomPosts();
 

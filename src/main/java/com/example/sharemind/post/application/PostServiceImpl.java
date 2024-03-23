@@ -12,10 +12,12 @@ import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
 import com.example.sharemind.post.dto.response.PostGetListResponse;
+import com.example.sharemind.post.dto.response.PostGetPopularityResponse;
 import com.example.sharemind.post.dto.response.PostGetResponse;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostServiceImpl implements PostService {
 
     private static final int POST_CUSTOMER_PAGE_SIZE = 4;
+    private static final int POST_POPULARITY_SIZE = 3;
 
     private final CustomerService customerService;
     private final CounselorService counselorService;
@@ -104,8 +107,16 @@ public class PostServiceImpl implements PostService {
     public List<PostGetListResponse> getPublicPostsByCustomer(Long postId,
             LocalDateTime updatedAt) {
         return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, updatedAt,
-                POST_CUSTOMER_PAGE_SIZE).stream()
+                        POST_CUSTOMER_PAGE_SIZE).stream()
                 .map(PostGetListResponse::of)
+                .toList();
+    }
+
+    @Override
+    public List<PostGetPopularityResponse> getPopularityPosts() {
+        return postRepository.findPopularityPosts(LocalDate.now().minusWeeks(1),
+                        POST_POPULARITY_SIZE).stream()
+                .map(PostGetPopularityResponse::of)
                 .toList();
     }
 
