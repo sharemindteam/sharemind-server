@@ -4,6 +4,7 @@ import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
+import com.example.sharemind.post.dto.response.PostGetListResponse;
 import com.example.sharemind.post.dto.response.PostGetResponse;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public interface PostService {
 
     PostGetResponse getPost(Long postId, Long customerId);
 
-    List<PostGetResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
+    List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
 
     List<Long> getRandomPosts();
 

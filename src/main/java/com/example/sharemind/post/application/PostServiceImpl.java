@@ -11,6 +11,7 @@ import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
+import com.example.sharemind.post.dto.response.PostGetListResponse;
 import com.example.sharemind.post.dto.response.PostGetResponse;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
@@ -87,13 +88,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId) {
+    public List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
                         POST_CUSTOMER_PAGE_SIZE).stream()
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
-                        ? PostGetResponse.ofIsNotCompleted(post) : PostGetResponse.of(post))
+                        ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post))
                 .toList();
     }
 

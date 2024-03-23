@@ -6,6 +6,7 @@ import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
+import com.example.sharemind.post.dto.response.PostGetListResponse;
 import com.example.sharemind.post.dto.response.PostGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -135,7 +136,7 @@ public class PostController {
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId""")
     })
     @GetMapping("/customers")
-    public ResponseEntity<List<PostGetResponse>> getPostsByCustomer(@RequestParam Boolean filter,
+    public ResponseEntity<List<PostGetListResponse>> getPostsByCustomer(@RequestParam Boolean filter,
             @RequestParam Long postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPostsByCustomer(filter, postId,
