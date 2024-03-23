@@ -93,8 +93,9 @@ public class PostController {
         return ResponseEntity.ok(postService.getIsSaved(postId));
     }
 
-    @Operation(summary = "일대다 상담 질문 단건 조회",
-            description = "- 일대다 상담 질문 단건 조회\n - 로그인한 사용자일 경우 헤더에 accessToken을 넣어주세요")
+    @Operation(summary = "구매자&비로그인 사용자 일대다 상담 질문 단건 조회", description = """
+            - 구매자&비로그인 사용자 일대다 상담 질문 단건 조회
+            - 로그인한 사용자일 경우 헤더에 accessToken을 넣어주세요""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "403", description = "접근 권한이 없는 상담(다른 회원의 비공개 상담 접근 시도)",

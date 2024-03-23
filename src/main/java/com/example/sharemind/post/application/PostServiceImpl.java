@@ -81,7 +81,7 @@ public class PostServiceImpl implements PostService {
         if (customerId != 0) {
             customerService.getCustomerByCustomerId(customerId);
         }
-        post.checkReadAuthority(customerId); // TODO: 비공개 상담에 답변 단 판매자도 볼 수 있게 해야함
+        post.checkReadAuthority(customerId);
 
         return PostGetResponse.of(post);
     }
@@ -104,17 +104,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostGetResponse getCounselorPostContent(Long postId, Long customerId) {
-
         Post post = checkAndGetCounselorPost(postId, customerId);
 
         return PostGetResponse.of(post);
-    }
-
-    private Post getProceedingPost(Long postId) {
-        Post post = getPostByPostId(postId);
-
-        post.checkPostProceeding();
-        return post;
     }
 
     @Override
@@ -132,5 +124,12 @@ public class PostServiceImpl implements PostService {
         Comment comment = commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor);
 
         return comment != null;
+    }
+
+    private Post getProceedingPost(Long postId) {
+        Post post = getPostByPostId(postId);
+
+        post.checkPostProceeding();
+        return post;
     }
 }
