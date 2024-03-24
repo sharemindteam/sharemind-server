@@ -4,6 +4,7 @@ import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chatMessage.exception.ChatMessageException;
 import com.example.sharemind.comment.exception.CommentException;
+import com.example.sharemind.commentLike.exception.CommentLikeException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.exception.CustomerException;
@@ -99,6 +100,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(CommentException.class)
     public ResponseEntity<CustomExceptionResponse> catchCommentException(CommentException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(CommentLikeException.class)
+    public ResponseEntity<CustomExceptionResponse> catchCommentLikeException(CommentLikeException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
