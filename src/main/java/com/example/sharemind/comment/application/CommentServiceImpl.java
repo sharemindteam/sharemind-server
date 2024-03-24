@@ -6,8 +6,11 @@ import com.example.sharemind.comment.dto.response.CommentGetResponse;
 import com.example.sharemind.comment.exception.CommentErrorCode;
 import com.example.sharemind.comment.exception.CommentException;
 import com.example.sharemind.comment.repository.CommentRepository;
+import com.example.sharemind.commentLike.repository.CommentLikeRepository;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.customer.application.CustomerService;
+import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
@@ -26,15 +29,20 @@ public class CommentServiceImpl implements CommentService {
 
     private final PostService postService;
     private final CounselorService counselorService;
+    private final CustomerService customerService;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Override
     public List<CommentGetResponse> getCommentsByPost(Long postId, Long customerId) {
         Post post = postService.checkAndGetCounselorPost(postId, customerId);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         return comments.stream()
-                .map(CommentGetResponse::of)
+                .map(comment -> CommentGetResponse.of(comment,
+                        commentLikeRepository.existsByCommentAndCustomerAndIsActivatedIsTrue(
+                                comment, customer)))
                 .toList();
     }
 

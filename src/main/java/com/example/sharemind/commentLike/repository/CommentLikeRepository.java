@@ -12,6 +12,8 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> 
 
     Boolean existsByCommentAndCustomer(Comment comment, Customer customer);
 
+    Boolean existsByCommentAndCustomerAndIsActivatedIsTrue(Comment comment, Customer customer);
+
     Optional<CommentLike> findByCommentAndCustomer(Comment comment, Customer customer);
 
     Optional<CommentLike> findByCommentAndCustomerAndIsActivatedIsTrue(Comment comment,
