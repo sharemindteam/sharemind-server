@@ -21,6 +21,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     private final PostService postService;
     private final PostLikeRepository postLikeRepository;
 
+    @Transactional
     @Override
     public void createPostLike(Long postId, Long customerId) {
         Post post = postService.getPostByPostId(postId);
@@ -40,5 +41,18 @@ public class PostLikeServiceImpl implements PostLikeService {
 
             postLikeRepository.save(postLike);
         }
+    }
+
+    @Transactional
+    @Override
+    public void deletePostLike(Long postId, Long customerId) {
+        Post post = postService.getPostByPostId(postId);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+        PostLike postLike = postLikeRepository.findByPostAndCustomerAndIsActivatedIsTrue(post,
+                        customer)
+                .orElseThrow(() -> new PostLikeException(PostLikeErrorCode.POST_LIKE_NOT_FOUND));
+
+        postLike.updateIsActivatedFalse();
     }
 }
