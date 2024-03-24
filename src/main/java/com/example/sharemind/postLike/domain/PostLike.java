@@ -51,6 +51,12 @@ public class PostLike extends BaseEntity {
         this.post.increaseTotalLike();
     }
 
+    public void updateIsActivatedFalse() {
+        super.updateIsActivatedFalse();
+
+        this.post.decreaseTotalLike();
+    }
+
     private void checkIsActivatedFalse() {
         if (this.isActivated()) {
             throw new PostLikeException(PostLikeErrorCode.POST_ALREADY_LIKED);
