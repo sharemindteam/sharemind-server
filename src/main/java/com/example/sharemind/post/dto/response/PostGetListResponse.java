@@ -5,6 +5,7 @@ import com.example.sharemind.post.domain.Post;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -22,6 +23,9 @@ public class PostGetListResponse {
 
     @Schema(description = "공개/비공개 여부")
     private final Boolean isPublic;
+
+    @Schema(description = "조회한 회원의 좋아요 여부")
+    private final Boolean isLiked;
 
     @Schema(description = "좋아요 수")
     private final Long totalLike;
@@ -41,12 +45,13 @@ public class PostGetListResponse {
 
     @Builder
     public PostGetListResponse(Long postId, String title, String content, Boolean isPublic,
-            Long totalLike, Long totalScrap, Long totalComment, String updatedAt,
+            Boolean isLiked, Long totalLike, Long totalScrap, Long totalComment, String updatedAt,
             LocalDateTime finishedAt) {
         this.postId = postId;
         this.title = title;
         this.content = content;
         this.isPublic = isPublic;
+        this.isLiked = isLiked;
         this.totalLike = totalLike;
         this.totalScrap = totalScrap;
         this.totalComment = totalComment;
@@ -54,12 +59,13 @@ public class PostGetListResponse {
         this.finishedAt = finishedAt;
     }
 
-    public static PostGetListResponse of(Post post) {
+    public static PostGetListResponse of(Post post, Boolean isLiked) {
         return PostGetListResponse.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .isPublic(post.getIsPublic())
+                .isLiked(isLiked)
                 .totalLike(post.getTotalLike())
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
@@ -74,6 +80,7 @@ public class PostGetListResponse {
                 .title(null)
                 .content(null)
                 .isPublic(post.getIsPublic())
+                .isLiked(false)
                 .totalLike(post.getTotalLike())
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
