@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,6 +72,9 @@ public class Post extends BaseEntity {
     @Column(name = "is_completed")
     private Boolean isCompleted;
 
+    @Column(name = "finished_at")
+    private LocalDateTime finishedAt;
+
     @Builder
     public Post(Customer customer, Long cost, Boolean isPublic) {
         this.customer = customer;
@@ -89,6 +93,10 @@ public class Post extends BaseEntity {
 
     public void updatePostStatus(PostStatus postStatus) {
         this.postStatus = postStatus;
+
+        if (this.postStatus == PostStatus.COMPLETED) {
+            this.finishedAt = LocalDateTime.now();
+        }
     }
 
     public void updatePost(ConsultCategory consultCategory, String title, String content,

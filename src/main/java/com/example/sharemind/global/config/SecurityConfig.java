@@ -56,6 +56,7 @@ public class SecurityConfig {
                                 .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html",
                                         "/counselor.html").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/posts/customers/public/**").permitAll()
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
                                 .requestMatchers("/api/v1/letters/counselors/**", "/api/v1/reviews/counselors**").hasRole(ROLE_COUNSELOR)
                                 .requestMatchers("/api/v1/chats/counselors/**").hasRole(ROLE_COUNSELOR)
