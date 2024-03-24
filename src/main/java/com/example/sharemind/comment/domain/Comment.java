@@ -45,4 +45,12 @@ public class Comment extends BaseEntity {
         isChosen = false;
         totalLike = 0L;
     }
+
+    public void increaseTotalLike() {
+        this.totalLike++;
+    }
+
+    public void decreaseTotalLike() {
+        this.totalLike--;
+    }
 }
