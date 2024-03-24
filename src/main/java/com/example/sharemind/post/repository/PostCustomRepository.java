@@ -10,6 +10,6 @@ public interface PostCustomRepository {
     List<Post> findAllByCustomerAndIsActivatedIsTrue(Customer customer, Boolean filter,
             Long postId, int size);
 
-    List<Post> findAllByIsPublicAndIsActivatedIsTrue(Long postId, LocalDateTime updatedAt,
+    List<Post> findAllByIsPublicAndIsActivatedIsTrue(Long postId, LocalDateTime finishedAt,
             int size);
 }

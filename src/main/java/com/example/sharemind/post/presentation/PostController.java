@@ -149,25 +149,25 @@ public class PostController {
 
     @Operation(summary = "구매자 사이드 공개상담 탭 일대다 상담 리스트 기본순 조회", description = """
             - 구매자 사이드의 공개상담 탭에서 답변 완료된 일대다 상담 질문 리스트 기본순 조회
-            - 주소 형식: /api/v1/posts/customers/public?postId=0&updatedAt=2024-03-22T00:47:59""")
+            - 주소 형식: /api/v1/posts/customers/public?postId=0&finishedAt=2024-03-22T00:47:59""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @Parameters({
             @Parameter(name = "postId", description = """
-                    - 조회 결과는 4개씩 반환하며, postId와 updatedAt으로 구분
+                    - 조회 결과는 4개씩 반환하며, postId와 finishedAt으로 구분
                     1. 최초 조회 요청이면 postId는 0
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId"""),
-            @Parameter(name = "updatedAt", description = """
+            @Parameter(name = "finishedAt", description = """
                     1. 최초 조회 요청이면 지금 시간
-                    2. 2번째 요청부터 updatedAt 직전 요청의 조회 결과 4개 중 마지막 updatedAtForPaging
+                    2. 2번째 요청부터 finishedAt 직전 요청의 조회 결과 4개 중 마지막 finishedAt
                     3. 형식 예시에 적어둔 것과 꼭 맞춰주셔야 합니다"""),
     })
     @GetMapping("/customers/public")
     public ResponseEntity<List<PostGetListResponse>> getPublicPostsByCustomer(
             @RequestParam Long postId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime updatedAt) {
-        return ResponseEntity.ok(postService.getPublicPostsByCustomer(postId, updatedAt));
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt) {
+        return ResponseEntity.ok(postService.getPublicPostsByCustomer(postId, finishedAt));
     }
 
     @Operation(summary = "구매자 사이드 공개상담 탭 일대다 상담 리스트 인기순 조회", description = """

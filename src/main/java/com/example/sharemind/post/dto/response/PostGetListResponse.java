@@ -35,14 +35,14 @@ public class PostGetListResponse {
     @Schema(description = "마지막 업데이트 일시", example = "8분 전")
     private final String updatedAt;
 
-    @Schema(description = "페이지네이션 위한 업데이트 일시")
+    @Schema(description = "답변 완료 일시")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private final LocalDateTime updatedAtForPaging;
+    private final LocalDateTime finishedAt;
 
     @Builder
     public PostGetListResponse(Long postId, String title, String content, Boolean isPublic,
             Long totalLike, Long totalScrap, Long totalComment, String updatedAt,
-            LocalDateTime updatedAtForPaging) {
+            LocalDateTime finishedAt) {
         this.postId = postId;
         this.title = title;
         this.content = content;
@@ -51,7 +51,7 @@ public class PostGetListResponse {
         this.totalScrap = totalScrap;
         this.totalComment = totalComment;
         this.updatedAt = updatedAt;
-        this.updatedAtForPaging = updatedAtForPaging;
+        this.finishedAt = finishedAt;
     }
 
     public static PostGetListResponse of(Post post) {
@@ -64,7 +64,7 @@ public class PostGetListResponse {
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
-                .updatedAtForPaging(post.getUpdatedAt())
+                .finishedAt(post.getFinishedAt())
                 .build();
     }
 
@@ -78,7 +78,7 @@ public class PostGetListResponse {
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
-                .updatedAtForPaging(post.getUpdatedAt())
+                .finishedAt(post.getFinishedAt())
                 .build();
     }
 }

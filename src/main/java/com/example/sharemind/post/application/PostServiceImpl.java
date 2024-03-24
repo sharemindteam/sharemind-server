@@ -105,8 +105,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostGetListResponse> getPublicPostsByCustomer(Long postId,
-            LocalDateTime updatedAt) {
-        return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, updatedAt,
+            LocalDateTime finishedAt) {
+        return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                         POST_CUSTOMER_PAGE_SIZE).stream()
                 .map(PostGetListResponse::of)
                 .toList();

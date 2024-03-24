@@ -31,7 +31,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     @Override
-    public List<Post> findAllByIsPublicAndIsActivatedIsTrue(Long postId, LocalDateTime updatedAt,
+    public List<Post> findAllByIsPublicAndIsActivatedIsTrue(Long postId, LocalDateTime finishedAt,
             int size) {
         return jpaQueryFactory
                 .selectFrom(post)
@@ -39,8 +39,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                         post.isPublic.isTrue(),
                         post.postStatus.eq(PostStatus.COMPLETED),
                         post.isActivated.isTrue(),
-                        lessThanUpdatedAtAndPostId(postId, updatedAt)
-                ).orderBy(post.updatedAt.desc(), post.postId.desc()).limit(size).fetch();
+                        lessThanFinishedAtAndPostId(postId, finishedAt)
+                ).orderBy(post.finishedAt.desc(), post.postId.desc()).limit(size).fetch();
     }
 
     private BooleanExpression postStatusIn(Boolean filter) {
@@ -52,8 +52,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return postId != 0 ? post.postId.lt(postId) : null;
     }
 
-    private BooleanExpression lessThanUpdatedAtAndPostId(Long postId, LocalDateTime updatedAt) {
-        return postId != 0 ? post.updatedAt.lt(updatedAt)
-                .or(post.updatedAt.eq(updatedAt).and(post.postId.lt(postId))) : null;
+    private BooleanExpression lessThanFinishedAtAndPostId(Long postId, LocalDateTime finishedAt) {
+        return postId != 0 ? post.finishedAt.lt(finishedAt)
+                .or(post.finishedAt.eq(finishedAt).and(post.postId.lt(postId))) : null;
     }
 }
