@@ -42,4 +42,17 @@ public class CommentLikeServiceImpl implements CommentLikeService {
             commentLikeRepository.save(commentLike);
         }
     }
+
+    @Transactional
+    @Override
+    public void deleteCommentLike(Long commentId, Long customerId) {
+        Comment comment = commentService.getCommentByCommentId(commentId);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+        CommentLike commentLike = commentLikeRepository.findByCommentAndCustomerAndIsActivatedIsTrue(
+                comment, customer).orElseThrow(
+                () -> new CommentLikeException(CommentLikeErrorCode.COMMENT_LIKE_NOT_FOUND));
+
+        commentLike.updateIsActivatedFalse();
+    }
 }
