@@ -40,12 +40,15 @@ public class PostLike extends BaseEntity {
     public PostLike(Customer customer, Post post) {
         this.customer = customer;
         this.post = post;
+
+        this.post.increaseTotalLike();
     }
 
     public void updateIsActivatedTrue() {
         checkIsActivatedFalse();
 
         super.updateIsActivatedTrue();
+        this.post.increaseTotalLike();
     }
 
     private void checkIsActivatedFalse() {
