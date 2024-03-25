@@ -26,6 +26,7 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private static final Integer MAX_COMMENTS = 5;
+    private static final Boolean COMMENT_IS_NOT_LIKED = false;
 
     private final PostService postService;
     private final CounselorService counselorService;
@@ -34,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentLikeRepository commentLikeRepository;
 
     @Override
-    public List<CommentGetResponse> getCommentsByPost(Long postId, Long customerId) {
+    public List<CommentGetResponse> getCounselorComments(Long postId, Long customerId) {
         Post post = postService.checkAndGetCounselorPost(postId, customerId);
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
@@ -43,6 +44,28 @@ public class CommentServiceImpl implements CommentService {
                 .map(comment -> CommentGetResponse.of(comment,
                         commentLikeRepository.existsByCommentAndCustomerAndIsActivatedIsTrue(
                                 comment, customer)))
+                .toList();
+    }
+
+    @Override
+    public List<CommentGetResponse> getCustomerComments(Long postId, Long customerId) {
+        Post post = postService.getPostByPostId(postId);
+        post.checkReadAuthority(customerId);
+
+        List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
+
+        if (customerId != 0) {
+            Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+            return comments.stream()
+                    .map(comment -> CommentGetResponse.of(comment,
+                            commentLikeRepository.existsByCommentAndCustomerAndIsActivatedIsTrue(
+                                    comment, customer)))
+                    .toList();
+        }
+
+        return comments.stream()
+                .map(comment -> CommentGetResponse.of(comment, COMMENT_IS_NOT_LIKED))
                 .toList();
     }
 
