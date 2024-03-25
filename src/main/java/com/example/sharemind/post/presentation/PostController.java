@@ -149,6 +149,7 @@ public class PostController {
 
     @Operation(summary = "구매자 사이드 공개상담 탭 일대다 상담 리스트 기본순 조회", description = """
             - 구매자 사이드의 공개상담 탭에서 답변 완료된 일대다 상담 질문 리스트 기본순 조회
+            - 로그인한 사용자일 경우 헤더에 accessToken을 넣어주세요
             - 주소 형식: /api/v1/posts/customers/public?postId=0&finishedAt=2024-03-22T00:47:59""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
@@ -166,8 +167,10 @@ public class PostController {
     @GetMapping("/customers/public")
     public ResponseEntity<List<PostGetListResponse>> getPublicPostsByCustomer(
             @RequestParam Long postId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt) {
-        return ResponseEntity.ok(postService.getPublicPostsByCustomer(postId, finishedAt));
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(postService.getPublicPostsByCustomer(postId, finishedAt,
+                customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "구매자 사이드 공개상담 탭 일대다 상담 리스트 인기순 조회", description = """
