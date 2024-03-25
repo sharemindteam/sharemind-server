@@ -19,6 +19,8 @@ import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class PostServiceImpl implements PostService {
 
     private static final int POST_CUSTOMER_PAGE_SIZE = 4;
     private static final int POST_POPULARITY_SIZE = 3;
+    private static final int TOTAL_POSTS = 50;
+    private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
 
     private final CustomerService customerService;
     private final CounselorService counselorService;
@@ -122,7 +126,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Long> getRandomPosts() {
-        return postRepository.findRandomProceedingPostIds();
+        List<Long> postsAfter24h = postRepository.findRandomProceedingPostIdsAfter24Hours();
+        List<Long> postsWithin24h = postRepository.findRandomProceedingPostIdsWithin24Hours();
+
+        List<Long> randomPosts = new ArrayList<>(TOTAL_POSTS);
+
+        for (int i = 0; i < Math.min(POSTS_AFTER_24H_COUNT, postsAfter24h.size()); i++) {
+            randomPosts.add(postsAfter24h.get(i));
+        }
+
+        List<Long> remainingPosts = new ArrayList<>(postsWithin24h);
+        remainingPosts.addAll(postsAfter24h.subList(randomPosts.size(), postsAfter24h.size()));
+        Collections.shuffle(remainingPosts);
+
+        int remainingSize = TOTAL_POSTS - randomPosts.size();
+        for(int i = 0; i < remainingSize && i < remainingPosts.size(); i++) {
+            randomPosts.add(remainingPosts.get(i));
+        }
+        Collections.shuffle(postsAfter24h);
+        return randomPosts;
     }
 
     @Override
