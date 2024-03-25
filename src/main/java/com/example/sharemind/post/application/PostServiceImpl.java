@@ -85,16 +85,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostGetResponse getPost(Long postId, Long customerId) {
         Post post = getPostByPostId(postId);
+        post.checkReadAuthority(customerId);
 
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
-            post.checkReadAuthority(customerId);
             return PostGetResponse.of(post,
                     postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post, customer));
         }
 
-        post.checkReadAuthority(customerId);
         return PostGetResponse.of(post, POST_IS_NOT_LIKED);
     }
 
