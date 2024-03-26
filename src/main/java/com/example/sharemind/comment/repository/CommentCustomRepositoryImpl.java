@@ -34,19 +34,19 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
 
     private BooleanExpression commentByCounselor(Counselor counselor) {
         return comment.isActivated.isTrue()
-                .and(QComment.comment.counselor.eq(counselor));
+                .and(comment.counselor.eq(counselor));
     }
 
     private BooleanExpression filterCondition(Boolean filter) {
         if (Boolean.FALSE.equals(filter)) {
-            return QPost.post.postStatus.eq(PostStatus.PROCEEDING);
+            return post.postStatus.eq(PostStatus.PROCEEDING);
         }
         return null;
     }
 
     private BooleanExpression postIdCondition(Long postId) {
         if (postId != null && postId != 0) {
-            return QPost.post.postId.lt(postId);
+            return post.postId.lt(postId);
         }
         return null;
     }
