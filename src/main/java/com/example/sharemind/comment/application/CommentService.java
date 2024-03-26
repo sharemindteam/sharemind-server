@@ -7,7 +7,9 @@ import com.example.sharemind.comment.dto.response.CommentGetResponse;
 import java.util.List;
 
 public interface CommentService {
-    List<CommentGetResponse> getCommentsByPost(Long postId, Long customerId);
+    List<CommentGetResponse> getCounselorComments(Long postId, Long customerId);
+
+    List<CommentGetResponse> getCustomerComments(Long postId, Long customerId);
 
     void createComment(CommentCreateRequest commentCreateRequest, Long customerId);
 
