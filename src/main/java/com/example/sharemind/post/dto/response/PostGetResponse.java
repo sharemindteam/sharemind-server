@@ -33,7 +33,7 @@ public class PostGetResponse {
     @Schema(description = "스크랩 수")
     private final Long totalScrap;
 
-    @Schema(description = "마지막 업데이트 일시", example = "8분 전")
+    @Schema(description = "마지막 업데이트 일시", example = "오전 11:10")
     private final String updatedAt;
 
     @Builder
