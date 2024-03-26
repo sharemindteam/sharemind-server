@@ -82,6 +82,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         commentRepository.save(commentCreateRequest.toEntity(post, counselor));
+        post.increaseTotalComment();
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         if (comments.size() == MAX_COMMENTS) {

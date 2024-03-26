@@ -114,6 +114,10 @@ public class Post extends BaseEntity {
         this.totalLike--;
     }
 
+    public void increaseTotalComment() {
+        this.totalComment++;
+    }
+
     public void updatePost(ConsultCategory consultCategory, String title, String content,
             Boolean isCompleted, Customer customer) {
         checkUpdatability();
