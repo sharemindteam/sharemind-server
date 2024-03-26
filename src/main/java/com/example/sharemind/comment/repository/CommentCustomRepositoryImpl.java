@@ -15,26 +15,25 @@ import java.util.List;
 public class CommentCustomRepositoryImpl implements CommentCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-    QComment comment = QComment.comment;
-    QPost post = QPost.post;
+    private final QComment comment = QComment.comment;
+    private final QPost post = comment.post;
 
     @Override
     public List<Comment> findAllByCounselorAndIsActivatedIsTrue(Counselor counselor, Boolean filter, Long postId, int size) {
-
-        BooleanExpression predicate = commentByCounselor(counselor)
-                .and(filterCondition(filter))
-                .and(postIdCondition(postId));
-
         return jpaQueryFactory
                 .selectFrom(comment)
-                .where(predicate)
+                .where(
+                        commentByCounselor(counselor),
+                        filterCondition(filter),
+                        postIdCondition(postId)
+                )
                 .orderBy(post.postId.desc())
                 .limit(size)
                 .fetch();
     }
 
     private BooleanExpression commentByCounselor(Counselor counselor) {
-        return QComment.comment.isActivated.isTrue()
+        return comment.isActivated.isTrue()
                 .and(QComment.comment.counselor.eq(counselor));
     }
 

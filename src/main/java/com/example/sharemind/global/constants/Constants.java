@@ -18,4 +18,6 @@ public class Constants {
     public static final Boolean IS_LETTER = false;
 
     public static final Long FEE = 1000L;
+
+    public static final Long MAX_COMMENTS = 5L;
 }

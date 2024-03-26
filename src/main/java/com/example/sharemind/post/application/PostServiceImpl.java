@@ -119,7 +119,6 @@ public class PostServiceImpl implements PostService {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
         List<Comment> comments = commentRepository.findAllByCounselorAndIsActivatedIsTrue(counselor, filter, postId, POST_PAGE_SIZE);
         return comments.stream()
-                .filter(comment -> comment.getPost() != null)
                 .map(comment -> PostGetCounselorListResponse.of(comment.getPost(), comment))
                 .toList();
     }
@@ -168,10 +167,10 @@ public class PostServiceImpl implements PostService {
         Collections.shuffle(remainingPosts);
 
         int remainingSize = TOTAL_POSTS - randomPosts.size();
-        for(int i = 0; i < remainingSize && i < remainingPosts.size(); i++) {
+        for(int i = 0; i < Math.min(remainingSize,remainingPosts.size()); i++) {
             randomPosts.add(remainingPosts.get(i));
         }
-        Collections.shuffle(postsAfter24h);
+        Collections.shuffle(randomPosts);
         return randomPosts;
     }
 
