@@ -23,6 +23,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.example.sharemind.global.constants.Constants.MAX_COMMENTS;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -72,6 +74,9 @@ public class Post extends BaseEntity {
     @Column(name = "is_completed")
     private Boolean isCompleted;
 
+    @Column(name = "published_at")
+    private LocalDateTime publishedAt;
+
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;
 
@@ -94,6 +99,10 @@ public class Post extends BaseEntity {
     public void updatePostStatus(PostStatus postStatus) {
         this.postStatus = postStatus;
 
+        if (this.postStatus == PostStatus.PROCEEDING) {
+            this.publishedAt = LocalDateTime.now();
+        }
+
         if (this.postStatus == PostStatus.COMPLETED) {
             this.finishedAt = LocalDateTime.now();
         }
@@ -107,6 +116,13 @@ public class Post extends BaseEntity {
         this.totalLike--;
     }
 
+    public void increaseTotalComment() {
+        this.totalComment++;
+        if (totalComment.equals(MAX_COMMENTS)) {
+            this.updatePostStatus(PostStatus.COMPLETED);
+        }
+    }
+
     public void updatePost(ConsultCategory consultCategory, String title, String content,
             Boolean isCompleted, Customer customer) {
         checkUpdatability();
@@ -118,7 +134,7 @@ public class Post extends BaseEntity {
         this.isCompleted = isCompleted;
 
         if (isCompleted) {
-            this.postStatus = PostStatus.PROCEEDING;
+            updatePostStatus(PostStatus.PROCEEDING);
         }
     }
 

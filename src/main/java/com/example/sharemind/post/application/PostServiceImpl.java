@@ -10,16 +10,15 @@ import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
-import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
-import com.example.sharemind.post.dto.response.PostGetListResponse;
-import com.example.sharemind.post.dto.response.PostGetPopularityResponse;
-import com.example.sharemind.post.dto.response.PostGetResponse;
+import com.example.sharemind.post.dto.response.*;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
 import com.example.sharemind.postLike.repository.PostLikeRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
-    private static final int POST_CUSTOMER_PAGE_SIZE = 4;
+    private static final int POST_PAGE_SIZE = 4;
     private static final int POST_POPULARITY_SIZE = 3;
+    private static final int TOTAL_POSTS = 50;
+    private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
     private static final Boolean POST_IS_NOT_LIKED = false;
 
     private final CustomerService customerService;
@@ -103,11 +104,22 @@ public class PostServiceImpl implements PostService {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
-                        POST_CUSTOMER_PAGE_SIZE).stream()
+                        POST_PAGE_SIZE).stream()
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
                         ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post,
                         postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                 customer)))
+                .toList();
+    }
+
+    @Override
+    public List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId,
+                                                                               Long customerId) {
+
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+        List<Comment> comments = commentRepository.findAllByCounselorAndIsActivatedIsTrue(counselor, filter, postId, POST_PAGE_SIZE);
+        return comments.stream()
+                .map(comment -> PostGetCounselorListResponse.of(comment.getPost(), comment))
                 .toList();
     }
 
@@ -118,7 +130,7 @@ public class PostServiceImpl implements PostService {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
             return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
-                            POST_CUSTOMER_PAGE_SIZE).stream()
+                            POST_PAGE_SIZE).stream()
                     .map(post -> PostGetListResponse.of(post,
                             postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                     customer)))
@@ -126,7 +138,7 @@ public class PostServiceImpl implements PostService {
         }
 
         return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
-                        POST_CUSTOMER_PAGE_SIZE).stream()
+                        POST_PAGE_SIZE).stream()
                 .map(post -> PostGetListResponse.of(post, POST_IS_NOT_LIKED))
                 .toList();
     }
@@ -141,7 +153,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Long> getRandomPosts() {
-        return postRepository.findRandomProceedingPostIds();
+        List<Long> postsAfter24h = postRepository.findRandomProceedingPostIdsAfter24Hours();
+        List<Long> postsWithin24h = postRepository.findRandomProceedingPostIdsWithin24Hours();
+
+        List<Long> randomPosts = new ArrayList<>(TOTAL_POSTS);
+
+        for (int i = 0; i < Math.min(POSTS_AFTER_24H_COUNT, postsAfter24h.size()); i++) {
+            randomPosts.add(postsAfter24h.get(i));
+        }
+
+        List<Long> remainingPosts = new ArrayList<>(postsWithin24h);
+        remainingPosts.addAll(postsAfter24h.subList(randomPosts.size(), postsAfter24h.size()));
+        Collections.shuffle(remainingPosts);
+
+        int remainingSize = TOTAL_POSTS - randomPosts.size();
+        for(int i = 0; i < Math.min(remainingSize,remainingPosts.size()); i++) {
+            randomPosts.add(remainingPosts.get(i));
+        }
+        Collections.shuffle(randomPosts);
+        return randomPosts;
     }
 
     @Override
