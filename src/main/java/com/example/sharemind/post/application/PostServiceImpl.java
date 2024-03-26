@@ -10,10 +10,7 @@ import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
-import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
-import com.example.sharemind.post.dto.response.PostGetListResponse;
-import com.example.sharemind.post.dto.response.PostGetPopularityResponse;
-import com.example.sharemind.post.dto.response.PostGetResponse;
+import com.example.sharemind.post.dto.response.*;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
@@ -116,12 +113,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetListResponse> getPostsByCounselor(Boolean filter, Long postId,
-            Long customerId) {
+    public List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId,
+                                                                               Long customerId) {
 
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
         List<Comment> comments = commentRepository.findAllByCounselorAndIsActivatedIsTrue(counselor, filter, postId, POST_PAGE_SIZE);
-        return null; //todo: 기획 답 오고 수정
+        return comments.stream()
+                .filter(comment -> comment.getPost() != null)
+                .map(comment -> PostGetCounselorListResponse.of(comment.getPost(), comment))
+                .toList();
     }
 
     @Override
