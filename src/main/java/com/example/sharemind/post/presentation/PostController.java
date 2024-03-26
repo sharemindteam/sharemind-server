@@ -147,6 +147,14 @@ public class PostController {
                 customUserDetails.getCustomer().getCustomerId()));
     }
 
+//    @GetMapping("/counselors")
+//    public ResponseEntity<List<PostGetListResponse>> getPostsByCounselor(
+//            @RequestParam Boolean filter,
+//            @RequestParam Long postId,
+//            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+//
+//    }
+
     @Operation(summary = "구매자 사이드 공개상담 탭 일대다 상담 리스트 기본순 조회", description = """
             - 구매자 사이드의 공개상담 탭에서 답변 완료된 일대다 상담 질문 리스트 기본순 조회
             - 로그인한 사용자일 경우 헤더에 accessToken을 넣어주세요

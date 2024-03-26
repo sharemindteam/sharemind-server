@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
-    private static final int POST_CUSTOMER_PAGE_SIZE = 4;
+    private static final int POST_PAGE_SIZE = 4;
     private static final int POST_POPULARITY_SIZE = 3;
     private static final int TOTAL_POSTS = 50;
     private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
@@ -108,12 +108,21 @@ public class PostServiceImpl implements PostService {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
-                        POST_CUSTOMER_PAGE_SIZE).stream()
+                        POST_PAGE_SIZE).stream()
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
                         ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post,
                         postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                 customer)))
                 .toList();
+    }
+
+    @Override
+    public List<PostGetListResponse> getPostsByCounselor(Boolean filter, Long postId,
+            Long customerId) {
+
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+        List<Comment> comments = commentRepository.findAllByCounselorAndIsActivatedIsTrue(counselor, filter, postId, POST_PAGE_SIZE);
+        return null; //todo: 기획 답 오고 수정
     }
 
     @Override
@@ -123,7 +132,7 @@ public class PostServiceImpl implements PostService {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
             return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
-                            POST_CUSTOMER_PAGE_SIZE).stream()
+                            POST_PAGE_SIZE).stream()
                     .map(post -> PostGetListResponse.of(post,
                             postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                     customer)))
@@ -131,7 +140,7 @@ public class PostServiceImpl implements PostService {
         }
 
         return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
-                        POST_CUSTOMER_PAGE_SIZE).stream()
+                        POST_PAGE_SIZE).stream()
                 .map(post -> PostGetListResponse.of(post, POST_IS_NOT_LIKED))
                 .toList();
     }
