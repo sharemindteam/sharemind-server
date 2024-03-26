@@ -144,6 +144,19 @@ public class PostController {
                 customUserDetails.getCustomer().getCustomerId()));
     }
 
+    @Operation(summary = "상담사 본인 일대다 상담 리스트 조회", description = """
+            - 상담사 상담 탭에서 본인이 댓글 작성한 일대다 상담 질문 리스트 조회
+            - 주소 형식: /api/v1/posts/counselors?filter=true&postId=0""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @Parameters({
+            @Parameter(name = "filter", description = "완료/취소된 상담 제외: true, 포함: false"),
+            @Parameter(name = "postId", description = """
+                    - 조회 결과는 4개씩 반환하며, postId로 구분
+                    1. 최초 조회 요청이면 postId는 0
+                    2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId""")
+    })
     @GetMapping("/counselors")
     public ResponseEntity<List<PostGetCounselorListResponse>> getPostsByCounselor(
             @RequestParam Boolean filter,
