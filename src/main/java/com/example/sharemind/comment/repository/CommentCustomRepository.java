@@ -5,7 +5,7 @@ import com.example.sharemind.counselor.domain.Counselor;
 
 import java.util.List;
 
-public interface CommentCustomerRepository {
+public interface CommentCustomRepository {
 
     List<Comment> findAllByCounselorAndIsActivatedIsTrue(Counselor counselor, Boolean filter, Long postId, int size);
 }

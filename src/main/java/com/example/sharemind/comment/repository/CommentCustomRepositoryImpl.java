@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class CommentCustomerRepositoryImpl implements CommentCustomerRepository {
+public class CommentCustomRepositoryImpl implements CommentCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     QComment comment = QComment.comment;
