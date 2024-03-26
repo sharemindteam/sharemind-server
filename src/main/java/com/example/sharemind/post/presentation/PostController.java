@@ -5,10 +5,7 @@ import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
-import com.example.sharemind.post.dto.response.PostGetIsSavedResponse;
-import com.example.sharemind.post.dto.response.PostGetListResponse;
-import com.example.sharemind.post.dto.response.PostGetPopularityResponse;
-import com.example.sharemind.post.dto.response.PostGetResponse;
+import com.example.sharemind.post.dto.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -147,13 +144,14 @@ public class PostController {
                 customUserDetails.getCustomer().getCustomerId()));
     }
 
-//    @GetMapping("/counselors")
-//    public ResponseEntity<List<PostGetListResponse>> getPostsByCounselor(
-//            @RequestParam Boolean filter,
-//            @RequestParam Long postId,
-//            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-//
-//    }
+    @GetMapping("/counselors")
+    public ResponseEntity<List<PostGetCounselorListResponse>> getPostsByCounselor(
+            @RequestParam Boolean filter,
+            @RequestParam Long postId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(postService.getPostsByCounselor(filter, postId,
+                customUserDetails.getCustomer().getCustomerId()));
+    }
 
     @Operation(summary = "구매자 사이드 공개상담 탭 일대다 상담 리스트 기본순 조회", description = """
             - 구매자 사이드의 공개상담 탭에서 답변 완료된 일대다 상담 질문 리스트 기본순 조회
