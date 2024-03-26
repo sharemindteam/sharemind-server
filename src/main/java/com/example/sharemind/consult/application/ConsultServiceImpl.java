@@ -54,6 +54,9 @@ public class ConsultServiceImpl implements ConsultService {
         if (!counselor.getConsultTypes().contains(consultType)) {
             throw new CounselorException(CounselorErrorCode.INVALID_CONSULT_TYPE);
         }
+
+        counselorService.checkCounselorAndCustomerSame(customer, counselor);
+
         Long cost = counselor.getConsultCost(consultType);
 
         Consult consult = Consult.builder()
