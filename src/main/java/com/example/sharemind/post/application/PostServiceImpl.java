@@ -17,6 +17,7 @@ import com.example.sharemind.post.dto.response.PostGetResponse;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
+import com.example.sharemind.postLike.repository.PostLikeRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,11 +36,13 @@ public class PostServiceImpl implements PostService {
     private static final int POST_POPULARITY_SIZE = 3;
     private static final int TOTAL_POSTS = 50;
     private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
+    private static final Boolean POST_IS_NOT_LIKED = false;
 
     private final CustomerService customerService;
     private final CounselorService counselorService;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final PostLikeRepository postLikeRepository;
 
     @Transactional
     @Override
@@ -88,11 +91,15 @@ public class PostServiceImpl implements PostService {
         Post post = getPostByPostId(postId);
 
         if (customerId != 0) {
-            customerService.getCustomerByCustomerId(customerId);
-        }
-        post.checkReadAuthority(customerId);
+            Customer customer = customerService.getCustomerByCustomerId(customerId);
 
-        return PostGetResponse.of(post);
+            post.checkReadAuthority(customerId);
+            return PostGetResponse.of(post,
+                    postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post, customer));
+        }
+
+        post.checkReadAuthority(customerId);
+        return PostGetResponse.of(post, POST_IS_NOT_LIKED);
     }
 
     @Override
@@ -103,16 +110,29 @@ public class PostServiceImpl implements PostService {
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
                         POST_CUSTOMER_PAGE_SIZE).stream()
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
-                        ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post))
+                        ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post,
+                        postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
+                                customer)))
                 .toList();
     }
 
     @Override
-    public List<PostGetListResponse> getPublicPostsByCustomer(Long postId,
-            LocalDateTime finishedAt) {
+    public List<PostGetListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+            Long customerId) {
+        if (customerId != 0) {
+            Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+            return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
+                            POST_CUSTOMER_PAGE_SIZE).stream()
+                    .map(post -> PostGetListResponse.of(post,
+                            postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
+                                    customer)))
+                    .toList();
+        }
+
         return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                         POST_CUSTOMER_PAGE_SIZE).stream()
-                .map(PostGetListResponse::of)
+                .map(post -> PostGetListResponse.of(post, POST_IS_NOT_LIKED))
                 .toList();
     }
 
@@ -151,7 +171,7 @@ public class PostServiceImpl implements PostService {
     public PostGetResponse getCounselorPostContent(Long postId, Long customerId) {
         Post post = checkAndGetCounselorPost(postId, customerId);
 
-        return PostGetResponse.of(post);
+        return PostGetResponse.of(post, POST_IS_NOT_LIKED);
     }
 
     @Override

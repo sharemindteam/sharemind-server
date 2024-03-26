@@ -26,7 +26,8 @@ public interface PostService {
 
     List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
 
-    List<PostGetListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt);
+    List<PostGetListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+            Long customerId);
 
     List<PostGetPopularityResponse> getPopularityPosts();
 

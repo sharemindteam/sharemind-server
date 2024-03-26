@@ -6,8 +6,11 @@ import com.example.sharemind.comment.dto.response.CommentGetResponse;
 import com.example.sharemind.comment.exception.CommentErrorCode;
 import com.example.sharemind.comment.exception.CommentException;
 import com.example.sharemind.comment.repository.CommentRepository;
+import com.example.sharemind.commentLike.repository.CommentLikeRepository;
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.customer.application.CustomerService;
+import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
@@ -22,35 +25,51 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
+    private static final Integer MAX_COMMENTS = 5;
+
     private final PostService postService;
     private final CounselorService counselorService;
+    private final CustomerService customerService;
     private final CommentRepository commentRepository;
-
-    private static final Integer MAX_COMMENTS = 5;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Override
     public List<CommentGetResponse> getCommentsByPost(Long postId, Long customerId) {
         Post post = postService.checkAndGetCounselorPost(postId, customerId);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
         return comments.stream()
-                .map(CommentGetResponse::of)
+                .map(comment -> CommentGetResponse.of(comment,
+                        commentLikeRepository.existsByCommentAndCustomerAndIsActivatedIsTrue(
+                                comment, customer)))
                 .toList();
     }
 
     @Transactional
     @Override
     public void createComment(CommentCreateRequest commentCreateRequest, Long customerId) {
-        Post post = postService.checkAndGetCounselorPost(commentCreateRequest.getPostId(), customerId);
+        Post post = postService.checkAndGetCounselorPost(commentCreateRequest.getPostId(),
+                customerId);
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
-        if (commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null)
-            throw new CommentException(CommentErrorCode.COMMENT_ALREADY_REGISTERED, counselor.getNickname());
+        if (commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null) {
+            throw new CommentException(CommentErrorCode.COMMENT_ALREADY_REGISTERED,
+                    counselor.getNickname());
+        }
 
         commentRepository.save(commentCreateRequest.toEntity(post, counselor));
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
-        if (comments.size() == MAX_COMMENTS)
+        if (comments.size() == MAX_COMMENTS) {
             post.updatePostStatus(PostStatus.COMPLETED);
+        }
+    }
+
+    @Override
+    public Comment getCommentByCommentId(Long commentId) {
+        return commentRepository.findByCommentIdAndIsActivatedIsTrue(commentId).orElseThrow(
+                () -> new CommentException(CommentErrorCode.COMMENT_NOT_FOUND,
+                        commentId.toString()));
     }
 }

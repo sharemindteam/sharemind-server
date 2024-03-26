@@ -15,28 +15,34 @@ public class CommentGetResponse {
     @Schema(description = "답변 내용")
     private final String content;
 
+    @Schema(description = "조회한 회원의 좋아요 여부")
+    private final Boolean isLiked;
+
     @Schema(description = "좋아요 수")
     private final Long totalLike;
 
     @Schema(description = "마지막 업데이트 일시", example = "오전 11:10")
     private final String updatedAt;
 
-    @Schema(description =  "채택 여부", example="true")
+    @Schema(description = "채택 여부", example = "true")
     private final Boolean isChosen;
 
     @Builder
-    public CommentGetResponse(String nickName, String content, Long totalLike, String updatedAt, Boolean isChosen) {
+    public CommentGetResponse(String nickName, String content, Boolean isLiked, Long totalLike,
+            String updatedAt, Boolean isChosen) {
         this.nickName = nickName;
         this.content = content;
+        this.isLiked = isLiked;
         this.totalLike = totalLike;
         this.updatedAt = updatedAt;
         this.isChosen = isChosen;
     }
 
-    public static CommentGetResponse of(Comment comment) {
+    public static CommentGetResponse of(Comment comment, Boolean isLiked) {
         return CommentGetResponse.builder()
                 .nickName(comment.getCounselor().getNickname())
                 .content(comment.getContent())
+                .isLiked(isLiked)
                 .totalLike(comment.getTotalLike())
                 .updatedAt(TimeUtil.getUpdatedAt(comment.getUpdatedAt()))
                 .isChosen(comment.getIsChosen())

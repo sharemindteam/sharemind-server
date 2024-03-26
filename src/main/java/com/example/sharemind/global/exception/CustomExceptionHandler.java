@@ -4,6 +4,7 @@ import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.chat.exception.ChatException;
 import com.example.sharemind.chatMessage.exception.ChatMessageException;
 import com.example.sharemind.comment.exception.CommentException;
+import com.example.sharemind.commentLike.exception.CommentLikeException;
 import com.example.sharemind.consult.exception.ConsultException;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.exception.CustomerException;
@@ -12,6 +13,7 @@ import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
 import com.example.sharemind.payment.exception.PaymentException;
 import com.example.sharemind.post.exception.PostException;
+import com.example.sharemind.postLike.exception.PostLikeException;
 import com.example.sharemind.review.exception.ReviewException;
 import com.example.sharemind.wishList.exception.WishListException;
 import jakarta.validation.ConstraintViolationException;
@@ -103,6 +105,13 @@ public class CustomExceptionHandler {
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
     }
 
+    @ExceptionHandler(CommentLikeException.class)
+    public ResponseEntity<CustomExceptionResponse> catchCommentLikeException(CommentLikeException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
     @ExceptionHandler(ReviewException.class)
     public ResponseEntity<CustomExceptionResponse> catchReviewException(ReviewException e) {
         log.error(e.getMessage(), e);
@@ -119,6 +128,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(PostException.class)
     public ResponseEntity<CustomExceptionResponse> catchPostException(PostException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(PostLikeException.class)
+    public ResponseEntity<CustomExceptionResponse> catchPostLikeException(PostLikeException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
