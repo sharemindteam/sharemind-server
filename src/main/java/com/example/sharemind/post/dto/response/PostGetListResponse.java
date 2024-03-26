@@ -36,7 +36,7 @@ public class PostGetListResponse {
     @Schema(description = "답변 수")
     private final Long totalComment;
 
-    @Schema(description = "마지막 업데이트 일시", example = "8분 전")
+    @Schema(description = "마지막 업데이트 일시", example = "오전 11:10")
     private final String updatedAt;
 
     @Schema(description = "답변 완료 일시")
