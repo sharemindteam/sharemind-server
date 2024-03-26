@@ -34,19 +34,19 @@ public class CommentController {
             - 주소 형식: /api/v1/comments/counselors/1""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담",
+            @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담\n 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
     @Parameters({
-            @Parameter(name = "postId", description = """
-                    - 일대다 상담 ID""")
+            @Parameter(name = "postId", description = "일대다 상담 ID")
     })
     @GetMapping("/counselors/{postId}")
     public ResponseEntity<List<CommentGetResponse>> getCounselorComments(@PathVariable Long postId,
-         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(commentService.getCommentsByPost(postId, customUserDetails.getCustomer().getCustomerId()));
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(commentService.getCounselorComments(postId,
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "상담사 사이드 일대다 상담 댓글 작성", description = """
@@ -54,15 +54,37 @@ public class CommentController {
             - 주소 형식: /api/v1/comments/counselors""")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "댓글 생성 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담 3. 이미 답변을 작성한 상담",
+            @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담\n 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담 3. 이미 답변을 작성한 상담",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
     @PostMapping("/counselors")
-    public ResponseEntity<Void> createComments(@RequestBody CommentCreateRequest commentCreateRequest,
-           @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        commentService.createComment(commentCreateRequest, customUserDetails.getCustomer().getCustomerId());
+    public ResponseEntity<Void> createComments(
+            @RequestBody CommentCreateRequest commentCreateRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        commentService.createComment(commentCreateRequest,
+                customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "구매자 사이드 일대다 상담 질문 단건의 댓글 목록 조회", description = """
+            - 구매자&비로그인 사용자 일대다 상담 질문 단건의 댓글 목록 조회
+            - 로그인한 사용자일 경우 헤더에 accessToken을 넣어주세요""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "접근 권한이 없는 상담(다른 회원의 비공개 상담 접근 시도)",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 상담 ID")
+    })
+    @GetMapping("/customers/{postId}")
+    public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(commentService.getCustomerComments(postId,
+                customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
     }
 }
