@@ -20,6 +20,9 @@ public class PostGetCounselorListResponse {
     @Schema(description = "상담 내용")
     private final String content;
 
+    @Schema(description = "상담 카테고리")
+    private final String consultCategory;
+
     @Schema(description = "공개/비공개 여부")
     private final Boolean isPublic;
 
@@ -39,12 +42,13 @@ public class PostGetCounselorListResponse {
     private final Boolean isChosen;
 
     @Builder
-    public PostGetCounselorListResponse(Long postId, String title, String content, Boolean isPublic,
-                                        Long totalLike, Long totalScrap, Long totalComment, String publishedAt,
-                                        Boolean isChosen) {
+    public PostGetCounselorListResponse(Long postId, String title, String content, String consultCategory,
+                                        Boolean isPublic, Long totalLike, Long totalScrap, Long totalComment,
+                                        String publishedAt, Boolean isChosen) {
         this.postId = postId;
         this.title = title;
         this.content = content;
+        this.consultCategory = consultCategory;
         this.isPublic = isPublic;
         this.totalLike = totalLike;
         this.totalScrap = totalScrap;
@@ -58,6 +62,7 @@ public class PostGetCounselorListResponse {
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .consultCategory(post.getConsultCategory().getDisplayName())
                 .isPublic(post.getIsPublic())
                 .totalLike(post.getTotalLike())
                 .totalScrap(post.getTotalScrap())
