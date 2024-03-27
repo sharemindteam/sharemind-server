@@ -42,4 +42,17 @@ public class PostScrapServiceImpl implements PostScrapService {
             postScrapRepository.save(postScrap);
         }
     }
+
+    @Transactional
+    @Override
+    public void deletePostScrap(Long postId, Long customerId) {
+        Post post = postService.getPostByPostId(postId);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+        PostScrap postScrap = postScrapRepository.findByPostAndCustomerAndIsActivatedIsTrue(post,
+                        customer)
+                .orElseThrow(() -> new PostScrapException(PostScrapErrorCode.POST_SCRAP_NOT_FOUND));
+
+        postScrap.updateIsActivatedFalse();
+    }
 }

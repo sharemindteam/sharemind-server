@@ -13,4 +13,6 @@ public interface PostScrapRepository extends JpaRepository<PostScrap, Long> {
     Boolean existsByPostAndCustomer(Post post, Customer customer);
 
     Optional<PostScrap> findByPostAndCustomer(Post post, Customer customer);
+
+    Optional<PostScrap> findByPostAndCustomerAndIsActivatedIsTrue(Post post, Customer customer);
 }
