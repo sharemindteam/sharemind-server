@@ -30,6 +30,9 @@ public class PostGetListResponse {
     @Schema(description = "좋아요 수")
     private final Long totalLike;
 
+    @Schema(description = "조회한 회원의 스크랩 여부")
+    private final Boolean isScrapped;
+
     @Schema(description = "스크랩 수")
     private final Long totalScrap;
 
@@ -45,21 +48,22 @@ public class PostGetListResponse {
 
     @Builder
     public PostGetListResponse(Long postId, String title, String content, Boolean isPublic,
-            Boolean isLiked, Long totalLike, Long totalScrap, Long totalComment, String updatedAt,
-            LocalDateTime finishedAt) {
+            Boolean isLiked, Long totalLike, Boolean isScrapped, Long totalScrap, Long totalComment,
+            String updatedAt, LocalDateTime finishedAt) {
         this.postId = postId;
         this.title = title;
         this.content = content;
         this.isPublic = isPublic;
         this.isLiked = isLiked;
         this.totalLike = totalLike;
+        this.isScrapped = isScrapped;
         this.totalScrap = totalScrap;
         this.totalComment = totalComment;
         this.updatedAt = updatedAt;
         this.finishedAt = finishedAt;
     }
 
-    public static PostGetListResponse of(Post post, Boolean isLiked) {
+    public static PostGetListResponse of(Post post, Boolean isLiked, Boolean isScrapped) {
         return PostGetListResponse.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -67,6 +71,7 @@ public class PostGetListResponse {
                 .isPublic(post.getIsPublic())
                 .isLiked(isLiked)
                 .totalLike(post.getTotalLike())
+                .isScrapped(isScrapped)
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
@@ -82,6 +87,7 @@ public class PostGetListResponse {
                 .isPublic(post.getIsPublic())
                 .isLiked(false)
                 .totalLike(post.getTotalLike())
+                .isScrapped(false)
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))

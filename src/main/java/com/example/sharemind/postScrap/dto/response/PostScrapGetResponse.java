@@ -1,19 +1,20 @@
-package com.example.sharemind.post.dto.response;
+package com.example.sharemind.postScrap.dto.response;
 
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
+import com.example.sharemind.postScrap.domain.PostScrap;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class PostGetResponse {
+public class PostScrapGetResponse {
+
+    @Schema(description = "스크랩 아이디")
+    private final Long postScrapId;
 
     @Schema(description = "일대다 질문 아이디")
     private final Long postId;
-
-    @Schema(description = "상담 카테고리", example = "권태기")
-    private final String consultCategory;
 
     @Schema(description = "제목")
     private final String title;
@@ -36,15 +37,18 @@ public class PostGetResponse {
     @Schema(description = "스크랩 수")
     private final Long totalScrap;
 
+    @Schema(description = "답변 수")
+    private final Long totalComment;
+
     @Schema(description = "마지막 업데이트 일시", example = "오전 11:10")
     private final String updatedAt;
 
     @Builder
-    public PostGetResponse(Long postId, String consultCategory, String title, String content,
+    public PostScrapGetResponse(Long postScrapId, Long postId, String title, String content,
             Boolean isPublic, Boolean isLiked, Long totalLike, Boolean isScrapped, Long totalScrap,
-            String updatedAt) {
+            Long totalComment, String updatedAt) {
+        this.postScrapId = postScrapId;
         this.postId = postId;
-        this.consultCategory = consultCategory;
         this.title = title;
         this.content = content;
         this.isPublic = isPublic;
@@ -52,20 +56,24 @@ public class PostGetResponse {
         this.totalLike = totalLike;
         this.isScrapped = isScrapped;
         this.totalScrap = totalScrap;
+        this.totalComment = totalComment;
         this.updatedAt = updatedAt;
     }
 
-    public static PostGetResponse of(Post post, Boolean isLiked, Boolean isScrapped) {
-        return PostGetResponse.builder()
+    public static PostScrapGetResponse of(PostScrap postScrap, Boolean isLiked) {
+        Post post = postScrap.getPost();
+
+        return PostScrapGetResponse.builder()
+                .postScrapId(postScrap.getPostScrapId())
                 .postId(post.getPostId())
-                .consultCategory(post.getConsultCategory().getDisplayName())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .isPublic(post.getIsPublic())
                 .isLiked(isLiked)
                 .totalLike(post.getTotalLike())
-                .isScrapped(isScrapped)
+                .isScrapped(true)
                 .totalScrap(post.getTotalScrap())
+                .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
                 .build();
     }

@@ -15,6 +15,7 @@ import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
 import com.example.sharemind.postLike.repository.PostLikeRepository;
+import com.example.sharemind.postScrap.repository.PostScrapRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,12 +35,14 @@ public class PostServiceImpl implements PostService {
     private static final int TOTAL_POSTS = 50;
     private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
     private static final Boolean POST_IS_NOT_LIKED = false;
+    private static final Boolean POST_IS_NOT_SCRAPPED = false;
 
     private final CustomerService customerService;
     private final CounselorService counselorService;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
+    private final PostScrapRepository postScrapRepository;
 
     @Transactional
     @Override
@@ -92,10 +95,12 @@ public class PostServiceImpl implements PostService {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
             return PostGetResponse.of(post,
-                    postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post, customer));
+                    postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post, customer),
+                    postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
+                            customer));
         }
 
-        return PostGetResponse.of(post, POST_IS_NOT_LIKED);
+        return PostGetResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED);
     }
 
     @Override
@@ -108,16 +113,19 @@ public class PostServiceImpl implements PostService {
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
                         ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post,
                         postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
+                                customer),
+                        postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                 customer)))
                 .toList();
     }
 
     @Override
     public List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId,
-                                                                               Long customerId) {
-
+            Long customerId) {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
-        List<Comment> comments = commentRepository.findAllByCounselorAndIsActivatedIsTrue(counselor, filter, postId, POST_PAGE_SIZE);
+        List<Comment> comments = commentRepository.findAllByCounselorAndIsActivatedIsTrue(counselor,
+                filter, postId, POST_PAGE_SIZE);
+
         return comments.stream()
                 .map(comment -> PostGetCounselorListResponse.of(comment.getPost(), comment))
                 .toList();
@@ -133,13 +141,15 @@ public class PostServiceImpl implements PostService {
                             POST_PAGE_SIZE).stream()
                     .map(post -> PostGetListResponse.of(post,
                             postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
+                                    customer),
+                            postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                     customer)))
                     .toList();
         }
 
         return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                         POST_PAGE_SIZE).stream()
-                .map(post -> PostGetListResponse.of(post, POST_IS_NOT_LIKED))
+                .map(post -> PostGetListResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED))
                 .toList();
     }
 
@@ -167,7 +177,7 @@ public class PostServiceImpl implements PostService {
         Collections.shuffle(remainingPosts);
 
         int remainingSize = TOTAL_POSTS - randomPosts.size();
-        for(int i = 0; i < Math.min(remainingSize,remainingPosts.size()); i++) {
+        for (int i = 0; i < Math.min(remainingSize, remainingPosts.size()); i++) {
             randomPosts.add(remainingPosts.get(i));
         }
         Collections.shuffle(randomPosts);
@@ -178,7 +188,7 @@ public class PostServiceImpl implements PostService {
     public PostGetResponse getCounselorPostContent(Long postId, Long customerId) {
         Post post = checkAndGetCounselorPost(postId, customerId);
 
-        return PostGetResponse.of(post, POST_IS_NOT_LIKED);
+        return PostGetResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED);
     }
 
     @Override
