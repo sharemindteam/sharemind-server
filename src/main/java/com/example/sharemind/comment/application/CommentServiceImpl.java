@@ -71,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
     public void createComment(CommentCreateRequest commentCreateRequest, Long customerId) {
         Post post = postService.checkAndGetCounselorPost(commentCreateRequest.getPostId(),
                 customerId);
-        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Customer customer = post.getCustomer();
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
         counselorService.checkCounselorAndCustomerSame(customer, counselor);
