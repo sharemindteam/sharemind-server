@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,5 +50,26 @@ public class PostScrapController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         postScrapService.createPostScrap(postId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "일대다 상담 스크랩 취소", description = "일대다 상담 스크랩 취소")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "취소 성공"),
+            @ApiResponse(responseCode = "404", description = """
+                    1. 존재하지 않는 상담
+                    2. 존재하지 않는 회원
+                    3. 존재하지 않는 스크랩""",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 질문 아이디")
+    })
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deletePostScrap(@PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        postScrapService.deletePostScrap(postId, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
     }
 }
