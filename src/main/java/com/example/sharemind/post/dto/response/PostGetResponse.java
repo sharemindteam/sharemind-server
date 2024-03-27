@@ -30,6 +30,9 @@ public class PostGetResponse {
     @Schema(description = "좋아요 수")
     private final Long totalLike;
 
+    @Schema(description = "조회한 회원의 스크랩 여부")
+    private final Boolean isScrapped;
+
     @Schema(description = "스크랩 수")
     private final Long totalScrap;
 
@@ -38,7 +41,8 @@ public class PostGetResponse {
 
     @Builder
     public PostGetResponse(Long postId, String consultCategory, String title, String content,
-            Boolean isPublic, Boolean isLiked, Long totalLike, Long totalScrap, String updatedAt) {
+            Boolean isPublic, Boolean isLiked, Long totalLike, Boolean isScrapped, Long totalScrap,
+            String updatedAt) {
         this.postId = postId;
         this.consultCategory = consultCategory;
         this.title = title;
@@ -46,11 +50,12 @@ public class PostGetResponse {
         this.isPublic = isPublic;
         this.isLiked = isLiked;
         this.totalLike = totalLike;
+        this.isScrapped = isScrapped;
         this.totalScrap = totalScrap;
         this.updatedAt = updatedAt;
     }
 
-    public static PostGetResponse of(Post post, Boolean isLiked) {
+    public static PostGetResponse of(Post post, Boolean isLiked, Boolean isScrapped) {
         return PostGetResponse.builder()
                 .postId(post.getPostId())
                 .consultCategory(post.getConsultCategory().getDisplayName())
@@ -59,6 +64,7 @@ public class PostGetResponse {
                 .isPublic(post.getIsPublic())
                 .isLiked(isLiked)
                 .totalLike(post.getTotalLike())
+                .isScrapped(isScrapped)
                 .totalScrap(post.getTotalScrap())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
                 .build();
