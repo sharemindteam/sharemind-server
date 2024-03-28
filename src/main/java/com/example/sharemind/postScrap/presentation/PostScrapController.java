@@ -12,8 +12,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -79,7 +81,7 @@ public class PostScrapController {
 
     @Operation(summary = "일대다 상담 스크랩 리스트 조회", description = """
             - 특정 회원이 스크랩한 일대다 상담 리스트 조회
-            - 주소 형식: /api/v1/postScraps&postScrapId=0""")
+            - 주소 형식: /api/v1/postScraps?postScrapId=0&scrappedAt=2024-03-22T00:47:59""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 회원",
@@ -91,13 +93,18 @@ public class PostScrapController {
             @Parameter(name = "postScrapId", description = """
                     - 조회 결과는 6개씩 반환하며, postScrapId로 구분
                     1. 최초 조회 요청이면 postScrapId는 0
-                    2. 2번째 요청부터 postScrapId는 직전 요청의 조회 결과 6개 중 마지막 postScrapId""")
+                    2. 2번째 요청부터 postScrapId는 직전 요청의 조회 결과 6개 중 마지막 postScrapId"""),
+            @Parameter(name = "scrappedAt", description = """
+                    1. 최초 조회 요청이면 지금 시간
+                    2. 2번째 요청부터 scrappedAt은 직전 요청의 조회 결과 6개 중 마지막 scrappedAt
+                    3. 형식 예시에 적어둔 것과 꼭 맞춰주셔야 합니다""")
     })
     @GetMapping
     public ResponseEntity<List<PostScrapGetResponse>> getScrappedPosts(
             @RequestParam Long postScrapId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime scrappedAt,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(postScrapService.getScrappedPosts(postScrapId,
+        return ResponseEntity.ok(postScrapService.getScrappedPosts(postScrapId, scrappedAt,
                 customUserDetails.getCustomer().getCustomerId()));
     }
 }
