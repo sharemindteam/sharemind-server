@@ -291,4 +291,10 @@ public class CounselorServiceImpl implements CounselorService {
                 .map(CounselorGetWishListResponse::of)
                 .toList();
     }
+
+    @Override
+    public void checkCounselorAndCustomerSame(Customer customer, Counselor counselor) {
+        if (customer.getCounselor() != null && customer.getCounselor() == counselor)
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_AND_CUSTOMER_SAME, customer.getCustomerId().toString());
+    }
 }

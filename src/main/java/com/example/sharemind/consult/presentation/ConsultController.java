@@ -33,7 +33,7 @@ public class ConsultController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "신청 성공"),
             @ApiResponse(responseCode = "400",
-                    description = "1. 프로필 심사가 완료되지 않은 상담사 아이디로 요청됨\n 2. 상담사가 제공하지 않는 상담 유형",
+                    description = "1. 프로필 심사가 완료되지 않은 상담사 아이디로 요청됨\n 2. 상담사가 제공하지 않는 상담 유형\n 3. 자기자신에게 상담 요청",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),

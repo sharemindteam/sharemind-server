@@ -71,7 +71,10 @@ public class CommentServiceImpl implements CommentService {
     public void createComment(CommentCreateRequest commentCreateRequest, Long customerId) {
         Post post = postService.checkAndGetCounselorPost(commentCreateRequest.getPostId(),
                 customerId);
+        Customer customer = post.getCustomer();
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+
+        counselorService.checkCounselorAndCustomerSame(customer, counselor);
 
         if (commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null) {
             throw new CommentException(CommentErrorCode.COMMENT_ALREADY_REGISTERED,

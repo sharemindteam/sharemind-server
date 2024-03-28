@@ -6,6 +6,7 @@ import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateAccountRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.*;
+import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
 
 import com.example.sharemind.wishList.dto.request.WishListGetRequest;
@@ -52,4 +53,6 @@ public interface CounselorService {
     CounselorGetMinderProfileResponse getAllCounselorMinderProfile(Long counselorId);
 
     void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest, Long customerId);
+
+    void checkCounselorAndCustomerSame(Customer customer, Counselor counselor);
 }

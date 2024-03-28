@@ -54,7 +54,8 @@ public class CommentController {
             - 주소 형식: /api/v1/comments/counselors""")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "댓글 생성 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담\n 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담 3. 이미 답변을 작성한 상담",
+            @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담\n 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담" +
+                    "3. 이미 답변을 작성한 상담 4. 자기자신에게 댓글 작성한 상담",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
