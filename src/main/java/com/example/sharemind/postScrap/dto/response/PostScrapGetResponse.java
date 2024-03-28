@@ -3,7 +3,9 @@ package com.example.sharemind.postScrap.dto.response;
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.postScrap.domain.PostScrap;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -40,13 +42,17 @@ public class PostScrapGetResponse {
     @Schema(description = "답변 수")
     private final Long totalComment;
 
-    @Schema(description = "마지막 업데이트 일시", example = "오전 11:10")
+    @Schema(description = "일대다 상담 마지막 업데이트 일시", example = "오전 11:10")
     private final String updatedAt;
+
+    @Schema(description = "스크랩 일시")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private final LocalDateTime scrappedAt;
 
     @Builder
     public PostScrapGetResponse(Long postScrapId, Long postId, String title, String content,
             Boolean isPublic, Boolean isLiked, Long totalLike, Boolean isScrapped, Long totalScrap,
-            Long totalComment, String updatedAt) {
+            Long totalComment, String updatedAt, LocalDateTime scrappedAt) {
         this.postScrapId = postScrapId;
         this.postId = postId;
         this.title = title;
@@ -58,6 +64,7 @@ public class PostScrapGetResponse {
         this.totalScrap = totalScrap;
         this.totalComment = totalComment;
         this.updatedAt = updatedAt;
+        this.scrappedAt = scrappedAt;
     }
 
     public static PostScrapGetResponse of(PostScrap postScrap, Boolean isLiked) {
@@ -75,6 +82,7 @@ public class PostScrapGetResponse {
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
+                .scrappedAt(postScrap.getUpdatedAt())
                 .build();
     }
 }
