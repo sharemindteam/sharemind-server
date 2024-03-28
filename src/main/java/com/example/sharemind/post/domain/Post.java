@@ -123,6 +123,14 @@ public class Post extends BaseEntity {
         }
     }
 
+    public void increaseTotalScrap() {
+        this.totalScrap++;
+    }
+
+    public void decreaseTotalScrap() {
+        this.totalScrap--;
+    }
+
     public void updatePost(ConsultCategory consultCategory, String title, String content,
             Boolean isCompleted, Customer customer) {
         checkUpdatability();

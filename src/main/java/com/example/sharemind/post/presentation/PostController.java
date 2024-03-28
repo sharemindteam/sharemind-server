@@ -180,8 +180,8 @@ public class PostController {
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId"""),
             @Parameter(name = "finishedAt", description = """
                     1. 최초 조회 요청이면 지금 시간
-                    2. 2번째 요청부터 finishedAt 직전 요청의 조회 결과 4개 중 마지막 finishedAt
-                    3. 형식 예시에 적어둔 것과 꼭 맞춰주셔야 합니다"""),
+                    2. 2번째 요청부터 finishedAt은 직전 요청의 조회 결과 4개 중 마지막 finishedAt
+                    3. 형식 예시에 적어둔 것과 꼭 맞춰주셔야 합니다""")
     })
     @GetMapping("/customers/public")
     public ResponseEntity<List<PostGetListResponse>> getPublicPostsByCustomer(
