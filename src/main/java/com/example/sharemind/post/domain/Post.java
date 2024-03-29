@@ -152,6 +152,12 @@ public class Post extends BaseEntity {
         }
     }
 
+    public void checkWriteAuthority(Customer customer) {
+        if (!customer.getCustomerId().equals(this.customer.getCustomerId())) {
+            throw new PostException(PostErrorCode.POST_MODIFY_DENIED);
+        }
+    }
+
     public void checkPostProceeding() {
         if (this.getPostStatus() != PostStatus.PROCEEDING)
             throw new PostException(PostErrorCode.POST_NOT_PROCEEDING, this.getPostId().toString());
@@ -162,12 +168,6 @@ public class Post extends BaseEntity {
             this.isPaid = true;
         } else {
             this.isPaid = false;
-        }
-    }
-
-    private void checkWriteAuthority(Customer customer) {
-        if (!customer.getCustomerId().equals(this.customer.getCustomerId())) {
-            throw new PostException(PostErrorCode.POST_MODIFY_DENIED);
         }
     }
 
