@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LetterMessageServiceImpl implements LetterMessageService {
     private static final Boolean IS_NOT_COMPLETED = false;
 
+    private final CustomerService customerService;
     private final LetterService letterService;
     private final LetterMessageRepository letterMessageRepository;
 
@@ -85,6 +86,9 @@ public class LetterMessageServiceImpl implements LetterMessageService {
     @Override
     public LetterMessageGetIsSavedResponse getIsSaved(Long letterId, String type) {
         Letter letter = letterService.getLetterByLetterId(letterId);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        letter.checkReadAuthority(customer);
+
         LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(type);
 
         if (letterMessageRepository.existsByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
