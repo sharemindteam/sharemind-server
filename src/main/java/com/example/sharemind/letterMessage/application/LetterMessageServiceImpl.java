@@ -101,10 +101,9 @@ public class LetterMessageServiceImpl implements LetterMessageService {
     @Override
     public LetterMessageGetIsSavedResponse getIsSaved(Long letterId, String type, Long customerId) {
         Letter letter = letterService.getLetterByLetterId(letterId);
-        Customer customer = customerService.getCustomerByCustomerId(customerId);
-        letter.checkReadAuthority(customer);
-
         LetterMessageType messageType = LetterMessageType.getLetterMessageTypeByName(type);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        letter.checkWriteAuthority(messageType, customer);
 
         if (letterMessageRepository.existsByLetterAndMessageTypeAndIsCompletedAndIsActivatedIsTrue(
                 letter, messageType, IS_NOT_COMPLETED)) {
