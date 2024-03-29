@@ -8,17 +8,23 @@ import com.example.sharemind.letterMessage.dto.response.LetterMessageGetRecentTy
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 
 public interface LetterMessageService {
-    LetterMessage createLetterMessage(LetterMessageCreateRequest letterMessageCreateRequest, Customer customer);
 
-    LetterMessage updateLetterMessage(LetterMessageUpdateRequest letterMessageUpdateRequest, Customer customer);
+    LetterMessage createLetterMessage(LetterMessageCreateRequest letterMessageCreateRequest,
+            Customer customer);
 
-    void createFirstQuestion(LetterMessageCreateFirstRequest letterMessageCreateFirstRequest, Customer customer);
+    LetterMessage updateLetterMessage(LetterMessageUpdateRequest letterMessageUpdateRequest,
+            Customer customer);
 
-    void updateFirstQuestion(LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest, Customer customer);
+    void createFirstQuestion(LetterMessageCreateFirstRequest letterMessageCreateFirstRequest,
+            Customer customer);
 
-    LetterMessageGetIsSavedResponse getIsSaved(Long letterId, String messageType);
+    void updateFirstQuestion(LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest,
+            Customer customer);
 
-    LetterMessageGetResponse getLetterMessage(Long letterId, String messageType, Boolean isCompleted, Customer customer);
+    LetterMessageGetIsSavedResponse getIsSaved(Long letterId, String messageType, Long customerId);
+
+    LetterMessageGetResponse getLetterMessage(Long letterId, String messageType,
+            Boolean isCompleted, Customer customer);
 
     LetterMessageGetRecentTypeResponse getRecentMessageType(Long letterId);
 }
