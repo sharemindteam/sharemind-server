@@ -91,7 +91,7 @@ public class SearchWordController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = CustomExceptionResponse.class))),
-            @ApiResponse(responseCode = "404", description = "1. 해당 정렬 방식이 존재하지 않음", content = @Content(mediaType = "application/json",
+            @ApiResponse(responseCode = "404", description = "1. 해당 정렬 방식이 존재하지 않음 2. postId가 존재하지 않음", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = CustomExceptionResponse.class)))
     })
     @Parameters({
