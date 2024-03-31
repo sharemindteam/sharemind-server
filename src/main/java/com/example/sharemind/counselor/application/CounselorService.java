@@ -7,7 +7,7 @@ import com.example.sharemind.counselor.dto.request.CounselorUpdateAccountRequest
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
 import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.customer.domain.Customer;
-import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
+import com.example.sharemind.searchWord.dto.request.SearchWordCounselorFindRequest;
 
 import com.example.sharemind.wishList.dto.request.WishListGetRequest;
 
@@ -31,7 +31,7 @@ public interface CounselorService {
 
     List<Counselor> getEvaluationPendingConsults();
 
-    List<Counselor> getCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest,
+    List<Counselor> getCounselorByWordWithPagination(SearchWordCounselorFindRequest searchWordCounselorFindRequest,
                                                      String sortType);
 
     CounselorGetInfoResponse getCounselorMyInfo(Long customerId);

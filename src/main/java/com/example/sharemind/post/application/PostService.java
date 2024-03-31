@@ -5,6 +5,7 @@ import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
 import com.example.sharemind.post.dto.response.*;
 
+import com.example.sharemind.searchWord.dto.request.SearchWordPostFindRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,4 +37,7 @@ public interface PostService {
     PostGetResponse getCounselorPostContent(Long postId, Long customerId);
 
     Post checkAndGetCounselorPost(Long postId, Long customerId);
+
+    List<Post> getPostByWordWithPagination(SearchWordPostFindRequest searchWordPostFindRequest,
+                                           String sortType);
 }
