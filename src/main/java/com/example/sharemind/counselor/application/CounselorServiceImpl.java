@@ -19,7 +19,7 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
-import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
+import com.example.sharemind.searchWord.dto.request.SearchWordCounselorFindRequest;
 import com.example.sharemind.wishList.application.WishListCounselorService;
 import com.example.sharemind.wishList.domain.WishList;
 import com.example.sharemind.wishList.dto.request.WishListGetRequest;
@@ -185,12 +185,13 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public List<Counselor> getCounselorByWordWithPagination(SearchWordFindRequest searchWordFindRequest,
-                                                            String sortType) {
+    public List<Counselor> getCounselorByWordWithPagination(
+            SearchWordCounselorFindRequest searchWordCounselorFindRequest,
+            String sortType) {
         String sortColumn = getCounselorSortColumn(sortType);
-        Pageable pageable = PageRequest.of(searchWordFindRequest.getIndex(), COUNSELOR_PAGE,
+        Pageable pageable = PageRequest.of(searchWordCounselorFindRequest.getIndex(), COUNSELOR_PAGE,
                 Sort.by(sortColumn).descending());
-        Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordFindRequest.getWord(),
+        Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordCounselorFindRequest.getWord(),
                 pageable);
         return page.getContent();
     }
