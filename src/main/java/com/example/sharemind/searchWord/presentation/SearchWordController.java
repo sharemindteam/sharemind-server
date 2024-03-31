@@ -46,8 +46,8 @@ public class SearchWordController {
                 searchWordService.getRecentSearchWordsByCustomer(customUserDetails.getCustomer().getCustomerId()));
     }
 
-    @Operation(summary = "검색 결과 반환", description = """
-            - 주소 형식 예시 : /api/v1/searchWords/results?sortType=STAR_RATING
+    @Operation(summary = "상담사 검색 결과 반환", description = """
+            - 주소 형식 예시 : /api/v1/searchWords/results/counselors?sortType=STAR_RATING
             - 검색어 결과를 상담사 닉네임, 소개 제목, 소개 내용에서 찾아서 반환. 정확하게 일치하는 정보만 반환
             - 만약 이전에 검색했던 검색어의 경우(ex) 연애, 갈등)에서 갈등이 다시 검색된다면 (갈등, 연애)순서로 다시 서버에 저장합니다. (중복 저장x)
             - 검색 결과는 4개씩 반환하며, index는 페이지 번호 입니다(ex index 0 : id 0~3에 해당하는 값 반환 index 1: 4~7에 해당하는 값 반환)
@@ -55,6 +55,8 @@ public class SearchWordController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomExceptionResponse.class))),
+            @ApiResponse(responseCode = "404", description = "1. 해당 정렬 방식이 존재하지 않음", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = CustomExceptionResponse.class)))
     })
     @Parameters({
@@ -78,6 +80,23 @@ public class SearchWordController {
                         sortType, searchWordCounselorFindRequest));
     }
 
+    @Operation(summary = "공개 상담 검색 결과 반환", description = """
+            - 주소 형식 예시 : /api/v1/searchWords/results/posts?sortType=LATEST
+            - 검색어 결과를 공개 상담 제목이나 내용 중 정확하게 일치하는 경우에 리턴
+            - 만약 이전에 검색했던 검색어의 경우(ex) 연애, 갈등)에서 갈등이 다시 검색된다면 (갈등, 연애)순서로 다시 서버에 저장합니다. (중복 저장x)
+            - 검색 결과는 5개씩 반환하며, 마지막에 리턴 받은 postId 이후 값을 5개 리턴합니다.
+            - 처음 조회 시 postId 0을 넘겨주세요~
+            - 해당하는 검색 결과가 없을 때는 빈배열을 리턴합니다.""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "1. 검색어가 2~20자 사이가 아님", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomExceptionResponse.class))),
+            @ApiResponse(responseCode = "404", description = "1. 해당 정렬 방식이 존재하지 않음", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomExceptionResponse.class)))
+    })
+    @Parameters({
+            @Parameter(name = "sortType", description = "LATEST: 최근순, DESC_TOTAL_COMMENT: 코멘트 많은 순, DESC_TOTAL_LIKE: 공감 많은 순")
+    })
     @PatchMapping("/results/posts")
     public ResponseEntity<List<PostGetListResponse>> getSearchWordPostResults(
             @Valid @RequestBody SearchWordPostFindRequest searchWordPostFindRequest, @RequestParam String sortType,
