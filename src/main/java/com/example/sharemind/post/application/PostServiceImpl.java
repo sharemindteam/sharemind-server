@@ -7,6 +7,7 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
+import com.example.sharemind.post.content.PostListSortType;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
@@ -16,6 +17,7 @@ import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.post.repository.PostRepository;
 import com.example.sharemind.postLike.repository.PostLikeRepository;
 import com.example.sharemind.postScrap.repository.PostScrapRepository;
+import com.example.sharemind.searchWord.dto.request.SearchWordPostFindRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
-    private static final int POST_PAGE_SIZE = 4;
+    private static final int POST_PAGE_SIZE = 5;
     private static final int POST_POPULARITY_SIZE = 3;
     private static final int TOTAL_POSTS = 50;
     private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
@@ -200,6 +202,18 @@ public class PostServiceImpl implements PostService {
         return getProceedingPost(postId);
     }
 
+    @Override
+    public List<Post> getPostByWordWithPagination(SearchWordPostFindRequest searchWordPostFindRequest,
+                                                  String sortType) {
+        String sortColumn = getPostSortColumn(sortType);
+        if (searchWordPostFindRequest.getPostId() == 0) {
+            return postRepository.getFirstPostByWordWithSortType(searchWordPostFindRequest, sortColumn, POST_PAGE_SIZE);
+        }
+        Post post = getPostByPostId(searchWordPostFindRequest.getPostId());
+        return postRepository.getPostByWordWithSortType(searchWordPostFindRequest, sortColumn, post,
+                POST_PAGE_SIZE);
+    }
+
     private Boolean checkCounselorReadAuthority(Long postId, Long customerId) {
         Post post = getPostByPostId(postId);
 
@@ -216,5 +230,10 @@ public class PostServiceImpl implements PostService {
 
         post.checkPostProceeding();
         return post;
+    }
+
+    private String getPostSortColumn(String sortType) {
+        PostListSortType postListSortType = PostListSortType.getSortTypeByName(sortType);
+        return postListSortType.getSortColumn();
     }
 }
