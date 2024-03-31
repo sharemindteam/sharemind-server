@@ -32,7 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
-    private static final int POST_PAGE_SIZE = 5;
+    private static final int POST_PAGE_SIZE = 4;
+    private static final int POST_PAGE_SEARCH_SIZE = 5;
     private static final int POST_POPULARITY_SIZE = 3;
     private static final int TOTAL_POSTS = 50;
     private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
@@ -209,7 +210,8 @@ public class PostServiceImpl implements PostService {
                                                   String sortType) {
         String sortColumn = getPostSortColumn(sortType);
         if (searchWordPostFindRequest.getPostId() == 0) {
-            return postRepository.getFirstPostByWordWithSortType(searchWordPostFindRequest, sortColumn, POST_PAGE_SIZE);
+            return postRepository.getFirstPostByWordWithSortType(searchWordPostFindRequest, sortColumn,
+                    POST_PAGE_SEARCH_SIZE);
         }
         Post post = getPostByPostId(searchWordPostFindRequest.getPostId());
         return postRepository.getPostByWordWithSortType(searchWordPostFindRequest, sortColumn, post,
