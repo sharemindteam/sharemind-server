@@ -18,7 +18,7 @@ public interface PostService {
 
     void updatePost(PostUpdateRequest postUpdateRequest, Long customerId);
 
-    PostGetIsSavedResponse getIsSaved(Long postId);
+    PostGetIsSavedResponse getIsSaved(Long postId, Long customerId);
 
     PostGetResponse getPost(Long postId, Long customerId);
 

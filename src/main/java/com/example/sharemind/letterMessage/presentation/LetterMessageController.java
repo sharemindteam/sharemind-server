@@ -49,9 +49,11 @@ public class LetterMessageController {
             )
     })
     @PostMapping
-    public ResponseEntity<Void> createLetterMessage(@Valid @RequestBody LetterMessageCreateRequest letterMessageCreateRequest,
-                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        letterMessageService.createLetterMessage(letterMessageCreateRequest, customUserDetails.getCustomer());
+    public ResponseEntity<Void> createLetterMessage(
+            @Valid @RequestBody LetterMessageCreateRequest letterMessageCreateRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.createLetterMessage(letterMessageCreateRequest,
+                customUserDetails.getCustomer());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -74,9 +76,11 @@ public class LetterMessageController {
             )
     })
     @PatchMapping
-    public ResponseEntity<Void> updateLetterMessage(@Valid @RequestBody LetterMessageUpdateRequest letterMessageUpdateRequest,
-                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        letterMessageService.updateLetterMessage(letterMessageUpdateRequest, customUserDetails.getCustomer());
+    public ResponseEntity<Void> updateLetterMessage(
+            @Valid @RequestBody LetterMessageUpdateRequest letterMessageUpdateRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.updateLetterMessage(letterMessageUpdateRequest,
+                customUserDetails.getCustomer());
         return ResponseEntity.ok().build();
     }
 
@@ -99,9 +103,11 @@ public class LetterMessageController {
             )
     })
     @PostMapping("/first-question")
-    public ResponseEntity<Void> createFirstQuestion(@Valid @RequestBody LetterMessageCreateFirstRequest letterMessageCreateFirstRequest,
-                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        letterMessageService.createFirstQuestion(letterMessageCreateFirstRequest, customUserDetails.getCustomer());
+    public ResponseEntity<Void> createFirstQuestion(
+            @Valid @RequestBody LetterMessageCreateFirstRequest letterMessageCreateFirstRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.createFirstQuestion(letterMessageCreateFirstRequest,
+                customUserDetails.getCustomer());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -124,9 +130,11 @@ public class LetterMessageController {
             )
     })
     @PatchMapping("/first-question")
-    public ResponseEntity<Void> updateFirstQuestion(@Valid @RequestBody LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest,
-                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        letterMessageService.updateFirstQuestion(letterMessageUpdateFirstRequest, customUserDetails.getCustomer());
+    public ResponseEntity<Void> updateFirstQuestion(
+            @Valid @RequestBody LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.updateFirstQuestion(letterMessageUpdateFirstRequest,
+                customUserDetails.getCustomer());
         return ResponseEntity.ok().build();
     }
 
@@ -149,8 +157,11 @@ public class LetterMessageController {
             @Parameter(name = "messageType", description = "메시지 유형")
     })
     @GetMapping("/drafts/{letterId}")
-    public ResponseEntity<LetterMessageGetIsSavedResponse> getIsSaved(@PathVariable Long letterId, @RequestParam String messageType) {
-        return ResponseEntity.ok(letterMessageService.getIsSaved(letterId, messageType));
+    public ResponseEntity<LetterMessageGetIsSavedResponse> getIsSaved(@PathVariable Long letterId,
+            @RequestParam String messageType,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(letterMessageService.getIsSaved(letterId, messageType,
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "메시지 조회",
@@ -170,9 +181,11 @@ public class LetterMessageController {
     })
     @GetMapping("/{letterId}")
     public ResponseEntity<LetterMessageGetResponse> getLetterMessage(@PathVariable Long letterId,
-                                                                     @RequestParam String messageType, @RequestParam Boolean isCompleted,
-                                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(letterMessageService.getLetterMessage(letterId, messageType, isCompleted, customUserDetails.getCustomer()));
+            @RequestParam String messageType, @RequestParam Boolean isCompleted,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                letterMessageService.getLetterMessage(letterId, messageType, isCompleted,
+                        customUserDetails.getCustomer()));
     }
 
     @Operation(summary = "편지 진행 상태 조회",
@@ -188,7 +201,8 @@ public class LetterMessageController {
             @Parameter(name = "letterId", description = "편지 아이디")
     })
     @GetMapping("/recent-type/{letterId}")
-    public ResponseEntity<LetterMessageGetRecentTypeResponse> getRecentMessageType(@PathVariable Long letterId) {
+    public ResponseEntity<LetterMessageGetRecentTypeResponse> getRecentMessageType(
+            @PathVariable Long letterId) {
         return ResponseEntity.ok(letterMessageService.getRecentMessageType(letterId));
     }
 }
