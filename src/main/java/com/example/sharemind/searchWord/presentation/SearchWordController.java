@@ -3,9 +3,11 @@ package com.example.sharemind.searchWord.presentation;
 import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
+import com.example.sharemind.post.dto.response.PostGetListResponse;
 import com.example.sharemind.searchWord.application.SearchWordService;
 import com.example.sharemind.searchWord.dto.request.SearchWordDeleteRequest;
-import com.example.sharemind.searchWord.dto.request.SearchWordFindRequest;
+import com.example.sharemind.searchWord.dto.request.SearchWordCounselorFindRequest;
+import com.example.sharemind.searchWord.dto.request.SearchWordPostFindRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -58,18 +60,35 @@ public class SearchWordController {
     @Parameters({
             @Parameter(name = "sortType", description = "LATEST: 최근순, POPULARITY: 인기순, STAR_RATING: 별점 평균 순")
     })
-    @PatchMapping("/results")
-    public ResponseEntity<List<CounselorGetListResponse>> getSearchWordResults(
-            @Valid @RequestBody SearchWordFindRequest searchWordFindRequest, @RequestParam String sortType,
+    @PatchMapping("/results/counselors")
+    public ResponseEntity<List<CounselorGetListResponse>> getSearchWordCounselorResults(
+            @Valid @RequestBody SearchWordCounselorFindRequest searchWordCounselorFindRequest,
+            @RequestParam String sortType,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        if (searchWordFindRequest.getIndex() < 0) {
+        if (searchWordCounselorFindRequest.getIndex() < 0) {
             return ResponseEntity.ok(Collections.emptyList());
         }
-        if (customUserDetails == null)
-            return ResponseEntity.ok(searchWordService.storeAllSearchWordAndGetCounselors(sortType, searchWordFindRequest));
+        if (customUserDetails == null) {
+            return ResponseEntity.ok(searchWordService.storeAllSearchWordAndGetCounselors(sortType,
+                    searchWordCounselorFindRequest));
+        }
         return ResponseEntity.ok(
-                searchWordService.storeSearchWordAndGetCounselorsByCustomer(customUserDetails.getCustomer().getCustomerId(),
-                        sortType, searchWordFindRequest));
+                searchWordService.storeSearchWordAndGetCounselorsByCustomer(
+                        customUserDetails.getCustomer().getCustomerId(),
+                        sortType, searchWordCounselorFindRequest));
+    }
+
+    @PatchMapping("/results/posts")
+    public ResponseEntity<List<PostGetListResponse>> getSearchWordPostResults(
+            @Valid @RequestBody SearchWordPostFindRequest searchWordPostFindRequest, @RequestParam String sortType,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (customUserDetails == null) {
+            return ResponseEntity.ok(
+                    searchWordService.storeAllSearchWordAndGetPosts(sortType, searchWordPostFindRequest));
+        }
+        return ResponseEntity.ok(
+                searchWordService.storeSearchWordAndGetPosts(customUserDetails.getCustomer().getCustomerId(),
+                        sortType, searchWordPostFindRequest));
     }
 
     @Operation(summary = "검색어 삭제", description = "검색어를 삭제하는 api\n"
