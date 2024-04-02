@@ -55,10 +55,12 @@ public class CounselorServiceImpl implements CounselorService {
     @Override
     public Counselor getCounselorByCustomerId(Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
+
         Counselor counselor = customer.getCounselor();
         if (counselor == null) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND);
         }
+
         return counselor;
     }
 
@@ -77,7 +79,11 @@ public class CounselorServiceImpl implements CounselorService {
                 nickname = "마인더" + new Random().nextInt(99999);
             }
 
-            Counselor counselor = counselorRepository.save(Counselor.builder().nickname(nickname).build());
+            Counselor counselor = counselorRepository.save(
+                    Counselor.builder()
+                            .nickname(nickname)
+                            .build()
+            );
             customer.setCounselor(counselor);
         }
 
@@ -100,7 +106,8 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Transactional
     @Override
-    public void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest, Long customerId) {
+    public void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest,
+            Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
         if ((counselor.getIsEducated() == null) || (!counselor.getIsEducated())) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_EDUCATED);
@@ -108,14 +115,16 @@ public class CounselorServiceImpl implements CounselorService {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_ALREADY_IN_EVALUATION);
         }
 
-        checkDuplicateNickname(counselorUpdateProfileRequest.getNickname(), counselor.getCounselorId());
+        checkDuplicateNickname(counselorUpdateProfileRequest.getNickname(),
+                counselor.getCounselorId());
 
         Set<ConsultCategory> consultCategories = new HashSet<>();
         for (String consultCategory : counselorUpdateProfileRequest.getConsultCategories()) {
             consultCategories.add(ConsultCategory.getConsultCategoryByName(consultCategory));
         }
 
-        ConsultStyle consultStyle = ConsultStyle.getConsultStyleByName(counselorUpdateProfileRequest.getConsultStyle());
+        ConsultStyle consultStyle = ConsultStyle.getConsultStyleByName(
+                counselorUpdateProfileRequest.getConsultStyle());
 
         Set<ConsultType> consultTypes = new HashSet<>();
         for (String consultType : counselorUpdateProfileRequest.getConsultTypes()) {
@@ -130,15 +139,27 @@ public class CounselorServiceImpl implements CounselorService {
             switch (consultType) {
                 case CHAT -> {
                     if (chatCost == null) {
-                        throw new CounselorException(CounselorErrorCode.COST_NOT_FOUND, consultType.name());
+                        throw new CounselorException(CounselorErrorCode.COST_NOT_FOUND,
+                                consultType.name());
                     }
-                    consultCosts.add(ConsultCost.builder().consultType(consultType).cost(chatCost).build());
+                    consultCosts.add(
+                            ConsultCost.builder()
+                                    .consultType(consultType)
+                                    .cost(chatCost)
+                                    .build()
+                    );
                 }
                 case LETTER -> {
                     if (letterCost == null) {
-                        throw new CounselorException(CounselorErrorCode.COST_NOT_FOUND, consultType.name());
+                        throw new CounselorException(CounselorErrorCode.COST_NOT_FOUND,
+                                consultType.name());
                     }
-                    consultCosts.add(ConsultCost.builder().consultType(consultType).cost(letterCost).build());
+                    consultCosts.add(
+                            ConsultCost.builder()
+                                    .consultType(consultType)
+                                    .cost(letterCost)
+                                    .build()
+                    );
                 }
             }
         }
@@ -150,8 +171,9 @@ public class CounselorServiceImpl implements CounselorService {
             consultTimes.add(ConsultTime.builder().day(day).times(times).build());
         }
 
-        counselor.updateProfile(counselorUpdateProfileRequest.getNickname(), consultCategories, consultStyle,
-                consultTypes, consultTimes, consultCosts, counselorUpdateProfileRequest.getIntroduction(),
+        counselor.updateProfile(counselorUpdateProfileRequest.getNickname(), consultCategories,
+                consultStyle, consultTypes, consultTimes, consultCosts,
+                counselorUpdateProfileRequest.getIntroduction(),
                 counselorUpdateProfileRequest.getExperience());
     }
 
@@ -170,8 +192,8 @@ public class CounselorServiceImpl implements CounselorService {
         return counselorRepository.findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
     }
 
-    private List<Counselor> getCounselorByCategoryWithPagination(CounselorGetRequest counselorGetRequest,
-                                                                 String sortType) {
+    private List<Counselor> getCounselorByCategoryWithPagination(
+            CounselorGetRequest counselorGetRequest, String sortType) {
         String sortColumn = getCounselorSortColumn(sortType);
         Pageable pageable = PageRequest.of(counselorGetRequest.getIndex(), COUNSELOR_PAGE,
                 Sort.by(sortColumn).descending());
@@ -181,7 +203,8 @@ public class CounselorServiceImpl implements CounselorService {
 
         ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
                 counselorGetRequest.getConsultCategory());
-        return counselorRepository.findByConsultCategoryAndLevelAndStatus(consultCategory, pageable).getContent();
+        return counselorRepository.findByConsultCategoryAndLevelAndStatus(consultCategory, pageable)
+                .getContent();
     }
 
     @Override
@@ -189,20 +212,24 @@ public class CounselorServiceImpl implements CounselorService {
             SearchWordCounselorFindRequest searchWordCounselorFindRequest,
             String sortType) {
         String sortColumn = getCounselorSortColumn(sortType);
-        Pageable pageable = PageRequest.of(searchWordCounselorFindRequest.getIndex(), COUNSELOR_PAGE,
+        Pageable pageable = PageRequest.of(searchWordCounselorFindRequest.getIndex(),
+                COUNSELOR_PAGE,
                 Sort.by(sortColumn).descending());
-        Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(searchWordCounselorFindRequest.getWord(),
+        Page<Counselor> page = counselorRepository.findByWordAndLevelAndStatus(
+                searchWordCounselorFindRequest.getWord(),
                 pageable);
         return page.getContent();
     }
 
     @Override
-    public List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId, String sortType,
-                                                                             CounselorGetRequest counselorGetRequest) {
-        List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest, sortType);
+    public List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId,
+            String sortType, CounselorGetRequest counselorGetRequest) {
+        List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
+                sortType);
 
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(customer);
+        Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(
+                customer);
 
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,
@@ -212,8 +239,9 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public List<CounselorGetListResponse> getAllCounselorsByCategory(String sortType,
-                                                                     CounselorGetRequest counselorGetRequest) {
-        List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest, sortType);
+            CounselorGetRequest counselorGetRequest) {
+        List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
+                sortType);
 
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor, false))
@@ -221,7 +249,8 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId, Long customerId) {
+    public CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId,
+            Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = getCounselorByCounselorId(counselorId);
 
@@ -238,15 +267,25 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Transactional
     @Override
-    public void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest, Long customerId) {
+    public void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest,
+            Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
         Bank.existsByDisplayName(counselorUpdateAccountRequest.getBank());
-        counselor.updateAccountInfo(counselorUpdateAccountRequest.getAccount(), counselorUpdateAccountRequest.getBank(),
+        counselor.updateAccountInfo(counselorUpdateAccountRequest.getAccount(),
+                counselorUpdateAccountRequest.getBank(),
                 counselorUpdateAccountRequest.getAccountHolder());
     }
 
+    @Override
+    public CounselorGetAccountResponse getAccount(Long customerId) {
+        Counselor counselor = getCounselorByCustomerId(customerId);
+
+        return CounselorGetAccountResponse.of(counselor);
+    }
+
     private String getCounselorSortColumn(String sortType) {
-        CounselorListSortType counselorListSortType = CounselorListSortType.getSortTypeByName(sortType);
+        CounselorListSortType counselorListSortType = CounselorListSortType.getSortTypeByName(
+                sortType);
         return counselorListSortType.getSortColumn();
     }
 
@@ -262,7 +301,8 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId, String type) {
+    public CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId,
+            String type) {
         Counselor counselor = getCounselorByCounselorId(counselorId);
         ConsultType consultType = ConsultType.getConsultTypeByName(type);
         if (!counselor.getConsultTypes().contains(consultType)) {
@@ -280,14 +320,16 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public CounselorGetBannerResponse getCounselorChatBanner(Chat chat) {
-        Counselor counselor = getCounselorByCounselorId(chat.getConsult().getCounselor().getCounselorId());
+        Counselor counselor = getCounselorByCounselorId(
+                chat.getConsult().getCounselor().getCounselorId());
         return CounselorGetBannerResponse.of(counselor);
     }
 
     @Override
-    public List<CounselorGetWishListResponse> getCounselorWishListByCustomer(WishListGetRequest wishListGetRequest,
-                                                                             Long customerId) {
-        List<WishList> wishLists = wishListCounselorService.getWishList(wishListGetRequest, customerId);
+    public List<CounselorGetWishListResponse> getCounselorWishListByCustomer(
+            WishListGetRequest wishListGetRequest, Long customerId) {
+        List<WishList> wishLists = wishListCounselorService.getWishList(wishListGetRequest,
+                customerId);
         return wishLists.stream()
                 .map(CounselorGetWishListResponse::of)
                 .toList();
@@ -295,7 +337,9 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public void checkCounselorAndCustomerSame(Customer customer, Counselor counselor) {
-        if (customer.getCounselor() != null && customer.getCounselor() == counselor)
-            throw new CounselorException(CounselorErrorCode.COUNSELOR_AND_CUSTOMER_SAME, customer.getCustomerId().toString());
+        if (customer.getCounselor() != null && customer.getCounselor() == counselor) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_AND_CUSTOMER_SAME,
+                    customer.getCustomerId().toString());
+        }
     }
 }
