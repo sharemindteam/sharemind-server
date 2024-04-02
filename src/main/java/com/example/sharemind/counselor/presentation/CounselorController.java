@@ -50,8 +50,9 @@ public class CounselorController {
     })
     @PostMapping("/quiz")
     public ResponseEntity<Void> updateIsEducated(@RequestParam Boolean isEducated,
-                                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        counselorService.updateIsEducated(isEducated, customUserDetails.getCustomer().getCustomerId());
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        counselorService.updateIsEducated(isEducated,
+                customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
     }
 
@@ -64,8 +65,10 @@ public class CounselorController {
             )
     })
     @GetMapping("/quiz")
-    public ResponseEntity<Boolean> getRetryPermission(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(counselorService.getRetryPermission(customUserDetails.getCustomer().getCustomerId()));
+    public ResponseEntity<Boolean> getRetryPermission(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(counselorService.getRetryPermission(
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "프로필 편집",
@@ -85,13 +88,14 @@ public class CounselorController {
             ),
             @ApiResponse(responseCode = "404", description = """
                     1. 상담사 정보 존재하지 않음
-                     2. 올바르지 않은 상담 카테고리/스타일/방식/요일
-                     3. 선택한 상담 방식에 대한 상담료 입력되지 않음""",
+                    2. 올바르지 않은 상담 카테고리/스타일/방식/요일
+                    3. 선택한 상담 방식에 대한 상담료 입력되지 않음""",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
-            @ApiResponse(responseCode = "409", description = "1. 한 요일에 대한 상담 가능 시간이 서로 겹침(ex. 13~15, 14~20)\n " +
-                    "2. 이미 존재하는 닉네임",
+            @ApiResponse(responseCode = "409", description = """
+                    1. 한 요일에 대한 상담 가능 시간이 서로 겹침(ex. 13~15, 14~20)
+                    2. 이미 존재하는 닉네임""",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -120,7 +124,8 @@ public class CounselorController {
     @GetMapping("/profiles")
     public ResponseEntity<CounselorGetProfileResponse> getCounselorProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(counselorService.getCounselorProfile(customUserDetails.getCustomer().getCustomerId()));
+        return ResponseEntity.ok(counselorService.getCounselorProfile(
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "상담사 내 정보 조회", description = "내 정보 페이지에 필요한 상담사 정보 조회")
@@ -134,7 +139,8 @@ public class CounselorController {
     @GetMapping("/my-info")
     public ResponseEntity<CounselorGetInfoResponse> getCounselorMyInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(counselorService.getCounselorMyInfo(customUserDetails.getCustomer().getCustomerId()));
+        return ResponseEntity.ok(counselorService.getCounselorMyInfo(
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "구매자 채팅창 위에 떠있는 상담사 정보를 불러오기 위한 것",
@@ -152,10 +158,11 @@ public class CounselorController {
             @Parameter(name = "isCustomer", description = "구매자일 때 true")
     })
     @GetMapping("/chats/{chatId}")
-    public ResponseEntity<CounselorGetBannerResponse> getCounselorChatBanner(@PathVariable Long chatId,
-                                                                             @RequestParam Boolean isCustomer,
-                                                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Chat chat = chatService.getAndValidateChat(chatId, isCustomer, customUserDetails.getCustomer().getCustomerId());
+    public ResponseEntity<CounselorGetBannerResponse> getCounselorChatBanner(
+            @PathVariable Long chatId, @RequestParam Boolean isCustomer,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Chat chat = chatService.getAndValidateChat(chatId, isCustomer,
+                customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok(
                 counselorService.getCounselorChatBanner(chat));
     }
@@ -179,9 +186,10 @@ public class CounselorController {
             @Parameter(name = "consultType", description = "상담 유형(LETTER, CHAT)")
     })
     @GetMapping("/consults/{counselorId}")
-    public ResponseEntity<CounselorGetForConsultResponse> getCounselorForConsultCreation(@PathVariable Long counselorId,
-                                                                                         @RequestParam String consultType) {
-        return ResponseEntity.ok(counselorService.getCounselorForConsultCreation(counselorId, consultType));
+    public ResponseEntity<CounselorGetForConsultResponse> getCounselorForConsultCreation(
+            @PathVariable Long counselorId, @RequestParam String consultType) {
+        return ResponseEntity.ok(
+                counselorService.getCounselorForConsultCreation(counselorId, consultType));
     }
 
     @Operation(summary = "상담사 리스트 반환",
@@ -208,10 +216,13 @@ public class CounselorController {
             return ResponseEntity.ok(Collections.emptyList());
         }
 
-        if (customUserDetails == null)
-            return ResponseEntity.ok(counselorService.getAllCounselorsByCategory(sortType, counselorGetRequest));
-        return ResponseEntity.ok(counselorService.getCounselorsByCategoryAndCustomer(customUserDetails.getCustomer()
-                .getCustomerId(), sortType, counselorGetRequest));
+        if (customUserDetails == null) {
+            return ResponseEntity.ok(
+                    counselorService.getAllCounselorsByCategory(sortType, counselorGetRequest));
+        }
+        return ResponseEntity.ok(
+                counselorService.getCounselorsByCategoryAndCustomer(customUserDetails.getCustomer()
+                        .getCustomerId(), sortType, counselorGetRequest));
     }
 
     @Operation(summary = "구매자 페이지에서 마인더 프로필 조회",
@@ -227,11 +238,14 @@ public class CounselorController {
             @Parameter(name = "counselorId", description = "상담사 아이디")
     })
     @GetMapping("/all/{counselorId}")
-    public ResponseEntity<CounselorGetMinderProfileResponse> getCounselorMinderProfile(@PathVariable Long counselorId,
-                                                                                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        if (customUserDetails == null)
+    public ResponseEntity<CounselorGetMinderProfileResponse> getCounselorMinderProfile(
+            @PathVariable Long counselorId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (customUserDetails == null) {
             return ResponseEntity.ok(counselorService.getAllCounselorMinderProfile(counselorId));
-        return ResponseEntity.ok(counselorService.getCounselorMinderProfileByCustomer(counselorId, customUserDetails.getCustomer().getCustomerId()));
+        }
+        return ResponseEntity.ok(counselorService.getCounselorMinderProfileByCustomer(counselorId,
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "상담사 수익 계좌 관리",
@@ -244,9 +258,23 @@ public class CounselorController {
             )
     })
     @PatchMapping("/account")
-    public ResponseEntity<Void> updateAccount(@Valid @RequestBody CounselorUpdateAccountRequest counselorUpdateAccountRequest,
-                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        counselorService.updateAccount(counselorUpdateAccountRequest, customUserDetails.getCustomer().getCustomerId());
+    public ResponseEntity<Void> updateAccount(
+            @Valid @RequestBody CounselorUpdateAccountRequest counselorUpdateAccountRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        counselorService.updateAccount(counselorUpdateAccountRequest,
+                customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "상담사 수익 계좌 조회",
+            description = "상담사 수익 계좌 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/account")
+    public ResponseEntity<CounselorGetAccountResponse> getAccount(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                counselorService.getAccount(customUserDetails.getCustomer().getCustomerId()));
     }
 }
