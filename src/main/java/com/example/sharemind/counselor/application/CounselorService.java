@@ -54,5 +54,7 @@ public interface CounselorService {
 
     void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest, Long customerId);
 
+    CounselorGetAccountResponse getAccount(Long customerId);
+
     void checkCounselorAndCustomerSame(Customer customer, Counselor counselor);
 }
