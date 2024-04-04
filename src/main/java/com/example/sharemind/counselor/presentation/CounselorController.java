@@ -277,4 +277,15 @@ public class CounselorController {
         return ResponseEntity.ok(
                 counselorService.getAccount(customUserDetails.getCustomer().getCustomerId()));
     }
+
+    @Operation(summary = "counselor id 조회",
+            description = "채팅 연결을 위한 상담사 id 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping()
+    public ResponseEntity<Long> getCounselorId(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(counselorService.getCounselorByCustomerId(customUserDetails.getCustomer()
+                .getCustomerId()).getCounselorId());
+    }
 }
