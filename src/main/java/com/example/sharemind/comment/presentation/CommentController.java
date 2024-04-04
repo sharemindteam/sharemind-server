@@ -44,7 +44,7 @@ public class CommentController {
     })
     @GetMapping("/counselors/{postId}")
     public ResponseEntity<List<CommentGetResponse>> getCounselorComments(@PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(commentService.getCounselorComments(postId,
                 customUserDetails.getCustomer().getCustomerId()));
     }
@@ -84,8 +84,15 @@ public class CommentController {
     })
     @GetMapping("/customers/{postId}")
     public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(commentService.getCustomerComments(postId,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @PatchMapping("/customers/{postId}")
+    public ResponseEntity<Void> updateCustomerChosenComment(@PathVariable Long postId, @RequestParam Long commentId,
+                                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        commentService.updateCustomerChosenComment(postId, commentId, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
     }
 }
