@@ -24,7 +24,7 @@
 
 <script type="text/javascript">
     var stompClient = null;
-    var chatId = 183; // 채팅방 ID로 업데이트 ceos1
+    var chatId = 182; // 채팅방 ID로 업데이트 ceos2
     var isCustomer = true; // 고객 여부
 
     function connect() {
@@ -37,11 +37,11 @@
         }, function (frame) {
             console.log('Connected: ' + frame);
 
-            stompClient.subscribe('/queue/chattings/connect/customers/20', function (response) {
+            stompClient.subscribe('/queue/chattings/connect/customers/21', function (response) {
                 console.log('Received response for customers: ', response.body);
             });
             // 구독
-            stompClient.subscribe('/queue/chattings/notifications/customers/20', function (notification) {
+            stompClient.subscribe('/queue/chattings/notifications/customers/21', function (notification) {
                 console.log('Notification: ', notification.body);
             });
             stompClient.subscribe('/queue/chattings/customers/' + chatId, function (statusUpdate) {
