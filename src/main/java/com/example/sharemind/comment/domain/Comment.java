@@ -1,5 +1,7 @@
 package com.example.sharemind.comment.domain;
 
+import com.example.sharemind.comment.exception.CommentErrorCode;
+import com.example.sharemind.comment.exception.CommentException;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.post.domain.Post;
@@ -52,5 +54,15 @@ public class Comment extends BaseEntity {
 
     public void decreaseTotalLike() {
         this.totalLike--;
+    }
+
+    public void checkCommentIsForPost(Post post) {
+        if (!post.getPostId().equals(this.post.getPostId())) {
+            throw new CommentException(CommentErrorCode.COMMENT_NOT_FOUND, commentId.toString());
+        }
+    }
+
+    public void updateIsChosen() {
+        this.isChosen = true;
     }
 }
