@@ -14,4 +14,6 @@ public interface CommentService {
     void createComment(CommentCreateRequest commentCreateRequest, Long customerId);
 
     Comment getCommentByCommentId(Long commentId);
+
+    void updateCustomerChosenComment(Long postId, Long commentId, Long customerId);
 }
