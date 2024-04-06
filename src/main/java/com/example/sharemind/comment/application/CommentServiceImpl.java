@@ -12,6 +12,7 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.post.application.PostService;
+import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -90,5 +91,21 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findByCommentIdAndIsActivatedIsTrue(commentId).orElseThrow(
                 () -> new CommentException(CommentErrorCode.COMMENT_NOT_FOUND,
                         commentId.toString()));
+    }
+
+    @Transactional
+    @Override
+    public void updateCustomerChosenComment(Long postId, Long commentId, Long customerId) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Post post = postService.getPostByPostId(postId);
+        post.checkWriteAuthority(customer);
+        post.checkPostProceeding();
+
+        Comment comment = getCommentByCommentId(commentId);
+        comment.checkCommentIsForPost(post);
+
+        comment.updateIsChosen();
+
+        post.updatePostStatus(PostStatus.COMPLETED);
     }
 }

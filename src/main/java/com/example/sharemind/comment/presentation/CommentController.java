@@ -44,7 +44,7 @@ public class CommentController {
     })
     @GetMapping("/counselors/{postId}")
     public ResponseEntity<List<CommentGetResponse>> getCounselorComments(@PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(commentService.getCounselorComments(postId,
                 customUserDetails.getCustomer().getCustomerId()));
     }
@@ -84,8 +84,37 @@ public class CommentController {
     })
     @GetMapping("/customers/{postId}")
     public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(commentService.getCustomerComments(postId,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "구매자 사이드 답변 채택", description = """
+            - 구매자(게시물 작성자)일 경우 답변 채택을 하는 API""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "채택 성공"),
+            @ApiResponse(responseCode = "400", description = "1. 진행중인 상담이 아닐 때",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "1. 구매자가 작성하지 않은 postId로 요청했을 때",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 사용자일 때 2. 존재하지 않는 일대다 상담 ID 일 때 "
+                    + "3. 존재하지 않는 답변 ID 일 때 4. 해당 게시물에 달린 답변이 아닐 때",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 상담 ID"),
+            @Parameter(name = "commentId", description = "답변 ID")
+    })
+    @PatchMapping("/customers/{postId}")
+    public ResponseEntity<Void> updateCustomerChosenComment(@PathVariable Long postId, @RequestParam Long commentId,
+                                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        commentService.updateCustomerChosenComment(postId, commentId, customUserDetails.getCustomer().getCustomerId());
+        return ResponseEntity.ok().build();
     }
 }
