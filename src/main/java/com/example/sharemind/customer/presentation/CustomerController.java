@@ -36,4 +36,13 @@ public class CustomerController {
     public ResponseEntity<String> getCustomerNickname(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(customerService.getCustomerNickname(customUserDetails.getCustomer().getCustomerId()));
     }
+
+    @Operation(summary = "customerId 조회", description = "채팅 연결에 필요한 customerId 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+    })
+    @GetMapping()
+    public ResponseEntity<Long> getCustomerId(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(customUserDetails.getCustomer().getCustomerId());
+    }
 }

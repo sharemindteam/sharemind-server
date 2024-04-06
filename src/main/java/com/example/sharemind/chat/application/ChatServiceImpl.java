@@ -107,7 +107,8 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void getAndSendChatIdsByWebSocket(Map<String, Object> sessionAttributes, Boolean isCustomer) {
         ChatGetConnectResponse chatGetConnectResponse = getChatIds(sessionAttributes, isCustomer);
-        sendChatIds(chatGetConnectResponse);
+        Long userId = (Long) sessionAttributes.get("userId");
+        sendChatIds(chatGetConnectResponse, userId);
     }
 
     private ChatGetConnectResponse getChatIds(Map<String, Object> sessionAttributes, Boolean isCustomer) {
@@ -119,9 +120,9 @@ public class ChatServiceImpl implements ChatService {
         return ChatGetConnectResponse.of(userId, chatRoomIds);
     }
 
-    private void sendChatIds(ChatGetConnectResponse chatGetConnectResponse) {
-        simpMessagingTemplate.convertAndSend("/queue/chattings/connect/counselors/", chatGetConnectResponse);
-        simpMessagingTemplate.convertAndSend("/queue/chattings/connect/customers/", chatGetConnectResponse);
+    private void sendChatIds(ChatGetConnectResponse chatGetConnectResponse, Long userId) {
+        simpMessagingTemplate.convertAndSend("/queue/chattings/connect/counselors/" + userId, chatGetConnectResponse);
+        simpMessagingTemplate.convertAndSend("/queue/chattings/connect/customers/" + userId, chatGetConnectResponse);
     }
 
     private Long getLatestMessageIdForChat(Chat chat) { //todo: ChatMessageService로 빼고싶었는데 순환참조 문제때문에 못뺌.. 구조 고민해보기
@@ -243,7 +244,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void getAndSendChatStatus(Long chatId, Map<String, Object> sessionAttributes, ChatStatusUpdateRequest chatStatusUpdateRequest,
+    public void getAndSendChatStatus(Long chatId, Map<String, Object> sessionAttributes,
+                                     ChatStatusUpdateRequest chatStatusUpdateRequest,
                                      Boolean isCustomer) {
         ChatGetStatusResponse chatGetStatusResponse = getChatStatus(chatId, chatStatusUpdateRequest, isCustomer);
 
@@ -284,7 +286,9 @@ public class ChatServiceImpl implements ChatService {
                 chatTaskScheduler.checkSendRequest(chat); //10분을 세는 상황
 
                 if (!chat.getAutoRefund()) // 처음 요청을 보낸거 기준으로 자동환불 처리 해주기 때문에
+                {
                     chat.updateAutoRefundTrue();
+                }
 
                 break;
             }
@@ -395,7 +399,8 @@ public class ChatServiceImpl implements ChatService {
     public void setChatInSessionRedis(Long chatId, Long customerId, Boolean isCustomer) {
         String redisKey = isCustomer
                 ? CUSTOMER_CHATTING_PREFIX + customerId.toString()
-                : COUNSELOR_CHATTING_PREFIX + counselorService.getCounselorByCustomerId(customerId).getCounselorId().toString();
+                : COUNSELOR_CHATTING_PREFIX + counselorService.getCounselorByCustomerId(customerId).getCounselorId()
+                        .toString();
         Map<Long, Integer> chatIdCounts = sessionRedisTemplate.opsForValue().get(redisKey);
 
         if (chatIdCounts == null) {
@@ -413,14 +418,16 @@ public class ChatServiceImpl implements ChatService {
 
     private void sendReadAllEvent(Long chatId, Long customerId, Boolean isCustomer) {
 
-        if (isCustomer)
+        if (isCustomer) {
             simpMessagingTemplate.convertAndSend(
                     "/queue/chattings/notifications/customers/" + customerId,
                     ChatNotifyEventResponse.of(chatId, ChatRoomWebsocketStatus.CHAT_READ_ALL));
-        else
+        } else {
             simpMessagingTemplate.convertAndSend(
-                    "/queue/chattings/notifications/counselors/" + counselorService.getCounselorByCustomerId(customerId).getCounselorId(),
+                    "/queue/chattings/notifications/counselors/" + counselorService.getCounselorByCustomerId(customerId)
+                            .getCounselorId(),
                     ChatNotifyEventResponse.of(chatId, ChatRoomWebsocketStatus.CHAT_READ_ALL));
+        }
     }
 
     @Override
@@ -431,7 +438,8 @@ public class ChatServiceImpl implements ChatService {
             Counselor counselor = counselorService.getCounselorByCounselorId(userId);
             customerId = customerService.getCustomerByCounselor(counselor).getCustomerId();
         }
-        String redisKey = isCustomer ? CUSTOMER_CHATTING_PREFIX + userId.toString() : COUNSELOR_CHATTING_PREFIX + userId.toString();
+        String redisKey = isCustomer ? CUSTOMER_CHATTING_PREFIX + userId.toString()
+                : COUNSELOR_CHATTING_PREFIX + userId.toString();
         Map<Long, Integer> chatIdCounts = sessionRedisTemplate.opsForValue().get(redisKey);
         if (chatIdCounts != null && chatIdCounts.containsKey(chatId)) {
             int count = chatIdCounts.get(chatId);

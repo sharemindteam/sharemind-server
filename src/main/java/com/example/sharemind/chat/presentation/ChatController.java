@@ -94,7 +94,8 @@ public class ChatController {
     public ResponseEntity<ChatGetRoomInfoResponse> getCounselorChatInfo(
             @PathVariable Long chatId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(chatService.getChatInfoByCounselor(chatId, customUserDetails.getCustomer().getCustomerId()));
+        return ResponseEntity.ok(
+                chatService.getChatInfoByCounselor(chatId, customUserDetails.getCustomer().getCustomerId()));
     }
 
     @MessageMapping("/api/v1/chat/customers/{chatId}")
@@ -146,14 +147,16 @@ public class ChatController {
     }
 
     @MessageMapping("/api/v1/chat/customers/exit/{chatId}")
-    public ResponseEntity<Void> leaveCustomerSession(@DestinationVariable Long chatId, SimpMessageHeaderAccessor headerAccessor) {
+    public ResponseEntity<Void> leaveCustomerSession(@DestinationVariable Long chatId,
+                                                     SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
         chatService.leaveChatSession(sessionAttributes, chatId, true);
         return ResponseEntity.ok().build();
     }
 
     @MessageMapping("/api/v1/chat/counselors/exit/{chatId}")
-    public ResponseEntity<Void> leaveCounselorSession(@DestinationVariable Long chatId, SimpMessageHeaderAccessor headerAccessor) {
+    public ResponseEntity<Void> leaveCounselorSession(@DestinationVariable Long chatId,
+                                                      SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = Objects.requireNonNull(headerAccessor.getSessionAttributes());
         chatService.leaveChatSession(sessionAttributes, chatId, false);
         return ResponseEntity.ok().build();
