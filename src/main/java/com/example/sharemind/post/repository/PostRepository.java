@@ -21,9 +21,9 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
             "ORDER BY total_like DESC LIMIT :size", nativeQuery = true)
     List<Post> findPopularityPosts(LocalDate weekAgo, int size);
 
-    @Query(value = "SELECT post_id FROM Post WHERE post_status = 'PROCEEDING' AND published_at <= CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
+    @Query(value = "SELECT post_id FROM post WHERE post_status = 'PROCEEDING' AND published_at <= CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
     List<Long> findRandomProceedingPostIdsAfter24Hours();
 
-    @Query(value = "SELECT post_id FROM Post WHERE post_status = 'PROCEEDING' AND published_at > CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
+    @Query(value = "SELECT post_id FROM post WHERE post_status = 'PROCEEDING' AND published_at > CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
     List<Long> findRandomProceedingPostIdsWithin24Hours();
 }
