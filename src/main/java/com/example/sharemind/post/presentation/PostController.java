@@ -144,7 +144,7 @@ public class PostController {
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId""")
     })
     @GetMapping("/customers")
-    public ResponseEntity<List<PostGetListResponse>> getPostsByCustomer(
+    public ResponseEntity<List<PostGetCustomerListResponse>> getPostsByCustomer(
             @RequestParam Boolean filter,
             @RequestParam Long postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -192,7 +192,7 @@ public class PostController {
                     3. 형식 예시에 적어둔 것과 꼭 맞춰주셔야 합니다""")
     })
     @GetMapping("/customers/public")
-    public ResponseEntity<List<PostGetListResponse>> getPublicPostsByCustomer(
+    public ResponseEntity<List<PostGetPublicListResponse>> getPublicPostsByCustomer(
             @RequestParam Long postId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {

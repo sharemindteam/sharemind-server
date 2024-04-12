@@ -7,7 +7,7 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.domain.Post;
-import com.example.sharemind.post.dto.response.PostGetListResponse;
+import com.example.sharemind.post.dto.response.PostGetPublicListResponse;
 import com.example.sharemind.postLike.repository.PostLikeRepository;
 import com.example.sharemind.postScrap.repository.PostScrapRepository;
 import com.example.sharemind.searchWord.domain.SearchWord;
@@ -76,20 +76,20 @@ public class SearchWordServiceImpl implements SearchWordService {
 
     @Transactional
     @Override
-    public List<PostGetListResponse> storeAllSearchWordAndGetPosts(String sortType,
+    public List<PostGetPublicListResponse> storeAllSearchWordAndGetPosts(String sortType,
                                                                    SearchWordPostFindRequest searchWordPostFindRequest) {
         storeSearchWordInDB(searchWordPostFindRequest.getWord());
 
         List<Post> posts = postService.getPostByWordWithPagination(searchWordPostFindRequest, sortType);
 
         return posts.stream()
-                .map(post -> PostGetListResponse.of(post, false, false))
+                .map(post -> PostGetPublicListResponse.of(post, false, false))
                 .toList();
     }
 
     @Transactional
     @Override
-    public List<PostGetListResponse> storeSearchWordAndGetPosts(Long customerId, String sortType,
+    public List<PostGetPublicListResponse> storeSearchWordAndGetPosts(Long customerId, String sortType,
                                                                 SearchWordPostFindRequest searchWordPostFindRequest) {
         storeSearchWordInRedis(customerId, searchWordPostFindRequest.getWord());
         storeSearchWordInDB(searchWordPostFindRequest.getWord());
@@ -99,7 +99,7 @@ public class SearchWordServiceImpl implements SearchWordService {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         return posts.stream()
-                .map(post -> PostGetListResponse.of(post,
+                .map(post -> PostGetPublicListResponse.of(post,
                         postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post, customer),
                         postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post, customer)))
                 .toList();

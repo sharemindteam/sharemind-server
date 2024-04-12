@@ -23,11 +23,11 @@ public interface PostService {
 
     PostGetResponse getPost(Long postId, Long customerId);
 
-    List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
+    List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
 
     List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId, Long customerId);
 
-    List<PostGetListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+    List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
             Long customerId);
 
     List<PostGetPopularityResponse> getPopularityPosts();

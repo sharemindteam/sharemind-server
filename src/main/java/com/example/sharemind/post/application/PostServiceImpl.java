@@ -109,14 +109,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId,
+    public List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId,
             Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
                         POST_PAGE_SIZE).stream()
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
-                        ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post,
+                        ? PostGetCustomerListResponse.ofIsNotCompleted(post) : PostGetCustomerListResponse.of(post,
                         postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                 customer),
                         postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
@@ -137,14 +137,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+    public List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
             Long customerId) {
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
             return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                             POST_PAGE_SIZE).stream()
-                    .map(post -> PostGetListResponse.of(post,
+                    .map(post -> PostGetPublicListResponse.of(post,
                             postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                     customer),
                             postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
@@ -154,7 +154,7 @@ public class PostServiceImpl implements PostService {
 
         return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                         POST_PAGE_SIZE).stream()
-                .map(post -> PostGetListResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED))
+                .map(post -> PostGetPublicListResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED))
                 .toList();
     }
 
