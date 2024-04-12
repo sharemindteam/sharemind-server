@@ -242,4 +242,23 @@ public class PostController {
         return ResponseEntity.ok(postService.getCounselorPostContent(postId,
                 customUserDetails.getCustomer().getCustomerId()));
     }
+
+    @Operation(summary = "게시물 조회 시 조회한 사람이 작성자인지 여부 조회", description = """
+            - 게시물 조회 시 조회한 사람이 작성자인지 여부 조회""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 일대다 질문 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 질문 아이디")
+    })
+    @GetMapping("/customers/public/{postId}")
+    public Boolean getIsPostOwner(@PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return postService.getIsPostOwner(postId,
+                customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId());
+    }
 }
