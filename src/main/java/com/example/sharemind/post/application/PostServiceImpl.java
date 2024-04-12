@@ -39,6 +39,7 @@ public class PostServiceImpl implements PostService {
     private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
     private static final Boolean POST_IS_NOT_LIKED = false;
     private static final Boolean POST_IS_NOT_SCRAPPED = false;
+    private static final Boolean IS_NOT_POST_OWNER = false;
 
     private final CustomerService customerService;
     private final CounselorService counselorService;
@@ -216,6 +217,18 @@ public class PostServiceImpl implements PostService {
         Post post = getPostByPostId(searchWordPostFindRequest.getPostId());
         return postRepository.getPostByWordWithSortType(searchWordPostFindRequest, sortColumn, post,
                 POST_PAGE_SIZE);
+    }
+
+    @Override
+    public Boolean getIsPostOwner(Long postId, Long customerId) {
+        if (customerId != 0) {
+            Post post = getPostByPostId(postId);
+            Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+            return post.checkOwner(customer.getCustomerId());
+        }
+
+        return IS_NOT_POST_OWNER;
     }
 
     private Boolean checkCounselorReadAuthority(Long postId, Long customerId) {

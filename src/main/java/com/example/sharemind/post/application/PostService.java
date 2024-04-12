@@ -40,4 +40,6 @@ public interface PostService {
 
     List<Post> getPostByWordWithPagination(SearchWordPostFindRequest searchWordPostFindRequest,
                                            String sortType);
+
+    Boolean getIsPostOwner(Long postId, Long customerId);
 }
