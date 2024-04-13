@@ -77,31 +77,6 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "일대다 상담 질문 임시저장 내용 존재 여부 조회",
-            description = "임시저장 내용 존재 여부 조회")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                    description = "조회 성공(임시저장 내용 존재하지 않으면 수정일시는 null로 반환됨)"),
-            @ApiResponse(responseCode = "403",
-                    description = "접근 권한이 없는 질문에 대한 요청",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomExceptionResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 일대다 질문 아이디로 요청됨",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomExceptionResponse.class))
-            )
-    })
-    @Parameters({
-            @Parameter(name = "postId", description = "일대다 질문 아이디")
-    })
-    @GetMapping("/drafts/{postId}")
-    public ResponseEntity<PostGetIsSavedResponse> getIsSaved(@PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(
-                postService.getIsSaved(postId, customUserDetails.getCustomer().getCustomerId()));
-    }
-
     @Operation(summary = "구매자&비로그인 사용자 일대다 상담 질문 단건 조회", description = """
             - 구매자&비로그인 사용자 일대다 상담 질문 단건 조회
             - 로그인한 사용자일 경우 헤더에 accessToken을 넣어주세요""")
@@ -144,7 +119,7 @@ public class PostController {
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId""")
     })
     @GetMapping("/customers")
-    public ResponseEntity<List<PostGetListResponse>> getPostsByCustomer(
+    public ResponseEntity<List<PostGetCustomerListResponse>> getPostsByCustomer(
             @RequestParam Boolean filter,
             @RequestParam Long postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -192,7 +167,7 @@ public class PostController {
                     3. 형식 예시에 적어둔 것과 꼭 맞춰주셔야 합니다""")
     })
     @GetMapping("/customers/public")
-    public ResponseEntity<List<PostGetListResponse>> getPublicPostsByCustomer(
+    public ResponseEntity<List<PostGetPublicListResponse>> getPublicPostsByCustomer(
             @RequestParam Long postId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -241,5 +216,24 @@ public class PostController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getCounselorPostContent(postId,
                 customUserDetails.getCustomer().getCustomerId()));
+    }
+
+    @Operation(summary = "게시물 조회 시 조회한 사람이 작성자인지 여부 조회", description = """
+            - 게시물 조회 시 조회한 사람이 작성자인지 여부 조회""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 일대다 질문 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 질문 아이디")
+    })
+    @GetMapping("/customers/public/{postId}")
+    public Boolean getIsPostOwner(@PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return postService.getIsPostOwner(postId,
+                customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId());
     }
 }

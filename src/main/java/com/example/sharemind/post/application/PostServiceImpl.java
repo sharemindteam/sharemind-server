@@ -39,6 +39,7 @@ public class PostServiceImpl implements PostService {
     private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
     private static final Boolean POST_IS_NOT_LIKED = false;
     private static final Boolean POST_IS_NOT_SCRAPPED = false;
+    private static final Boolean IS_NOT_POST_OWNER = false;
 
     private final CustomerService customerService;
     private final CounselorService counselorService;
@@ -79,19 +80,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostGetIsSavedResponse getIsSaved(Long postId, Long customerId) {
-        Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Post post = getPostByPostId(postId);
-        post.checkWriteAuthority(customer);
-
-        if ((post.getIsCompleted() != null) && !post.getIsCompleted()) {
-            return PostGetIsSavedResponse.of(post);
-        } else {
-            return PostGetIsSavedResponse.of();
-        }
-    }
-
-    @Override
     public PostGetResponse getPost(Long postId, Long customerId) {
         Post post = getPostByPostId(postId);
         post.checkReadAuthority(customerId);
@@ -109,14 +97,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId,
+    public List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId,
             Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
                         POST_PAGE_SIZE).stream()
                 .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
-                        ? PostGetListResponse.ofIsNotCompleted(post) : PostGetListResponse.of(post,
+                        ? PostGetCustomerListResponse.ofIsNotCompleted(post) : PostGetCustomerListResponse.of(post,
                         postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                 customer),
                         postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
@@ -137,14 +125,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+    public List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
             Long customerId) {
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
             return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                             POST_PAGE_SIZE).stream()
-                    .map(post -> PostGetListResponse.of(post,
+                    .map(post -> PostGetPublicListResponse.of(post,
                             postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                     customer),
                             postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
@@ -154,7 +142,7 @@ public class PostServiceImpl implements PostService {
 
         return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                         POST_PAGE_SIZE).stream()
-                .map(post -> PostGetListResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED))
+                .map(post -> PostGetPublicListResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED))
                 .toList();
     }
 
@@ -216,6 +204,18 @@ public class PostServiceImpl implements PostService {
         Post post = getPostByPostId(searchWordPostFindRequest.getPostId());
         return postRepository.getPostByWordWithSortType(searchWordPostFindRequest, sortColumn, post,
                 POST_PAGE_SIZE);
+    }
+
+    @Override
+    public Boolean getIsPostOwner(Long postId, Long customerId) {
+        if (customerId != 0) {
+            Post post = getPostByPostId(postId);
+            Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+            return post.checkOwner(customer.getCustomerId());
+        }
+
+        return IS_NOT_POST_OWNER;
     }
 
     private Boolean checkCounselorReadAuthority(Long postId, Long customerId) {

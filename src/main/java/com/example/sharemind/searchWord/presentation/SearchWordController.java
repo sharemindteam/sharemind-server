@@ -3,7 +3,7 @@ package com.example.sharemind.searchWord.presentation;
 import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
-import com.example.sharemind.post.dto.response.PostGetListResponse;
+import com.example.sharemind.post.dto.response.PostGetPublicListResponse;
 import com.example.sharemind.searchWord.application.SearchWordService;
 import com.example.sharemind.searchWord.dto.request.SearchWordDeleteRequest;
 import com.example.sharemind.searchWord.dto.request.SearchWordCounselorFindRequest;
@@ -98,7 +98,7 @@ public class SearchWordController {
             @Parameter(name = "sortType", description = "LATEST: 최근순, DESC_TOTAL_COMMENT: 코멘트 많은 순, DESC_TOTAL_LIKE: 공감 많은 순")
     })
     @PatchMapping("/results/posts")
-    public ResponseEntity<List<PostGetListResponse>> getSearchWordPostResults(
+    public ResponseEntity<List<PostGetPublicListResponse>> getSearchWordPostResults(
             @Valid @RequestBody SearchWordPostFindRequest searchWordPostFindRequest, @RequestParam String sortType,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (customUserDetails == null) {

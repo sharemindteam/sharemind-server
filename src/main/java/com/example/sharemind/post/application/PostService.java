@@ -19,15 +19,13 @@ public interface PostService {
 
     void updatePost(PostUpdateRequest postUpdateRequest, Long customerId);
 
-    PostGetIsSavedResponse getIsSaved(Long postId, Long customerId);
-
     PostGetResponse getPost(Long postId, Long customerId);
 
-    List<PostGetListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
+    List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
 
     List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId, Long customerId);
 
-    List<PostGetListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+    List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
             Long customerId);
 
     List<PostGetPopularityResponse> getPopularityPosts();
@@ -40,4 +38,6 @@ public interface PostService {
 
     List<Post> getPostByWordWithPagination(SearchWordPostFindRequest searchWordPostFindRequest,
                                            String sortType);
+
+    Boolean getIsPostOwner(Long postId, Long customerId);
 }

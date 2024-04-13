@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class PostGetListResponse {
+public class PostGetPublicListResponse {
 
     @Schema(description = "일대다 질문 아이디")
     private final Long postId;
@@ -20,9 +20,6 @@ public class PostGetListResponse {
 
     @Schema(description = "상담 내용")
     private final String content;
-
-    @Schema(description = "공개/비공개 여부")
-    private final Boolean isPublic;
 
     @Schema(description = "조회한 회원의 좋아요 여부")
     private final Boolean isLiked;
@@ -47,13 +44,12 @@ public class PostGetListResponse {
     private final LocalDateTime finishedAt;
 
     @Builder
-    public PostGetListResponse(Long postId, String title, String content, Boolean isPublic,
-            Boolean isLiked, Long totalLike, Boolean isScrapped, Long totalScrap, Long totalComment,
+    public PostGetPublicListResponse(Long postId, String title, String content, Boolean isLiked,
+            Long totalLike, Boolean isScrapped, Long totalScrap, Long totalComment,
             String updatedAt, LocalDateTime finishedAt) {
         this.postId = postId;
         this.title = title;
         this.content = content;
-        this.isPublic = isPublic;
         this.isLiked = isLiked;
         this.totalLike = totalLike;
         this.isScrapped = isScrapped;
@@ -63,31 +59,14 @@ public class PostGetListResponse {
         this.finishedAt = finishedAt;
     }
 
-    public static PostGetListResponse of(Post post, Boolean isLiked, Boolean isScrapped) {
-        return PostGetListResponse.builder()
+    public static PostGetPublicListResponse of(Post post, Boolean isLiked, Boolean isScrapped) {
+        return PostGetPublicListResponse.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .isPublic(post.getIsPublic())
                 .isLiked(isLiked)
                 .totalLike(post.getTotalLike())
                 .isScrapped(isScrapped)
-                .totalScrap(post.getTotalScrap())
-                .totalComment(post.getTotalComment())
-                .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
-                .finishedAt(post.getFinishedAt())
-                .build();
-    }
-
-    public static PostGetListResponse ofIsNotCompleted(Post post) {
-        return PostGetListResponse.builder()
-                .postId(post.getPostId())
-                .title(null)
-                .content(null)
-                .isPublic(post.getIsPublic())
-                .isLiked(false)
-                .totalLike(post.getTotalLike())
-                .isScrapped(false)
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
                 .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
