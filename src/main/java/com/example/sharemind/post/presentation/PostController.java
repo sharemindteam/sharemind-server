@@ -77,31 +77,6 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "일대다 상담 질문 임시저장 내용 존재 여부 조회",
-            description = "임시저장 내용 존재 여부 조회")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                    description = "조회 성공(임시저장 내용 존재하지 않으면 수정일시는 null로 반환됨)"),
-            @ApiResponse(responseCode = "403",
-                    description = "접근 권한이 없는 질문에 대한 요청",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomExceptionResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 일대다 질문 아이디로 요청됨",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomExceptionResponse.class))
-            )
-    })
-    @Parameters({
-            @Parameter(name = "postId", description = "일대다 질문 아이디")
-    })
-    @GetMapping("/drafts/{postId}")
-    public ResponseEntity<PostGetIsSavedResponse> getIsSaved(@PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(
-                postService.getIsSaved(postId, customUserDetails.getCustomer().getCustomerId()));
-    }
-
     @Operation(summary = "구매자&비로그인 사용자 일대다 상담 질문 단건 조회", description = """
             - 구매자&비로그인 사용자 일대다 상담 질문 단건 조회
             - 로그인한 사용자일 경우 헤더에 accessToken을 넣어주세요""")

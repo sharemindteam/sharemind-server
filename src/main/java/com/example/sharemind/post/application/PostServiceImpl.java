@@ -80,19 +80,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostGetIsSavedResponse getIsSaved(Long postId, Long customerId) {
-        Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Post post = getPostByPostId(postId);
-        post.checkWriteAuthority(customer);
-
-        if ((post.getIsCompleted() != null) && !post.getIsCompleted()) {
-            return PostGetIsSavedResponse.of(post);
-        } else {
-            return PostGetIsSavedResponse.of();
-        }
-    }
-
-    @Override
     public PostGetResponse getPost(Long postId, Long customerId) {
         Post post = getPostByPostId(postId);
         post.checkReadAuthority(customerId);
