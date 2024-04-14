@@ -9,6 +9,9 @@ import lombok.Getter;
 @Getter
 public class CommentGetResponse {
 
+    @Schema(description = "댓글 id")
+    private final Long commentId;
+
     @Schema(description = "상담사 닉네임")
     private final String nickName;
 
@@ -28,8 +31,9 @@ public class CommentGetResponse {
     private final Boolean isChosen;
 
     @Builder
-    public CommentGetResponse(String nickName, String content, Boolean isLiked, Long totalLike,
-            String updatedAt, Boolean isChosen) {
+    public CommentGetResponse(Long commentId, String nickName, String content, Boolean isLiked, Long totalLike,
+                              String updatedAt, Boolean isChosen) {
+        this.commentId = commentId;
         this.nickName = nickName;
         this.content = content;
         this.isLiked = isLiked;
@@ -40,6 +44,7 @@ public class CommentGetResponse {
 
     public static CommentGetResponse of(Comment comment, Boolean isLiked) {
         return CommentGetResponse.builder()
+                .commentId(comment.getCommentId())
                 .nickName(comment.getCounselor().getNickname())
                 .content(comment.getContent())
                 .isLiked(isLiked)
