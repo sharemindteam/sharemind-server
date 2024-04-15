@@ -1,6 +1,7 @@
 package com.example.sharemind.global.websocket;
 
 import com.example.sharemind.auth.exception.AuthException;
+import com.example.sharemind.counselor.exception.CounselorException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
@@ -26,12 +27,21 @@ public class StompErrorHandler extends StompSubProtocolErrorHandler {
         if (exception instanceof AuthException) {
             return handleAuthException(clientMessage, exception);
         }
+        if (exception instanceof CounselorException) {
+            return handleCounselorException(clientMessage, exception);
+        }
         return super.handleClientMessageProcessingError(clientMessage, ex);
     }
 
     private Message<byte[]> handleAuthException(Message<byte[]> clientMessage,
                                                 Throwable ex) {
         return prepareErrorMessage(clientMessage, ex.getMessage(), HttpStatus.UNAUTHORIZED.name());
+    }
+
+    private Message<byte[]> handleCounselorException(Message<byte[]> clientMessage,
+                                                     Throwable ex) {
+        CounselorException ce = (CounselorException) ex;
+        return prepareErrorMessage(clientMessage, ce.getMessage(), ce.getErrorCode().getHttpStatus().toString());
     }
 
     private Message<byte[]> prepareErrorMessage(final Message<byte[]> clientMessage,

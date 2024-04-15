@@ -8,6 +8,8 @@ import com.example.sharemind.auth.exception.AuthErrorCode;
 import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.consult.repository.ConsultRepository;
 import com.example.sharemind.counselor.application.CounselorService;
+import com.example.sharemind.counselor.exception.CounselorErrorCode;
+import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.global.jwt.TokenProvider;
@@ -85,9 +87,13 @@ public class StompPreHandler implements ChannelInterceptor {
     }
 
     private Long getUserId(CustomUserDetails userDetails, boolean isCustomer) {
+        if (!isCustomer && userDetails.getCustomer().getCounselor() == null) {
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_FOUND,
+                    userDetails.getCustomer().getCustomerId().toString());
+        }
         return isCustomer ? userDetails.getCustomer().getCustomerId()
                 : userDetails.getCustomer().getCounselor().getCounselorId();
-    }//todo: counselorId가 null인 경우 에러 처리
+    }
 
     private String getNickname(Long userId, boolean isCustomer) {
         return isCustomer ? customerService.getCustomerByCustomerId(userId).getNickname()
