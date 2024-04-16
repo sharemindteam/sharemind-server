@@ -15,6 +15,9 @@ public class CommentGetResponse {
     @Schema(description = "상담사 닉네임")
     private final String nickName;
 
+    @Schema(description = "상담 스타일")
+    private final String consultStyle;
+
     @Schema(description = "답변 내용")
     private final String content;
 
@@ -31,10 +34,12 @@ public class CommentGetResponse {
     private final Boolean isChosen;
 
     @Builder
-    public CommentGetResponse(Long commentId, String nickName, String content, Boolean isLiked, Long totalLike,
+    public CommentGetResponse(Long commentId, String nickName, String consultStyle, String content, Boolean isLiked,
+                              Long totalLike,
                               String updatedAt, Boolean isChosen) {
         this.commentId = commentId;
         this.nickName = nickName;
+        this.consultStyle = consultStyle;
         this.content = content;
         this.isLiked = isLiked;
         this.totalLike = totalLike;
@@ -46,6 +51,7 @@ public class CommentGetResponse {
         return CommentGetResponse.builder()
                 .commentId(comment.getCommentId())
                 .nickName(comment.getCounselor().getNickname())
+                .consultStyle(comment.getCounselor().getConsultStyle().getDisplayName())
                 .content(comment.getContent())
                 .isLiked(isLiked)
                 .totalLike(comment.getTotalLike())
