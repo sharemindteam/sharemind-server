@@ -117,4 +117,22 @@ public class CommentController {
         commentService.updateCustomerChosenComment(postId, commentId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "상담사의 댓글 작성 여부 조회", description = """
+            - 상담사가 해당 게시물에 댓글을 작성하였는지 조회하는 API""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 일대다 질문 아이디로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 상담 ID"),
+    })
+    @GetMapping("/counselors/authentication/{postId}")
+    public Boolean getIsCommentOwner(@PathVariable Long postId,
+                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return commentService.getIsCommentOwner(postId, customUserDetails.getCustomer().getCustomerId());
+    }
 }
