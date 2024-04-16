@@ -16,4 +16,6 @@ public interface CommentService {
     Comment getCommentByCommentId(Long commentId);
 
     void updateCustomerChosenComment(Long postId, Long commentId, Long customerId);
+
+    Boolean getIsCommentOwner(Long postId, Long customerId);
 }
