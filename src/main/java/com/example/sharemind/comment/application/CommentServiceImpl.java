@@ -108,4 +108,12 @@ public class CommentServiceImpl implements CommentService {
 
         post.updatePostStatus(PostStatus.COMPLETED);
     }
+
+    @Override
+    public Boolean getIsCommentOwner(Long postId, Long customerId) {
+        Post post = postService.getPostByPostId(postId);
+        Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+
+        return commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null;
+    }
 }
