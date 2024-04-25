@@ -127,13 +127,10 @@ public class LetterServiceImpl implements LetterService {
             LetterMessage recentMessage1 = getRecentMessage(letter1);
             LetterMessage recentMessage2 = getRecentMessage(letter2);
 
-            if (recentMessage1 == null) {
-                return (recentMessage2 == null) ? 0 : 1;
-            }
-            if (recentMessage2 == null) {
-                return -1;
-            }
-            return recentMessage2.getUpdatedAt().compareTo(recentMessage1.getUpdatedAt());
+            LocalDateTime updated1 = (recentMessage1 == null) ? letter1.getUpdatedAt() : recentMessage1.getUpdatedAt();
+            LocalDateTime updated2 = (recentMessage2 == null) ? letter2.getUpdatedAt() : recentMessage2.getUpdatedAt();
+
+            return updated2.compareTo(updated1);
         };
         switch (sortType) {
             case LATEST -> letters.sort(comparator);
