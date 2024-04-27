@@ -8,6 +8,7 @@ import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.content.PostListSortType;
+import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -216,6 +218,17 @@ public class PostServiceImpl implements PostService {
         }
 
         return IS_NOT_POST_OWNER;
+    }
+
+    @Scheduled(cron = "0 0 0/1 * * *", zone = "Asia/Seoul")
+    @Transactional
+    public void checkPostStatus() {
+        postRepository.findAllProceedingPublicPostsAfter72Hours()
+                .forEach(post -> {
+                    if (post.getTotalComment() > 0) {
+                        post.updatePostStatus(PostStatus.COMPLETED);
+                    }
+                });
     }
 
     private Boolean checkCounselorReadAuthority(Long postId, Long customerId) {
