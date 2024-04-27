@@ -55,7 +55,7 @@ public class CommentGetResponse {
                 .content(comment.getContent())
                 .isLiked(isLiked)
                 .totalLike(comment.getTotalLike())
-                .updatedAt(TimeUtil.getUpdatedAt(comment.getUpdatedAt()))
+                .updatedAt(TimeUtil.getUpdatedAt(comment.getCreatedAt()))
                 .isChosen(comment.getIsChosen())
                 .build();
     }
