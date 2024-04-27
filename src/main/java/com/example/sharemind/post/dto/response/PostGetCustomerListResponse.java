@@ -78,7 +78,7 @@ public class PostGetCustomerListResponse {
                 .isScrapped(isScrapped)
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
-                .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
+                .updatedAt(TimeUtil.getUpdatedAt(post.getPublishedAt()))
                 .finishedAt(post.getFinishedAt())
                 .build();
     }
@@ -95,7 +95,7 @@ public class PostGetCustomerListResponse {
                 .isScrapped(false)
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
-                .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
+                .updatedAt(TimeUtil.getUpdatedAt(post.getPublishedAt()))
                 .finishedAt(post.getFinishedAt())
                 .build();
     }

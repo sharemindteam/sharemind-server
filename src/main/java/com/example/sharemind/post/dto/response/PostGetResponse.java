@@ -66,7 +66,7 @@ public class PostGetResponse {
                 .totalLike(post.getTotalLike())
                 .isScrapped(isScrapped)
                 .totalScrap(post.getTotalScrap())
-                .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
+                .updatedAt(TimeUtil.getUpdatedAt(post.getPublishedAt()))
                 .build();
     }
 }

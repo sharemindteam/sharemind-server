@@ -69,7 +69,7 @@ public class PostGetPublicListResponse {
                 .isScrapped(isScrapped)
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
-                .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
+                .updatedAt(TimeUtil.getUpdatedAt(post.getPublishedAt()))
                 .finishedAt(post.getFinishedAt())
                 .build();
     }
