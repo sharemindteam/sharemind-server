@@ -1,14 +1,17 @@
 package com.example.sharemind.global.utils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 public class TimeUtil {
+
     public static String getUpdatedAt(LocalDateTime updatedAt) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul"))
+                .toLocalDateTime();
 
         if (ChronoUnit.YEARS.between(updatedAt, now) > 0) {
             return updatedAt.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
@@ -19,12 +22,14 @@ public class TimeUtil {
                 return updatedAt.format(DateTimeFormatter.ofPattern("MM.dd"));
             }
         } else {
-            return updatedAt.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.KOREA));
+            return updatedAt.format(
+                    DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.KOREA));
         }
     }
 
     public static String getUpdatedAtForReview(LocalDateTime updatedAt) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul"))
+                .toLocalDateTime();
 
         if (ChronoUnit.YEARS.between(updatedAt, now) > 0) {
             return updatedAt.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
@@ -34,7 +39,8 @@ public class TimeUtil {
     }
 
     public static String getChatSendRequestLeftTime(LocalDateTime updatedAt) {
-        long gapSeconds = ChronoUnit.SECONDS.between(updatedAt, LocalDateTime.now());
+        long gapSeconds = ChronoUnit.SECONDS.between(updatedAt,
+                LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime());
         long totalSeconds = 600 - gapSeconds;
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;
