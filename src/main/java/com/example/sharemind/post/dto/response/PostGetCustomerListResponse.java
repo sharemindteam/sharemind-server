@@ -95,7 +95,7 @@ public class PostGetCustomerListResponse {
                 .isScrapped(false)
                 .totalScrap(post.getTotalScrap())
                 .totalComment(post.getTotalComment())
-                .updatedAt(TimeUtil.getUpdatedAt(post.getPublishedAt()))
+                .updatedAt(TimeUtil.getUpdatedAt(post.getUpdatedAt()))
                 .finishedAt(post.getFinishedAt())
                 .build();
     }
