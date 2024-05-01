@@ -62,12 +62,14 @@ public class ChatLetterGetResponse {
     }
 
     public static ChatLetterGetResponse of(String nickname, int unreadMessageCount, Chat chat, Counselor counselor,
-                                           ChatMessage chatMessage) {
+                                           ChatMessage chatMessage, Boolean isCustomer) {
         Boolean reviewCompleted = null;
 
         if (chatMessage == null) {
             return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
-                    chat.changeChatStatusForChatList().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chat.getConsult().getUpdatedAt()), counselor.getNickname() + "님께 고민내용을 남겨주세요. " + counselor.getNickname() + "님이 24시간 내에 채팅 요청을 드립니다.",
+                    chat.changeChatStatusForChatList().getDisplayName(), nickname,
+                    TimeUtil.getUpdatedAt(chat.getConsult().getUpdatedAt()),
+                    counselor.getNickname() + "님께 고민내용을 남겨주세요. " + counselor.getNickname() + "님이 24시간 내에 채팅 요청을 드립니다.",
                     null, 0, reviewCompleted, chat.getConsult().getConsultId(),
                     IS_CHAT);
         }
@@ -75,10 +77,12 @@ public class ChatLetterGetResponse {
         if (chat.getChatStatus().equals(ChatStatus.FINISH)) {
             reviewCompleted = chat.getConsult().getReview().getIsCompleted();
         }
-        if (chatMessage.getMessageStatus().equals(ChatMessageStatus.FINISH))
-            chatMessageContent = ChatMessageUtil.getFinishMessage(chat, chatMessageContent);
+        if (chatMessage.getMessageStatus().equals(ChatMessageStatus.FINISH)) {
+            chatMessageContent = ChatMessageUtil.getFinishMessage(chat, chatMessageContent, isCustomer);
+        }
         return new ChatLetterGetResponse(chat.getChatId(), counselor.getConsultStyle().getDisplayName(),
-                chat.changeChatStatusForChatList().getDisplayName(), nickname, TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
+                chat.changeChatStatusForChatList().getDisplayName(), nickname,
+                TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
                 chatMessageContent, chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted,
                 chat.getConsult().getConsultId(), IS_CHAT);
     }

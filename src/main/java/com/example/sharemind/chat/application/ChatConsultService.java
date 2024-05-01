@@ -90,7 +90,7 @@ public class ChatConsultService {
 
         int unreadMessageCount = isConnected ? 0 : chatMessageRepository.countByChatAndMessageIdGreaterThanAndIsCustomer(
                 chat, lastReadMessageId, !isCustomer);
-        return ChatLetterGetResponse.of(nickname, unreadMessageCount, chat, consult.getCounselor(), latestChatMessage);
+        return ChatLetterGetResponse.of(nickname, unreadMessageCount, chat, consult.getCounselor(), latestChatMessage, isCustomer);
     }
 
     public Boolean checkChatSessionConnect(Long chatId, Long customerId, Boolean isCustomer) {

@@ -44,7 +44,7 @@ public class ChatMessageGetResponse {
     @Schema(description = "채팅 요청 상태일 때, 남은 시간, 채팅 요청 상태 이외에는 null")
     private final String time;
 
-    public static ChatMessageGetResponse of(Chat chat, ChatMessage chatMessage) {
+    public static ChatMessageGetResponse of(Chat chat, ChatMessage chatMessage, Boolean isCustomer) {
         Consult consult = chat.getConsult();
 
         if (chatMessage.getMessageStatus() == ChatMessageStatus.SEND_REQUEST) {
@@ -54,7 +54,7 @@ public class ChatMessageGetResponse {
         }
         if (chatMessage.getMessageStatus() == ChatMessageStatus.FINISH) {
             return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                    chatMessage.getMessageId(), ChatMessageUtil.getFinishMessage(chat, chatMessage.getContent()), chatMessage.getUpdatedAt(),
+                    chatMessage.getMessageId(), ChatMessageUtil.getFinishMessage(chat, chatMessage.getContent(), isCustomer), chatMessage.getUpdatedAt(),
                     chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), null);
         }
         return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),

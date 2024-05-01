@@ -77,7 +77,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         }
         List<ChatMessage> chatMessages = getChatMessageByPagination(chat, messageId);
         return chatMessages.stream()
-                .map(chatMessage -> ChatMessageGetResponse.of(chat, chatMessage))
+                .map(chatMessage -> ChatMessageGetResponse.of(chat, chatMessage, isCustomer))
                 .toList();
     }
 
