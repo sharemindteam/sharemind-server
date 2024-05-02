@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    ChatMessage findTopByChatOrderByUpdatedAtDesc(Chat chat);
+    ChatMessage findTopByChatAndIsActivatedTrueOrderByUpdatedAtDesc(Chat chat);
 
     @Query("SELECT COUNT(cm) FROM ChatMessage cm WHERE cm.chat = :chat AND cm.messageId > :lastReadMessageId AND (:isCustomer IS NULL OR cm.isCustomer = :isCustomer)")
     int countByChatAndMessageIdGreaterThanAndIsCustomer(Chat chat, Long lastReadMessageId, Boolean isCustomer);

@@ -126,7 +126,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private Long getLatestMessageIdForChat(Chat chat) { //todo: ChatMessageService로 빼고싶었는데 순환참조 문제때문에 못뺌.. 구조 고민해보기
-        ChatMessage latestMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
+        ChatMessage latestMessage = chatMessageRepository.findTopByChatAndIsActivatedTrueOrderByUpdatedAtDesc(chat);
         return Optional.ofNullable(latestMessage).map(ChatMessage::getMessageId).orElse(0L);
     }
 
@@ -194,7 +194,7 @@ public class ChatServiceImpl implements ChatService {
     private List<Chat> sortChatsByLatestMessage(List<Chat> chats) {
         Map<Chat, LocalDateTime> latestMessageTime = new HashMap<>();
         for (Chat chat : chats) {
-            ChatMessage latestMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
+            ChatMessage latestMessage = chatMessageRepository.findTopByChatAndIsActivatedTrueOrderByUpdatedAtDesc(chat);
             latestMessageTime.put(chat, latestMessage != null ? latestMessage.getUpdatedAt() : chat.getUpdatedAt());
         }
 

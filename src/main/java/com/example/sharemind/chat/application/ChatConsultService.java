@@ -84,7 +84,7 @@ public class ChatConsultService {
 
         Consult consult = chat.getConsult();
         String nickname = isCustomer ? consult.getCounselor().getNickname() : consult.getCustomer().getNickname();
-        ChatMessage latestChatMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
+        ChatMessage latestChatMessage = chatMessageRepository.findTopByChatAndIsActivatedTrueOrderByUpdatedAtDesc(chat);
         Long lastReadMessageId = isCustomer ? chat.getCustomerReadId() : chat.getCounselorReadId();
         Boolean isConnected = checkChatSessionConnect(chat.getChatId(), customerId, isCustomer);
 
