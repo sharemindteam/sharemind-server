@@ -21,8 +21,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
     List<Post> findAllProceedingPublicPostsAfter72Hours();
 
     @Query(value = "SELECT * FROM post " +
-            "WHERE is_public = true AND post_status = 'COMPLETED' AND is_activated = true " +
-            "AND updated_at >= :weekAgo " +
+            "WHERE is_public = true AND (post_status = 'TIME_OUT' OR post_status = 'COMPLETED') " +
+            "AND is_activated = true AND updated_at >= :weekAgo " +
             "ORDER BY total_like DESC LIMIT :size", nativeQuery = true)
     List<Post> findPopularityPosts(LocalDate weekAgo, int size);
 
