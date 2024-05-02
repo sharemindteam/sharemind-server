@@ -128,8 +128,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId,
-            LocalDateTime finishedAt,
-            Long customerId) {
+            LocalDateTime finishedAt, Long customerId) {
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
@@ -199,8 +198,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> getPostByWordWithPagination(
-            SearchWordPostFindRequest searchWordPostFindRequest,
-            String sortType) {
+            SearchWordPostFindRequest searchWordPostFindRequest, String sortType) {
         String sortColumn = getPostSortColumn(sortType);
         if (searchWordPostFindRequest.getPostId() == 0) {
             return postRepository.getFirstPostByWordWithSortType(searchWordPostFindRequest,
@@ -230,7 +228,7 @@ public class PostServiceImpl implements PostService {
         postRepository.findAllProceedingPublicPostsAfter72Hours()
                 .forEach(post -> {
                     if (post.getTotalComment() > 0) {
-                        post.updatePostStatus(PostStatus.COMPLETED);
+                        post.updatePostStatus(PostStatus.TIME_OUT);
                     }
                 });
     }
