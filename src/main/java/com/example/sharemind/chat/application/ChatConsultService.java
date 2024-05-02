@@ -84,13 +84,13 @@ public class ChatConsultService {
 
         Consult consult = chat.getConsult();
         String nickname = isCustomer ? consult.getCounselor().getNickname() : consult.getCustomer().getNickname();
-        ChatMessage latestChatMessage = chatMessageRepository.findTopByChatOrderByUpdatedAtDesc(chat);
+        ChatMessage latestChatMessage = chatMessageRepository.findTopByChatAndIsActivatedTrueOrderByUpdatedAtDesc(chat);
         Long lastReadMessageId = isCustomer ? chat.getCustomerReadId() : chat.getCounselorReadId();
         Boolean isConnected = checkChatSessionConnect(chat.getChatId(), customerId, isCustomer);
 
         int unreadMessageCount = isConnected ? 0 : chatMessageRepository.countByChatAndMessageIdGreaterThanAndIsCustomer(
                 chat, lastReadMessageId, !isCustomer);
-        return ChatLetterGetResponse.of(nickname, unreadMessageCount, chat, consult.getCounselor(), latestChatMessage);
+        return ChatLetterGetResponse.of(nickname, unreadMessageCount, chat, consult.getCounselor(), latestChatMessage, isCustomer);
     }
 
     public Boolean checkChatSessionConnect(Long chatId, Long customerId, Boolean isCustomer) {

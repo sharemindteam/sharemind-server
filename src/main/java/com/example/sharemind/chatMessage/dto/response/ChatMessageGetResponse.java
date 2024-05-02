@@ -44,21 +44,21 @@ public class ChatMessageGetResponse {
     @Schema(description = "채팅 요청 상태일 때, 남은 시간, 채팅 요청 상태 이외에는 null")
     private final String time;
 
-    public static ChatMessageGetResponse of(Chat chat, ChatMessage chatMessage) {
+    public static ChatMessageGetResponse of(Chat chat, ChatMessage chatMessage, Boolean isCustomer) {
         Consult consult = chat.getConsult();
-
+        String messageContent = chatMessage.getContent();
+        String sendRequestTime = null;
         if (chatMessage.getMessageStatus() == ChatMessageStatus.SEND_REQUEST) {
-            return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                    chatMessage.getMessageId(), chatMessage.getContent(), chatMessage.getUpdatedAt(),
-                    chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), TimeUtil.getChatSendRequestLeftTime(chatMessage.getCreatedAt()));
+            sendRequestTime = TimeUtil.getChatSendRequestLeftTime(chatMessage.getCreatedAt());
+            if (!isCustomer) {
+                messageContent = ChatMessageUtil.getCounselorSendRequestMessage(chat);
+            }
         }
         if (chatMessage.getMessageStatus() == ChatMessageStatus.FINISH) {
-            return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                    chatMessage.getMessageId(), ChatMessageUtil.getFinishMessage(chat, chatMessage.getContent()), chatMessage.getUpdatedAt(),
-                    chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), null);
+            messageContent = ChatMessageUtil.getFinishMessage(chat, chatMessage.getContent(), isCustomer);
         }
         return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                chatMessage.getMessageId(), chatMessage.getContent(), chatMessage.getUpdatedAt(),
-                chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), null);
+                chatMessage.getMessageId(), messageContent, chatMessage.getUpdatedAt(),
+                chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), sendRequestTime);
     }
 }
