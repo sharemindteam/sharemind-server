@@ -163,8 +163,15 @@ public class Post extends BaseEntity {
     }
 
     public void checkPostProceeding() {
-        if (this.getPostStatus() != PostStatus.PROCEEDING)
+        if (this.postStatus != PostStatus.PROCEEDING) {
             throw new PostException(PostErrorCode.POST_NOT_PROCEEDING, this.getPostId().toString());
+        }
+    }
+
+    public void checkPostProceedingOrTimeOut() {
+        if (this.postStatus != PostStatus.PROCEEDING && this.postStatus != PostStatus.TIME_OUT) {
+            throw new PostException(PostErrorCode.POST_NOT_PROCEEDING, this.getPostId().toString());
+        }
     }
 
     private void setIsPaid(Boolean isPublic) {

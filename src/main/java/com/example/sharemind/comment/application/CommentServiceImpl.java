@@ -99,7 +99,7 @@ public class CommentServiceImpl implements CommentService {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Post post = postService.getPostByPostId(postId);
         post.checkWriteAuthority(customer);
-        post.checkPostProceeding();
+        post.checkPostProceedingOrTimeOut();
 
         Comment comment = getCommentByCommentId(commentId);
         comment.checkCommentIsForPost(post);
