@@ -41,7 +41,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .selectFrom(post)
                 .where(
                         post.isPublic.isTrue(),
-                        post.postStatus.eq(PostStatus.COMPLETED),
+                        post.postStatus.in(PostStatus.TIME_OUT, PostStatus.COMPLETED),
                         post.isActivated.isTrue(),
                         lessThanFinishedAtAndPostId(postId, finishedAt)
                 ).orderBy(post.finishedAt.desc(), post.postId.desc()).limit(size).fetch();
@@ -55,7 +55,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         post.isPublic.isTrue(),
                         post.isActivated.isTrue(),
-                        post.postStatus.in(PostStatus.PROCEEDING, PostStatus.COMPLETED),
+                        post.postStatus.in(PostStatus.TIME_OUT, PostStatus.COMPLETED),
                         (post.title.contains(searchWordPostFindRequest.getWord())
                                 .or(post.content.contains(searchWordPostFindRequest.getWord())))
                 )
@@ -72,7 +72,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         post.isPublic.isTrue(),
                         post.isActivated.isTrue(),
-                        post.postStatus.in(PostStatus.PROCEEDING, PostStatus.COMPLETED),
+                        post.postStatus.in(PostStatus.TIME_OUT, PostStatus.COMPLETED),
                         (post.title.contains(searchWordPostFindRequest.getWord())
                                 .or(post.content.contains(searchWordPostFindRequest.getWord()))),
                         getSortColumnCondition(post, sortColumn, lastPost)
