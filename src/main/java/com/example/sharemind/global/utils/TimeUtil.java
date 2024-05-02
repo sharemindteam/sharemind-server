@@ -7,19 +7,21 @@ import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 public class TimeUtil {
+
     public static String getUpdatedAt(LocalDateTime updatedAt) {
         LocalDateTime now = LocalDateTime.now();
 
         if (ChronoUnit.YEARS.between(updatedAt, now) > 0) {
             return updatedAt.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
-        } else if (ChronoUnit.DAYS.between(updatedAt, now) > 0) {
-            if (ChronoUnit.DAYS.between(updatedAt, now) == 1) {
+        } else if (ChronoUnit.DAYS.between(updatedAt.toLocalDate(), now.toLocalDate()) > 0) {
+            if (ChronoUnit.DAYS.between(updatedAt.toLocalDate(), now.toLocalDate()) == 1) {
                 return "어제";
             } else {
                 return updatedAt.format(DateTimeFormatter.ofPattern("MM.dd"));
             }
         } else {
-            return updatedAt.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.KOREA));
+            return updatedAt.format(
+                    DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.KOREA));
         }
     }
 

@@ -31,7 +31,7 @@ public class SwaggerConfig {
                         .bearerFormat("JWT"));
 
         return new OpenAPI()
-                .addServersItem(new Server().url("https://sharemindapp.com"))
+                .addServersItem(new Server().url("https://server.sharemindapp.com"))
                 .components(new Components())
                 .info(info)
                 .addSecurityItem(securityRequirement)

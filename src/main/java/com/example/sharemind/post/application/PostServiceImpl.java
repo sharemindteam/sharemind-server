@@ -105,12 +105,12 @@ public class PostServiceImpl implements PostService {
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
                         POST_PAGE_SIZE).stream()
-                .map(post -> (post.getIsCompleted() != null && !post.getIsCompleted())
-                        ? PostGetCustomerListResponse.ofIsNotCompleted(post) : PostGetCustomerListResponse.of(post,
+                .map(post -> (post.getIsCompleted() != null && post.getIsCompleted())
+                        ? PostGetCustomerListResponse.of(post,
                         postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
                                 customer),
                         postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
-                                customer)))
+                                customer)) : PostGetCustomerListResponse.ofIsNotCompleted(post))
                 .toList();
     }
 
@@ -127,7 +127,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+    public List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId,
+            LocalDateTime finishedAt,
             Long customerId) {
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
@@ -144,7 +145,8 @@ public class PostServiceImpl implements PostService {
 
         return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                         POST_PAGE_SIZE).stream()
-                .map(post -> PostGetPublicListResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED))
+                .map(post -> PostGetPublicListResponse.of(post, POST_IS_NOT_LIKED,
+                        POST_IS_NOT_SCRAPPED))
                 .toList();
     }
 
@@ -196,11 +198,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPostByWordWithPagination(SearchWordPostFindRequest searchWordPostFindRequest,
-                                                  String sortType) {
+    public List<Post> getPostByWordWithPagination(
+            SearchWordPostFindRequest searchWordPostFindRequest,
+            String sortType) {
         String sortColumn = getPostSortColumn(sortType);
         if (searchWordPostFindRequest.getPostId() == 0) {
-            return postRepository.getFirstPostByWordWithSortType(searchWordPostFindRequest, sortColumn,
+            return postRepository.getFirstPostByWordWithSortType(searchWordPostFindRequest,
+                    sortColumn,
                     POST_PAGE_SEARCH_SIZE);
         }
         Post post = getPostByPostId(searchWordPostFindRequest.getPostId());
