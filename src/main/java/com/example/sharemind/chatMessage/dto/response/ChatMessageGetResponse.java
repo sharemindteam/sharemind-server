@@ -46,19 +46,19 @@ public class ChatMessageGetResponse {
 
     public static ChatMessageGetResponse of(Chat chat, ChatMessage chatMessage, Boolean isCustomer) {
         Consult consult = chat.getConsult();
-
+        String messageContent = chatMessage.getContent();
+        String sendRequestTime = null;
         if (chatMessage.getMessageStatus() == ChatMessageStatus.SEND_REQUEST) {
-            return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                    chatMessage.getMessageId(), chatMessage.getContent(), chatMessage.getUpdatedAt(),
-                    chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), TimeUtil.getChatSendRequestLeftTime(chatMessage.getCreatedAt()));
+            sendRequestTime = TimeUtil.getChatSendRequestLeftTime(chatMessage.getCreatedAt());
+            if (!isCustomer) {
+                messageContent = ChatMessageUtil.getCounselorSendRequestMessage(chat);
+            }
         }
         if (chatMessage.getMessageStatus() == ChatMessageStatus.FINISH) {
-            return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                    chatMessage.getMessageId(), ChatMessageUtil.getFinishMessage(chat, chatMessage.getContent(), isCustomer), chatMessage.getUpdatedAt(),
-                    chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), null);
+            messageContent = ChatMessageUtil.getFinishMessage(chat, chatMessage.getContent(), isCustomer);
         }
         return new ChatMessageGetResponse(consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
-                chatMessage.getMessageId(), chatMessage.getContent(), chatMessage.getUpdatedAt(),
-                chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), null);
+                chatMessage.getMessageId(), messageContent, chatMessage.getUpdatedAt(),
+                chatMessage.getIsCustomer(), chatMessage.getMessageStatus(), sendRequestTime);
     }
 }

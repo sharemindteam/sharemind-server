@@ -77,6 +77,9 @@ public class ChatLetterGetResponse {
         if (chat.getChatStatus().equals(ChatStatus.FINISH)) {
             reviewCompleted = chat.getConsult().getReview().getIsCompleted();
         }
+        if (chatMessage.getMessageStatus().equals(ChatMessageStatus.SEND_REQUEST) && !isCustomer) {
+            chatMessageContent = ChatMessageUtil.getCounselorSendRequestMessage(chat);
+        }
         if (chatMessage.getMessageStatus().equals(ChatMessageStatus.FINISH)) {
             chatMessageContent = ChatMessageUtil.getFinishMessage(chat, chatMessageContent, isCustomer);
         }
