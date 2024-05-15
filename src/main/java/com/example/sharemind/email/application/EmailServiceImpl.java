@@ -1,5 +1,6 @@
 package com.example.sharemind.email.application;
 
+import com.example.sharemind.email.content.EmailType;
 import com.example.sharemind.email.dto.response.EmailGetSendCountResponse;
 import com.example.sharemind.email.exception.EmailErrorCode;
 import com.example.sharemind.email.exception.EmailException;
@@ -36,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
         } else {
             count = checkCodeCount(email);
         }
-        sendSignUpEmail(email, code);
+        sendEmail(email, EmailType.SIGNUP_CODE, code);
         storeCodeInRedis(email, code, count);
 
         return EmailGetSendCountResponse.of(count + 1);
@@ -51,20 +52,12 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendIdEmail(String to, String id) {
+    public void sendEmail(String to, EmailType emailType, String extraContent) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setSubject("sharemind 아이디입니다.");
-        message.setText("sharemind 아이디 정보 입니다.\n" + id);
-        mailSender.send(message);
-    }
+        message.setSubject(emailType.getSubject());
+        message.setText(emailType.getText() + extraContent);
 
-    @Override
-    public void sendNewPasswordEmail(String to, String password) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject("sharemind 임시 비밀번호입니다.");
-        message.setText("sharemind 임시 비밀번호입니다.\n 사이트에 접속하여 새로운 비밀번호로 바꿔주세요.\n" + password);
         mailSender.send(message);
     }
 
@@ -82,8 +75,10 @@ public class EmailServiceImpl implements EmailService {
 
     private void storeCodeInRedis(String email, String code, int count) {
         if (count == 0) {
-            redisTemplate.opsForValue().set(EMAIL_PREFIX + email, code, EXPIRATION_TIME, TimeUnit.MINUTES);
-            countRedisTemplate.opsForValue().set(EMAIL_PREFIX + email, 1, EXPIRATION_TIME, TimeUnit.MINUTES);
+            redisTemplate.opsForValue()
+                    .set(EMAIL_PREFIX + email, code, EXPIRATION_TIME, TimeUnit.MINUTES);
+            countRedisTemplate.opsForValue()
+                    .set(EMAIL_PREFIX + email, 1, EXPIRATION_TIME, TimeUnit.MINUTES);
         } else {
             countRedisTemplate.opsForValue().set(EMAIL_PREFIX + email, count + 1);
         }
@@ -93,13 +88,5 @@ public class EmailServiceImpl implements EmailService {
         SecureRandom random = new SecureRandom();
         int code = random.nextInt(900000) + 100000; // 100000~999999 범위로 숫자 생성
         return String.valueOf(code);
-    }
-
-    private void sendSignUpEmail(String to, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject("sharemind 회원 가입 인증 코드입니다.");
-        message.setText("sharemind 회원 가입 인증 코드입니다.\n5분 내에 입력해주세요\n코드 : " + text);
-        mailSender.send(message);
     }
 }
