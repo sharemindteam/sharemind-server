@@ -96,10 +96,10 @@ public class AdminServiceImpl implements AdminService {
         String email = customerService.getCustomerByCounselor(counselor).getEmail();
         if (isPassed) {
             profileStatus = ProfileStatus.EVALUATION_COMPLETE;
-            emailService.sendEmail(email, EmailType.COUNSELOR_PROFILE_COMPLETE, null);
+            emailService.sendEmail(email, EmailType.COUNSELOR_PROFILE_COMPLETE, "");
         } else {
             profileStatus = ProfileStatus.EVALUATION_FAIL;
-            emailService.sendEmail(email, EmailType.COUNSELOR_PROFILE_FAIL, null);
+            emailService.sendEmail(email, EmailType.COUNSELOR_PROFILE_FAIL, "");
         }
         counselor.updateProfileStatusAndProfileUpdatedAt(profileStatus);
 
