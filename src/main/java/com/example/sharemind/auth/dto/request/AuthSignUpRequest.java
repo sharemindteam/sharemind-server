@@ -19,20 +19,10 @@ public class AuthSignUpRequest {
             message = "비밀번호는 영문, 숫자, 특수문자 중 2가지 이상을 조합한 10자리 이상의 문자열이어야 합니다.")
     private String password;
 
-    @Schema(description = "전화번호(하이픈 필수)", example = "010-1234-5678")
-    @NotBlank(message = "전화번호는 공백일 수 없습니다.")
-    private String phoneNumber;
-
-    @Schema(description = "복구 이메일", example = "bdskfj@gmail.com")
-    @NotBlank(message = "복구 이메일은 공백일 수 없습니다.")
-    private String recoveryEmail;
-
     public Customer toEntity(String password) {
         return Customer.builder()
                 .email(email)
                 .password(password)
-                .phoneNumber(phoneNumber)
-                .recoveryEmail(recoveryEmail)
                 .build();
     }
 }

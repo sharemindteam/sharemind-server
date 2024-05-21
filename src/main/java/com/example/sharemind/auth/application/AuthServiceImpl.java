@@ -28,6 +28,7 @@ import java.time.Duration;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
     private static final String SIGNOUT_VALUE = "signOut";
 
     private final TokenProvider tokenProvider;
@@ -44,27 +45,28 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void signUp(AuthSignUpRequest authSignUpRequest) {
         if (customerRepository.existsByEmailAndIsActivatedIsTrue(authSignUpRequest.getEmail())) {
-            throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST, authSignUpRequest.getEmail());
-        } else if (customerRepository.existsByRecoveryEmailAndIsActivatedIsTrue(
-                authSignUpRequest.getRecoveryEmail())) {
-            throw new AuthException(AuthErrorCode.RECOVERY_EMAIL_ALREADY_EXIST,
-                    authSignUpRequest.getRecoveryEmail());
+            throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXIST,
+                    authSignUpRequest.getEmail());
         }
 
-        Customer customer = authSignUpRequest.toEntity(passwordEncoder.encode(authSignUpRequest.getPassword()));
+        Customer customer = authSignUpRequest.toEntity(
+                passwordEncoder.encode(authSignUpRequest.getPassword()));
         customerRepository.save(customer);
     }
 
     @Override
     public TokenDto signIn(AuthSignInRequest authSignInRequest) {
-        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(authSignInRequest.getEmail())
-                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, authSignInRequest.getEmail()));
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(
+                        authSignInRequest.getEmail())
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND,
+                        authSignInRequest.getEmail()));
 
         if (!passwordEncoder.matches(authSignInRequest.getPassword(), customer.getPassword())) {
             throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
         }
 
-        String accessToken = tokenProvider.createAccessToken(customer.getEmail(), customer.getRoles());
+        String accessToken = tokenProvider.createAccessToken(customer.getEmail(),
+                customer.getRoles());
         String refreshToken = tokenProvider.createRefreshToken(customer.getEmail());
 
         return TokenDto.of(accessToken, refreshToken);
@@ -77,10 +79,11 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String email = tokenProvider.getEmail(authReissueRequest.getRefreshToken());
-        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(email)
-                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, email));
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(email).orElseThrow(
+                () -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, email));
 
-        String accessToken = tokenProvider.createAccessToken(customer.getEmail(), customer.getRoles());
+        String accessToken = tokenProvider.createAccessToken(customer.getEmail(),
+                customer.getRoles());
         String refreshToken = tokenProvider.createRefreshToken(customer.getEmail());
 
         return TokenDto.of(accessToken, refreshToken);
@@ -99,19 +102,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Boolean getPasswordMatched(AuthGetPasswordMatchRequest authGetPasswordMatchRequest, Long customerId) {
+    public Boolean getPasswordMatched(AuthGetPasswordMatchRequest authGetPasswordMatchRequest,
+            Long customerId) {
         Customer customer = customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
-                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND,
+                        customerId.toString()));
 
-        return passwordEncoder.matches(authGetPasswordMatchRequest.getPassword(), customer.getPassword());
+        return passwordEncoder.matches(authGetPasswordMatchRequest.getPassword(),
+                customer.getPassword());
     }
 
     @Transactional
     @Override
-    public void updatePassword(AuthUpdatePasswordRequest authUpdatePasswordRequest, Long customerId) {
+    public void updatePassword(AuthUpdatePasswordRequest authUpdatePasswordRequest,
+            Long customerId) {
         Customer customer = customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
-                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
-        if (passwordEncoder.matches(authUpdatePasswordRequest.getPassword(), customer.getPassword())) {
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND,
+                        customerId.toString()));
+        if (passwordEncoder.matches(authUpdatePasswordRequest.getPassword(),
+                customer.getPassword())) {
             throw new AuthException(AuthErrorCode.DUPLICATE_PASSWORD);
         }
 
@@ -122,7 +131,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void quit(AuthQuitRequest authQuitRequest, Long customerId) {
         Customer customer = customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)
-                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, customerId.toString()));
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND,
+                        customerId.toString()));
         if (consultService.checkWaitingOrOngoingExistsByCustomer(customer)) {
             throw new AuthException(AuthErrorCode.INVALID_QUIT_CONSULT);
         } else if (paymentService.checkRefundWaitingExists(customer)) {
@@ -144,7 +154,8 @@ public class AuthServiceImpl implements AuthService {
         customer.setQuit(quit);
         customer.updateIsActivatedFalse();
 
-        signOut(AuthSignOutRequest.of(authQuitRequest.getAccessToken(), authQuitRequest.getRefreshToken()));
+        signOut(AuthSignOutRequest.of(authQuitRequest.getAccessToken(),
+                authQuitRequest.getRefreshToken()));
     }
 
     @Override
@@ -152,22 +163,27 @@ public class AuthServiceImpl implements AuthService {
         String email = tokenProvider.getEmail(authSignOutRequest.getRefreshToken());
         tokenRepository.deleteByKey(email);
 
-        String accessToken = tokenProvider.getTokenWithNoPrefix(authSignOutRequest.getAccessToken());
+        String accessToken = tokenProvider.getTokenWithNoPrefix(
+                authSignOutRequest.getAccessToken());
         Duration expirationTime = tokenProvider.getRestExpirationTime(accessToken);
         tokenRepository.save(accessToken, SIGNOUT_VALUE, expirationTime);
     }
 
     @Override
     public void sendIdByRecoveryEmail(AuthFindIdRequest authFindIdRequest) {
-        Customer customer = customerService.getCustomerByRecoveryEmail(authFindIdRequest.getRecoveryEmail());
+        Customer customer = customerService.getCustomerByRecoveryEmail(
+                authFindIdRequest.getRecoveryEmail());
         emailService.sendIdEmail(authFindIdRequest.getRecoveryEmail(), customer.getEmail());
     }
 
     @Transactional
     @Override
-    public void updateAndSendPasswordByRecoveryEmail(AuthFindPasswordRequest authFindPasswordRequest) {
-        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(authFindPasswordRequest.getEmail())
-                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND, authFindPasswordRequest.getEmail()));
+    public void updateAndSendPasswordByRecoveryEmail(
+            AuthFindPasswordRequest authFindPasswordRequest) {
+        Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(
+                        authFindPasswordRequest.getEmail())
+                .orElseThrow(() -> new CustomerException(CustomerErrorCode.CUSTOMER_NOT_FOUND,
+                        authFindPasswordRequest.getEmail()));
         String newPassword = PasswordGenerator.generateTemporaryPassword();
         customer.updatePassword(passwordEncoder.encode(newPassword));
         emailService.sendNewPasswordEmail(authFindPasswordRequest.getEmail(), newPassword);
