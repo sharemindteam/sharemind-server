@@ -7,7 +7,6 @@ import com.example.sharemind.auth.exception.AuthException;
 import com.example.sharemind.auth.repository.TokenRepository;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.counselor.domain.Counselor;
-import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.customer.domain.Quit;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
@@ -35,7 +34,6 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final PaymentService paymentService;
     private final ConsultService consultService;
-    private final CustomerService customerService;
     private final EmailService emailService;
     private final CustomerRepository customerRepository;
     private final QuitRepository quitRepository;
@@ -164,16 +162,9 @@ public class AuthServiceImpl implements AuthService {
         tokenRepository.save(accessToken, SIGNOUT_VALUE, expirationTime);
     }
 
-    @Override
-    public void sendIdByRecoveryEmail(AuthFindIdRequest authFindIdRequest) {
-        Customer customer = customerService.getCustomerByRecoveryEmail(
-                authFindIdRequest.getRecoveryEmail());
-        emailService.sendIdEmail(authFindIdRequest.getRecoveryEmail(), customer.getEmail());
-    }
-
     @Transactional
     @Override
-    public void updateAndSendPasswordByRecoveryEmail(
+    public void updateAndSendPasswordByEmail(
             AuthFindPasswordRequest authFindPasswordRequest) {
         Customer customer = customerRepository.findByEmailAndIsActivatedIsTrue(
                         authFindPasswordRequest.getEmail())
