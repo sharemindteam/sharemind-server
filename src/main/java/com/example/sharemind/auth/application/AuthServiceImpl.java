@@ -97,11 +97,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Boolean checkDuplicateRecoveryEmail(String email) {
-        return customerRepository.existsByRecoveryEmailAndIsActivatedIsTrue(email);
-    }
-
-    @Override
     public Boolean getPasswordMatched(AuthGetPasswordMatchRequest authGetPasswordMatchRequest,
             Long customerId) {
         Customer customer = customerRepository.findByCustomerIdAndIsActivatedIsTrue(customerId)

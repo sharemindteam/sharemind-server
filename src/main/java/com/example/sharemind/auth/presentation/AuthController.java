@@ -183,17 +183,4 @@ public class AuthController {
         authService.updateAndSendPasswordByRecoveryEmail(authFindPasswordRequest);
         return ResponseEntity.ok().build();
     }
-
-    @Operation(summary = "복구 이메일 중복 확인",
-            description = """
-                    - 복구 이메일 중복 확인
-                    - 중복된 이메일 있으면 true, 없으면 false
-                    - 주소 형식: /api/v1/auth/recovery-email?email=aaa@gmail.com""")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "확인 성공")
-    })
-    @GetMapping("/recovery-email")
-    public ResponseEntity<Boolean> checkDuplicateRecoveryEmail(@RequestParam String email) {
-        return ResponseEntity.ok(authService.checkDuplicateRecoveryEmail(email));
-    }
 }
