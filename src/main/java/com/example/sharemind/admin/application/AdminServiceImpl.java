@@ -18,6 +18,8 @@ import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.email.application.EmailService;
+import com.example.sharemind.email.content.EmailType;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.payment.application.PaymentService;
@@ -48,6 +50,7 @@ public class AdminServiceImpl implements AdminService {
     private final CounselorService counselorService;
     private final CustomerService customerService;
     private final PostService postService;
+    private final EmailService emailService;
 
     @Override
     public List<ConsultGetUnpaidResponse> getUnpaidConsults() {
@@ -90,10 +93,13 @@ public class AdminServiceImpl implements AdminService {
         }
 
         ProfileStatus profileStatus;
+        String email = customerService.getCustomerByCounselor(counselor).getEmail();
         if (isPassed) {
             profileStatus = ProfileStatus.EVALUATION_COMPLETE;
+            emailService.sendEmail(email, EmailType.COUNSELOR_PROFILE_COMPLETE, "");
         } else {
             profileStatus = ProfileStatus.EVALUATION_FAIL;
+            emailService.sendEmail(email, EmailType.COUNSELOR_PROFILE_FAIL, "");
         }
         counselor.updateProfileStatusAndProfileUpdatedAt(profileStatus);
 

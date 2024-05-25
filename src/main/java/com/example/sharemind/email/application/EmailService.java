@@ -1,5 +1,6 @@
 package com.example.sharemind.email.application;
 
+import com.example.sharemind.email.content.EmailType;
 import com.example.sharemind.email.dto.response.EmailGetSendCountResponse;
 
 public interface EmailService {
@@ -7,7 +8,5 @@ public interface EmailService {
 
     void verifyCode(String email, String code);
 
-    void sendIdEmail(String to, String id);
-
-    void sendNewPasswordEmail(String to, String password);
+    void sendEmail(String to, EmailType emailType, String extraContent);
 }
