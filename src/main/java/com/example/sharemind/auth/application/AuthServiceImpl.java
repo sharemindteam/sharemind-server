@@ -14,6 +14,7 @@ import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.customer.repository.CustomerRepository;
 import com.example.sharemind.customer.repository.QuitRepository;
 import com.example.sharemind.email.application.EmailService;
+import com.example.sharemind.email.content.EmailType;
 import com.example.sharemind.global.jwt.TokenProvider;
 import com.example.sharemind.payment.application.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -172,6 +173,7 @@ public class AuthServiceImpl implements AuthService {
                         authFindPasswordRequest.getEmail()));
         String newPassword = PasswordGenerator.generateTemporaryPassword();
         customer.updatePassword(passwordEncoder.encode(newPassword));
-        emailService.sendNewPasswordEmail(authFindPasswordRequest.getEmail(), newPassword);
+        emailService.sendEmail(authFindPasswordRequest.getEmail(), EmailType.FIND_PASSWORD,
+                newPassword);
     }
 }
