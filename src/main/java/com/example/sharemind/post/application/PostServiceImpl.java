@@ -19,7 +19,6 @@ import com.example.sharemind.post.repository.PostRepository;
 import com.example.sharemind.postLike.repository.PostLikeRepository;
 import com.example.sharemind.postScrap.repository.PostScrapRepository;
 import com.example.sharemind.searchWord.dto.request.SearchWordPostFindRequest;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +35,6 @@ public class PostServiceImpl implements PostService {
 
     private static final int POST_PAGE_SIZE = 4;
     private static final int POST_PAGE_SEARCH_SIZE = 5;
-    private static final int POST_POPULARITY_SIZE = 3;
     private static final int TOTAL_POSTS = 50;
     private static final int POSTS_AFTER_24H_COUNT = TOTAL_POSTS / 3;
     private static final Boolean POST_IS_NOT_LIKED = false;
@@ -150,10 +148,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetPopularityResponse> getPopularityPosts() {
-        return postRepository.findPopularityPosts(LocalDate.now().minusWeeks(1),
-                        POST_POPULARITY_SIZE).stream()
-                .map(PostGetPopularityResponse::of)
+    public List<PostGetPublicListResponse> getPopularityPosts(Long postId, LocalDateTime finishedAt,
+            Long customerId) {
+        if (customerId != 0) {
+            Customer customer = customerService.getCustomerByCustomerId(customerId);
+
+            return postRepository.findPopularityPosts(postId, finishedAt, POST_PAGE_SIZE).stream()
+                    .map(post -> PostGetPublicListResponse.of(post,
+                            postLikeRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
+                                    customer),
+                            postScrapRepository.existsByPostAndCustomerAndIsActivatedIsTrue(post,
+                                    customer)))
+                    .toList();
+        }
+
+        return postRepository.findPopularityPosts(postId, finishedAt, POST_PAGE_SIZE).stream()
+                .map(post -> PostGetPublicListResponse.of(post, POST_IS_NOT_LIKED,
+                        POST_IS_NOT_SCRAPPED))
                 .toList();
     }
 

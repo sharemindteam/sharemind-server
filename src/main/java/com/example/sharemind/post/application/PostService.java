@@ -21,14 +21,17 @@ public interface PostService {
 
     PostGetResponse getPost(Long postId, Long customerId);
 
-    List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId, Long customerId);
+    List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId,
+            Long customerId);
 
-    List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId, Long customerId);
+    List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId,
+            Long customerId);
 
     List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
             Long customerId);
 
-    List<PostGetPopularityResponse> getPopularityPosts();
+    List<PostGetPublicListResponse> getPopularityPosts(Long postId, LocalDateTime finishedAt,
+            Long customerId);
 
     List<Long> getRandomPosts();
 
@@ -37,7 +40,7 @@ public interface PostService {
     Post checkAndGetCounselorPost(Long postId, Long customerId);
 
     List<Post> getPostByWordWithPagination(SearchWordPostFindRequest searchWordPostFindRequest,
-                                           String sortType);
+            String sortType);
 
     Boolean getIsPostOwner(Long postId, Long customerId);
 }

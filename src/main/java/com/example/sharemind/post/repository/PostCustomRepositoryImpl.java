@@ -48,6 +48,19 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     @Override
+    public List<Post> findPopularityPosts(Long postId, LocalDateTime finishedAt, int size) {
+        return jpaQueryFactory
+                .selectFrom(post)
+                .where(
+                        post.isPublic.isTrue(),
+                        post.postStatus.in(PostStatus.TIME_OUT, PostStatus.COMPLETED),
+                        post.totalLike.goe(10),
+                        post.isActivated.isTrue(),
+                        lessThanFinishedAtAndPostId(postId, finishedAt)
+                ).orderBy(post.finishedAt.desc(), post.postId.desc()).limit(size).fetch();
+    }
+
+    @Override
     public List<Post> getFirstPostByWordWithSortType(SearchWordPostFindRequest searchWordPostFindRequest,
                                                      String sortColumn, int size) {
         return jpaQueryFactory
