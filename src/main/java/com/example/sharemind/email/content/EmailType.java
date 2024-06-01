@@ -13,10 +13,6 @@ public enum EmailType {
                     5분 내에 입력해주세요.
                     코드 : 
                     """),
-    FIND_ID("sharemind 아이디입니다.",
-            """
-                    sharemind 아이디 정보입니다.
-                    """),
     FIND_PASSWORD("sharemind 임시 비밀번호입니다.",
             """
                     sharemind 임시 비밀번호입니다.
