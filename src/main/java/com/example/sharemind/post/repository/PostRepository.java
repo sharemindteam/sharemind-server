@@ -1,7 +1,6 @@
 package com.example.sharemind.post.repository;
 
 import com.example.sharemind.post.domain.Post;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,12 +18,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
             "WHERE is_public = true AND post_status = 'PROCEEDING' AND is_activated = true "
             + "AND published_at <= CURRENT_TIMESTAMP - INTERVAL 3 DAY", nativeQuery = true)
     List<Post> findAllProceedingPublicPostsAfter72Hours();
-
-    @Query(value = "SELECT * FROM post " +
-            "WHERE is_public = true AND (post_status = 'TIME_OUT' OR post_status = 'COMPLETED') " +
-            "AND is_activated = true AND updated_at >= :weekAgo " +
-            "ORDER BY total_like DESC LIMIT :size", nativeQuery = true)
-    List<Post> findPopularityPosts(LocalDate weekAgo, int size);
 
     @Query(value = "SELECT post_id FROM post WHERE post_status = 'PROCEEDING' AND published_at <= CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
     List<Long> findRandomProceedingPostIdsAfter24Hours();
