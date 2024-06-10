@@ -8,6 +8,8 @@ public class Constants {
     public static final String CUSTOMER_CHATTING_PREFIX = "customer chatting: "; // 현재 접속중인 방
     public static final String COUNSELOR_CHATTING_PREFIX = "counselor chatting: ";
 
+    public static final String REALTIME_COUNSELOR = "realtimeCounselors";
+
     public static final Integer CUSTOMER_ONGOING_CONSULT = 1;
     public static final Integer COUNSELOR_ONGOING_CONSULT = 3;
 
