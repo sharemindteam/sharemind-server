@@ -23,16 +23,20 @@ public class CounselorGetListResponse extends CounselorGetBaseResponse {
     @Schema(description = "찜여부", example = "true")
     private final Boolean isWishList;
 
-    private CounselorGetListResponse(Counselor counselor, Boolean isWishList) {
+    @Schema(description = "현재 접속 여부", example = "true")
+    private final Boolean isRealtime;
+
+    private CounselorGetListResponse(Counselor counselor, Boolean isWishList, Boolean isRealtime) {
         super(counselor);
         this.counselorId = counselor.getCounselorId();
         this.level = counselor.getLevel();
         this.totalReview = counselor.getTotalReview();
         this.ratingAverage = counselor.getRatingAverage();
         this.isWishList = isWishList;
+        this.isRealtime = isRealtime;
     }
 
-    public static CounselorGetListResponse of(Counselor counselor, Boolean isWishList) {
-        return new CounselorGetListResponse(counselor, isWishList);
+    public static CounselorGetListResponse of(Counselor counselor, Boolean isWishList, Boolean isRealtime) {
+        return new CounselorGetListResponse(counselor, isWishList, isRealtime);
     }
 }
