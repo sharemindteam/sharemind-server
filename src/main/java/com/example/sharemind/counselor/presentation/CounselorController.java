@@ -50,7 +50,7 @@ public class CounselorController {
     })
     @PostMapping("/quiz")
     public ResponseEntity<Void> updateIsEducated(@RequestParam Boolean isEducated,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         counselorService.updateIsEducated(isEducated,
                 customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
@@ -201,7 +201,7 @@ public class CounselorController {
                     - 들을 준비가 된 마인더들(상담사 전체 리스트)조회의 경우, RequestBody에서 consultCategory를 빼고 넘겨주시면 됩니다.""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "1. sortType이 잘못된 경우 2. RequestBody의 카테고리가 잘못도니 경우",
+            @ApiResponse(responseCode = "404", description = "1. sortType이 잘못된 경우 2. RequestBody의 카테고리가 잘못된 경우",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
