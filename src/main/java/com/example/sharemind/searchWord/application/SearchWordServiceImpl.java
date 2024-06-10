@@ -1,5 +1,7 @@
 package com.example.sharemind.searchWord.application;
 
+import static com.example.sharemind.global.constants.Constants.REALTIME_COUNSELOR;
+
 import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
@@ -40,6 +42,7 @@ public class SearchWordServiceImpl implements SearchWordService {
     private final PostScrapRepository postScrapRepository;
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, List<Long>> counselorRedisTemplate;
 
     @Transactional
     @Override
@@ -50,13 +53,18 @@ public class SearchWordServiceImpl implements SearchWordService {
 
         List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordCounselorFindRequest,
                 sortType);
-
+        List<Long> counselorIds = counselorRedisTemplate.opsForValue().get(REALTIME_COUNSELOR);
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(customer);
-
+        if (counselorIds == null) {
+            return counselors.stream()
+                    .map(counselor -> CounselorGetListResponse.of(counselor,
+                            wishListCounselorIds.contains(counselor.getCounselorId()), false))
+                    .toList();
+        }
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,
-                        wishListCounselorIds.contains(counselor.getCounselorId())))
+                        wishListCounselorIds.contains(counselor.getCounselorId()), counselorIds.contains(counselor.getCounselorId())))
                 .toList();
     }
 
@@ -68,9 +76,14 @@ public class SearchWordServiceImpl implements SearchWordService {
 
         List<Counselor> counselors = counselorService.getCounselorByWordWithPagination(searchWordCounselorFindRequest,
                 sortType);
-
+        List<Long> counselorIds = counselorRedisTemplate.opsForValue().get(REALTIME_COUNSELOR);
+        if (counselorIds == null) {
+            return counselors.stream()
+                    .map(counselor -> CounselorGetListResponse.of(counselor, false, false))
+                    .toList();
+        }
         return counselors.stream()
-                .map(counselor -> CounselorGetListResponse.of(counselor, false))
+                .map(counselor -> CounselorGetListResponse.of(counselor, false, counselorIds.contains(counselor.getCounselorId())))
                 .toList();
     }
 
@@ -79,7 +92,6 @@ public class SearchWordServiceImpl implements SearchWordService {
     public List<PostGetPublicListResponse> storeAllSearchWordAndGetPosts(String sortType,
                                                                    SearchWordPostFindRequest searchWordPostFindRequest) {
         storeSearchWordInDB(searchWordPostFindRequest.getWord());
-
         List<Post> posts = postService.getPostByWordWithPagination(searchWordPostFindRequest, sortType);
 
         return posts.stream()

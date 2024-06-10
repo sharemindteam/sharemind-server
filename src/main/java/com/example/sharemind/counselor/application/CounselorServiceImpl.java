@@ -1,5 +1,7 @@
 package com.example.sharemind.counselor.application;
 
+import static com.example.sharemind.global.constants.Constants.REALTIME_COUNSELOR;
+
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.content.Bank;
 import com.example.sharemind.counselor.content.ConsultStyle;
@@ -204,13 +206,23 @@ public class CounselorServiceImpl implements CounselorService {
         Pageable pageable = PageRequest.of(counselorGetRequest.getIndex(), COUNSELOR_PAGE,
                 Sort.by(sortColumn).descending());
         if (counselorGetRequest.getConsultCategory() == null) {
-            return counselorRepository.findByLevelAndStatus(pageable).getContent();
+            return getRealtimeCounselors(counselorGetRequest.getIndex());
         }
 
         ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
                 counselorGetRequest.getConsultCategory());
         return counselorRepository.findByConsultCategoryAndLevelAndStatus(consultCategory, pageable)
                 .getContent();
+    }
+
+    private List<Counselor> getRealtimeCounselors(int index) {
+        int start = index * COUNSELOR_PAGE;
+        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
+
+        List<Long> counselorsSubList =
+                counselorIds != null && counselorIds.size() >= 3 ? counselorIds.subList(start, start + COUNSELOR_PAGE)
+                        : counselorIds;
+        return counselorRepository.findAllById(counselorsSubList);
     }
 
     @Override
@@ -233,14 +245,20 @@ public class CounselorServiceImpl implements CounselorService {
                                                                              CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
                 sortType);
-
+        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(
                 customer);
-
+        if (counselorIds == null) {
+            return counselors.stream()
+                    .map(counselor -> CounselorGetListResponse.of(counselor,
+                            wishListCounselorIds.contains(counselor.getCounselorId()), false))
+                    .toList();
+        }
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,
-                        wishListCounselorIds.contains(counselor.getCounselorId())))
+                        wishListCounselorIds.contains(counselor.getCounselorId()),
+                        counselorIds.contains(counselor.getCounselorId())))
                 .toList();
     }
 
@@ -249,9 +267,15 @@ public class CounselorServiceImpl implements CounselorService {
                                                                      CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
                 sortType);
-
+        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
+        if (counselorIds == null) {
+            return counselors.stream()
+                    .map(counselor -> CounselorGetListResponse.of(counselor, false, false))
+                    .toList();
+        }
         return counselors.stream()
-                .map(counselor -> CounselorGetListResponse.of(counselor, false))
+                .map(counselor -> CounselorGetListResponse.of(counselor, false,
+                        counselorIds.contains(counselor.getCounselorId())))
                 .toList();
     }
 
@@ -365,7 +389,7 @@ public class CounselorServiceImpl implements CounselorService {
                 .map(Counselor::getCounselorId)
                 .toList();
 
-        redisTemplate.opsForValue().set("availableCounselors", counselorIds);
+        redisTemplate.opsForValue().set(REALTIME_COUNSELOR, counselorIds);
     }
 
     private boolean isAvailableAtRealTime(Set<ConsultTime> consultTimes, String day, int hour) {
