@@ -220,7 +220,7 @@ public class CounselorServiceImpl implements CounselorService {
         List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
 
         List<Long> counselorsSubList =
-                counselorIds != null && counselorIds.size() >= 3 ? counselorIds.subList(start, start + COUNSELOR_PAGE)
+                counselorIds != null && counselorIds.size() >= COUNSELOR_PAGE ? counselorIds.subList(start, start + COUNSELOR_PAGE)
                         : counselorIds;
         return counselorRepository.findAllById(counselorsSubList);
     }
