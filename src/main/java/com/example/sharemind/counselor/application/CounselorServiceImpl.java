@@ -1,5 +1,7 @@
 package com.example.sharemind.counselor.application;
 
+import static com.example.sharemind.global.constants.Constants.REALTIME_COUNSELOR;
+
 import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.counselor.content.Bank;
 import com.example.sharemind.counselor.content.ConsultStyle;
@@ -23,11 +25,15 @@ import com.example.sharemind.searchWord.dto.request.SearchWordCounselorFindReque
 import com.example.sharemind.wishList.application.WishListCounselorService;
 import com.example.sharemind.wishList.domain.WishList;
 import com.example.sharemind.wishList.dto.request.WishListGetRequest;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,10 +46,12 @@ import java.util.*;
 public class CounselorServiceImpl implements CounselorService {
 
     private static final int COUNSELOR_PAGE = 4;
+    private static final String SPLIT_HOURS = "~";
 
     private final CounselorRepository counselorRepository;
     private final CustomerService customerService;
     private final WishListCounselorService wishListCounselorService;
+    private final RedisTemplate<String, List<Long>> redisTemplate;
 
     @Override
     public Counselor getCounselorByCounselorId(Long counselorId) {
@@ -107,7 +115,7 @@ public class CounselorServiceImpl implements CounselorService {
     @Transactional
     @Override
     public void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest,
-            Long customerId) {
+                                       Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
         if ((counselor.getIsEducated() == null) || (!counselor.getIsEducated())) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_EDUCATED);
@@ -198,13 +206,23 @@ public class CounselorServiceImpl implements CounselorService {
         Pageable pageable = PageRequest.of(counselorGetRequest.getIndex(), COUNSELOR_PAGE,
                 Sort.by(sortColumn).descending());
         if (counselorGetRequest.getConsultCategory() == null) {
-            return counselorRepository.findByLevelAndStatus(pageable).getContent();
+            return getRealtimeCounselors(counselorGetRequest.getIndex());
         }
 
         ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
                 counselorGetRequest.getConsultCategory());
         return counselorRepository.findByConsultCategoryAndLevelAndStatus(consultCategory, pageable)
                 .getContent();
+    }
+
+    private List<Counselor> getRealtimeCounselors(int index) {
+        int start = index * COUNSELOR_PAGE;
+        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
+
+        List<Long> counselorsSubList =
+                counselorIds != null && counselorIds.size() >= COUNSELOR_PAGE ? counselorIds.subList(start, start + COUNSELOR_PAGE)
+                        : counselorIds;
+        return counselorRepository.findAllById(counselorsSubList);
     }
 
     @Override
@@ -223,34 +241,47 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId,
-            String sortType, CounselorGetRequest counselorGetRequest) {
+                                                                             String sortType,
+                                                                             CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
                 sortType);
-
+        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(
                 customer);
-
+        if (counselorIds == null) {
+            return counselors.stream()
+                    .map(counselor -> CounselorGetListResponse.of(counselor,
+                            wishListCounselorIds.contains(counselor.getCounselorId()), false))
+                    .toList();
+        }
         return counselors.stream()
                 .map(counselor -> CounselorGetListResponse.of(counselor,
-                        wishListCounselorIds.contains(counselor.getCounselorId())))
+                        wishListCounselorIds.contains(counselor.getCounselorId()),
+                        counselorIds.contains(counselor.getCounselorId())))
                 .toList();
     }
 
     @Override
     public List<CounselorGetListResponse> getAllCounselorsByCategory(String sortType,
-            CounselorGetRequest counselorGetRequest) {
+                                                                     CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
                 sortType);
-
+        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
+        if (counselorIds == null) {
+            return counselors.stream()
+                    .map(counselor -> CounselorGetListResponse.of(counselor, false, false))
+                    .toList();
+        }
         return counselors.stream()
-                .map(counselor -> CounselorGetListResponse.of(counselor, false))
+                .map(counselor -> CounselorGetListResponse.of(counselor, false,
+                        counselorIds.contains(counselor.getCounselorId())))
                 .toList();
     }
 
     @Override
     public CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId,
-            Long customerId) {
+                                                                                 Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = getCounselorByCounselorId(counselorId);
 
@@ -268,7 +299,7 @@ public class CounselorServiceImpl implements CounselorService {
     @Transactional
     @Override
     public void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest,
-            Long customerId) {
+                              Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
         Bank.existsByDisplayName(counselorUpdateAccountRequest.getBank());
         counselor.updateAccountInfo(counselorUpdateAccountRequest.getAccount(),
@@ -302,7 +333,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId,
-            String type) {
+                                                                         String type) {
         Counselor counselor = getCounselorByCounselorId(counselorId);
         ConsultType consultType = ConsultType.getConsultTypeByName(type);
         if (!counselor.getConsultTypes().contains(consultType)) {
@@ -341,5 +372,39 @@ public class CounselorServiceImpl implements CounselorService {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_AND_CUSTOMER_SAME,
                     customer.getCustomerId().toString());
         }
+    }
+
+    @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul")
+    public void updateRealtimeCounselors() {
+        List<Counselor> counselors = counselorRepository.findAllByIsEducatedIsTrueAndIsActivatedIsTrue();
+        String currentDay = LocalDate.now().getDayOfWeek().toString().substring(0, 3).toUpperCase();
+        int currentHour = LocalTime.now().getHour();
+
+        List<Counselor> realtimeCounselors = counselors.stream()
+                .filter(counselor -> isAvailableAtRealTime(counselor.getConsultTimes(), currentDay, currentHour))
+                .sorted((c1, c2) -> Long.compare(c2.getTotalConsult(), c1.getTotalConsult()))
+                .toList();
+
+        List<Long> counselorIds = realtimeCounselors.stream()
+                .map(Counselor::getCounselorId)
+                .toList();
+
+        redisTemplate.opsForValue().set(REALTIME_COUNSELOR, counselorIds);
+    }
+
+    private boolean isAvailableAtRealTime(Set<ConsultTime> consultTimes, String day, int hour) {
+        for (ConsultTime consultTime : consultTimes) {
+            if (Objects.equals(consultTime.getDay().toString(), day)) {
+                for (String timeRange : consultTime.getTimes()) {
+                    String[] parts = timeRange.split(SPLIT_HOURS);
+                    int startHour = Integer.parseInt(parts[0]);
+                    int endHour = Integer.parseInt(parts[1]);
+                    if (hour >= startHour && hour < endHour) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
