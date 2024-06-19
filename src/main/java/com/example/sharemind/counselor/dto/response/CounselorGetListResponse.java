@@ -26,6 +26,9 @@ public class CounselorGetListResponse extends CounselorGetBaseResponse {
     @Schema(description = "현재 접속 여부", example = "true")
     private final Boolean isRealtime;
 
+    @Schema(description = "상담 완료 횟수")
+    private final Long totalConsult;
+
     private CounselorGetListResponse(Counselor counselor, Boolean isWishList, Boolean isRealtime) {
         super(counselor);
         this.counselorId = counselor.getCounselorId();
@@ -34,6 +37,7 @@ public class CounselorGetListResponse extends CounselorGetBaseResponse {
         this.ratingAverage = counselor.getRatingAverage();
         this.isWishList = isWishList;
         this.isRealtime = isRealtime;
+        this.totalConsult = counselor.getTotalConsult();
     }
 
     public static CounselorGetListResponse of(Counselor counselor, Boolean isWishList, Boolean isRealtime) {
