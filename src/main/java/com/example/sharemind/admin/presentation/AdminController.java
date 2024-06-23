@@ -198,4 +198,23 @@ public class AdminController {
             @RequestParam String keyword) {
         return ResponseEntity.ok(adminService.getCustomersByNicknameOrEmail(keyword));
     }
+
+    @Operation(summary = "특정 셰어 로그인 제재 여부 수정", description = "특정 셰어 로그인 제재 여부 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 아이디로 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 상담 아이디"),
+            @Parameter(name = "isBanned", description = "제재 설정 시 true, 제재 해제 시 false")
+    })
+    @PatchMapping("/customers/{customerId}")
+    public ResponseEntity<Void> updateCustomerIsBanned(@PathVariable Long customerId,
+            @RequestParam Boolean isBanned) {
+        adminService.updateCustomerIsBanned(customerId, isBanned);
+        return ResponseEntity.ok().build();
+    }
 }
