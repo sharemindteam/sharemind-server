@@ -51,6 +51,10 @@ public class AuthController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
+            @ApiResponse(responseCode = "403", description = "로그인이 제한된 사용자로 요청됨",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 이메일로 요청됨",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
