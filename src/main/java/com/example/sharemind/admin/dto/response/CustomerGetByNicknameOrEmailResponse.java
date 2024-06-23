@@ -17,11 +17,16 @@ public class CustomerGetByNicknameOrEmailResponse {
     @Schema(description = "이메일")
     private final String email;
 
+    @Schema(description = "로그인 제재 여부")
+    private final Boolean isBanned;
+
     @Builder
-    public CustomerGetByNicknameOrEmailResponse(Long customerId, String nickname, String email) {
+    public CustomerGetByNicknameOrEmailResponse(Long customerId, String nickname, String email,
+            Boolean isBanned) {
         this.customerId = customerId;
         this.nickname = nickname;
         this.email = email;
+        this.isBanned = isBanned;
     }
 
     public static CustomerGetByNicknameOrEmailResponse of(Customer customer) {
@@ -29,6 +34,7 @@ public class CustomerGetByNicknameOrEmailResponse {
                 .customerId(customer.getCustomerId())
                 .nickname(customer.getNickname())
                 .email(customer.getEmail())
+                .isBanned(customer.getIsBanned())
                 .build();
     }
 }

@@ -34,6 +34,9 @@ public class Customer extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private Boolean isBanned;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "counselor_id", unique = true)
     private Counselor counselor;
@@ -47,6 +50,7 @@ public class Customer extends BaseEntity {
         this.nickname = "셰어" + new Random().nextInt(999999);
         this.email = email;
         this.password = password;
+        this.isBanned = false;
 
         this.roles = new ArrayList<>() {{
             add(Role.ROLE_CUSTOMER);
