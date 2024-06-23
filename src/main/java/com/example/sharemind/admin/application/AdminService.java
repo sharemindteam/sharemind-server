@@ -31,4 +31,6 @@ public interface AdminService {
     void updatePostIsPaid(Long postId);
 
     List<CustomerGetByNicknameOrEmailResponse> getCustomersByNicknameOrEmail(String keyword);
+
+    void updateCustomerIsBanned(Long customerId, Boolean isBanned);
 }

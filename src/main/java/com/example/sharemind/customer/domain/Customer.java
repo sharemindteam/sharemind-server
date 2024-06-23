@@ -61,6 +61,10 @@ public class Customer extends BaseEntity {
         this.password = password;
     }
 
+    public void updateIsBanned(Boolean isBanned) {
+        this.isBanned = isBanned;
+    }
+
     public void setCounselor(Counselor counselor) {
         this.counselor = counselor;
     }

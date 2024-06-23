@@ -173,4 +173,11 @@ public class AdminServiceImpl implements AdminService {
                 .map(CustomerGetByNicknameOrEmailResponse::of)
                 .toList();
     }
+
+    @Transactional
+    @Override
+    public void updateCustomerIsBanned(Long customerId, Boolean isBanned) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        customer.updateIsBanned(isBanned);
+    }
 }
