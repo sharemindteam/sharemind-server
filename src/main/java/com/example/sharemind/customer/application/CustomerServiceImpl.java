@@ -5,6 +5,7 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.customer.exception.CustomerErrorCode;
 import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.customer.repository.CustomerRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,5 +33,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public String getCustomerNickname(Long customerId) {
         return getCustomerByCustomerId(customerId).getNickname();
+    }
+
+    @Override
+    public List<Customer> getCustomersByNicknameOrEmail(String keyword) {
+        return customerRepository.findAllByNicknameOrEmail(keyword);
     }
 }

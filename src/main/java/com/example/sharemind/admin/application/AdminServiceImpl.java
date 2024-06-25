@@ -1,6 +1,7 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
@@ -163,5 +164,20 @@ public class AdminServiceImpl implements AdminService {
         }
 
         post.updateIsPaid();
+    }
+
+    @Override
+    public List<CustomerGetByNicknameOrEmailResponse> getCustomersByNicknameOrEmail(
+            String keyword) {
+        return customerService.getCustomersByNicknameOrEmail(keyword).stream()
+                .map(CustomerGetByNicknameOrEmailResponse::of)
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updateCustomerIsBanned(Long customerId, Boolean isBanned) {
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        customer.updateIsBanned(isBanned);
     }
 }

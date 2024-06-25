@@ -2,6 +2,7 @@ package com.example.sharemind.admin.presentation;
 
 import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
@@ -42,11 +43,11 @@ public class AdminController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "400", description = "이미 결제 완료된 상담",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 상담 아이디로 요청됨",
-                            content = @Content(mediaType = "application/json",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
@@ -87,7 +88,8 @@ public class AdminController {
             @Parameter(name = "isPassed", description = "심사 통과 여부")
     })
     @PatchMapping("/pending-profiles/{counselorId}")
-    public ResponseEntity<Void> updateProfileStatus(@PathVariable Long counselorId, @RequestParam Boolean isPassed) {
+    public ResponseEntity<Void> updateProfileStatus(@PathVariable Long counselorId,
+            @RequestParam Boolean isPassed) {
         adminService.updateProfileStatus(counselorId, isPassed);
         return ResponseEntity.ok().build();
     }
@@ -181,6 +183,38 @@ public class AdminController {
     @PatchMapping("/unpaid-posts/{postId}")
     public ResponseEntity<Void> updatePostIsPaid(@PathVariable Long postId) {
         adminService.updatePostIsPaid(postId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "닉네임, 이메일로 셰어 조회", description = "닉네임, 이메일로 셰어 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @Parameters({
+            @Parameter(name = "keyword", description = "조회할 사용자의 닉네임 또는 이메일")
+    })
+    @GetMapping("/customers")
+    public ResponseEntity<List<CustomerGetByNicknameOrEmailResponse>> getCustomersByNicknameOrEmail(
+            @RequestParam String keyword) {
+        return ResponseEntity.ok(adminService.getCustomersByNicknameOrEmail(keyword));
+    }
+
+    @Operation(summary = "특정 셰어 로그인 제재 여부 수정", description = "특정 셰어 로그인 제재 여부 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 아이디로 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "일대다 상담 아이디"),
+            @Parameter(name = "isBanned", description = "제재 설정 시 true, 제재 해제 시 false")
+    })
+    @PatchMapping("/customers/{customerId}")
+    public ResponseEntity<Void> updateCustomerIsBanned(@PathVariable Long customerId,
+            @RequestParam Boolean isBanned) {
+        adminService.updateCustomerIsBanned(customerId, isBanned);
         return ResponseEntity.ok().build();
     }
 }

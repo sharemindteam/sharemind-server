@@ -1,6 +1,7 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
@@ -28,4 +29,8 @@ public interface AdminService {
     List<PostGetUnpaidPrivateResponse> getUnpaidPrivatePosts();
 
     void updatePostIsPaid(Long postId);
+
+    List<CustomerGetByNicknameOrEmailResponse> getCustomersByNicknameOrEmail(String keyword);
+
+    void updateCustomerIsBanned(Long customerId, Boolean isBanned);
 }

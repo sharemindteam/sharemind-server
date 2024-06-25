@@ -64,6 +64,10 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
         }
 
+        if (customer.getIsBanned()) {
+            throw new AuthException(AuthErrorCode.CUSTOMER_BANNED);
+        }
+
         String accessToken = tokenProvider.createAccessToken(customer.getEmail(),
                 customer.getRoles());
         String refreshToken = tokenProvider.createRefreshToken(customer.getEmail());
