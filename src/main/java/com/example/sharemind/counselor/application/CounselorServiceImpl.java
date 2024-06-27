@@ -374,6 +374,11 @@ public class CounselorServiceImpl implements CounselorService {
         }
     }
 
+    @Override
+    public List<Counselor> getCounselorsByNicknameOrEmail(String keyword) {
+        return counselorRepository.findAllByNicknameOrEmail(keyword);
+    }
+
     @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul")
     public void updateRealtimeCounselors() {
         List<Counselor> counselors = counselorRepository.findAllByIsEducatedIsTrueAndIsActivatedIsTrue();

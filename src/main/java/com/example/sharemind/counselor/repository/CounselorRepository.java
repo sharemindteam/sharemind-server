@@ -24,6 +24,12 @@ public interface CounselorRepository extends JpaRepository<Counselor, Long> {
     @Query("SELECT c FROM Counselor c WHERE  c.profileStatus = 'EVALUATION_PENDING' AND c.isActivated = true")
     List<Counselor> findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
 
+    @Query(value = "SELECT c FROM Counselor c "
+            + "JOIN Customer cstm ON c.counselorId = cstm.counselor.counselorId "
+            + "WHERE (c.nickname LIKE %:keyword% OR cstm.email LIKE %:keyword%) "
+            + "AND c.isActivated = true")
+    List<Counselor> findAllByNicknameOrEmail(String keyword);
+
     @Query("SELECT c FROM Counselor c WHERE (c.nickname LIKE %:word% OR c.experience LIKE %:word% OR c.introduction LIKE %:word%) AND c.level >= 1 AND c.isActivated = true AND c.profileStatus = 'EVALUATION_COMPLETE'")
     Page<Counselor> findByWordAndLevelAndStatus(String word, Pageable pageable);
 
