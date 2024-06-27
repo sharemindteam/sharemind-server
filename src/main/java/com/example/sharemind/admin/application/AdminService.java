@@ -36,4 +36,6 @@ public interface AdminService {
     void updateCustomerIsBanned(Long customerId, Boolean isBanned);
 
     List<CounselorGetByNicknameOrEmailResponse> getCounselorsByNicknameOrEmail(String keyword);
+
+    void updateCounselorPending(Long counselorId);
 }

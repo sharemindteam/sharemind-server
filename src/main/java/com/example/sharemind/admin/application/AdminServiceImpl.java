@@ -191,4 +191,11 @@ public class AdminServiceImpl implements AdminService {
                         customerService.getCustomerByCounselor(counselor).getEmail()))
                 .toList();
     }
+
+    @Transactional
+    @Override
+    public void updateCounselorPending(Long counselorId) {
+        Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
+        counselor.updateProfileStatusAndProfileUpdatedAt(ProfileStatus.EVALUATION_PENDING);
+    }
 }
