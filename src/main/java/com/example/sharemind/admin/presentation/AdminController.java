@@ -2,6 +2,7 @@ package com.example.sharemind.admin.presentation;
 
 import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
@@ -216,5 +217,18 @@ public class AdminController {
             @RequestParam Boolean isBanned) {
         adminService.updateCustomerIsBanned(customerId, isBanned);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "닉네임, 이메일로 마인더 조회", description = "닉네임, 이메일로 마인더 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @Parameters({
+            @Parameter(name = "keyword", description = "조회할 상담사의 닉네임 또는 이메일")
+    })
+    @GetMapping("/counselors")
+    public ResponseEntity<List<CounselorGetByNicknameOrEmailResponse>> getCounselorsByNicknameOrEmail(
+            @RequestParam String keyword) {
+        return ResponseEntity.ok(adminService.getCounselorsByNicknameOrEmail(keyword));
     }
 }
