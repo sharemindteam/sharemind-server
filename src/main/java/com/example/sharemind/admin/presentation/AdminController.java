@@ -187,7 +187,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "닉네임, 이메일로 셰어 조회", description = "닉네임, 이메일로 셰어 조회")
+    @Operation(summary = "닉네임, 이메일로 사용자 조회", description = "닉네임, 이메일로 사용자 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
@@ -200,7 +200,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getCustomersByNicknameOrEmail(keyword));
     }
 
-    @Operation(summary = "특정 셰어 로그인 제재 여부 수정", description = "특정 셰어 로그인 제재 여부 수정")
+    @Operation(summary = "특정 사용자 로그인 제재 여부 수정", description = "특정 사용자 로그인 제재 여부 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 아이디로 요청",
@@ -209,7 +209,7 @@ public class AdminController {
             )
     })
     @Parameters({
-            @Parameter(name = "postId", description = "일대다 상담 아이디"),
+            @Parameter(name = "customerId", description = "사용자 아이디"),
             @Parameter(name = "isBanned", description = "제재 설정 시 true, 제재 해제 시 false")
     })
     @PatchMapping("/customers/{customerId}")
@@ -219,7 +219,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "닉네임, 이메일로 마인더 조회", description = "닉네임, 이메일로 마인더 조회")
+    @Operation(summary = "닉네임, 이메일로 상담사 조회", description = "닉네임, 이메일로 상담사 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
@@ -230,5 +230,22 @@ public class AdminController {
     public ResponseEntity<List<CounselorGetByNicknameOrEmailResponse>> getCounselorsByNicknameOrEmail(
             @RequestParam String keyword) {
         return ResponseEntity.ok(adminService.getCounselorsByNicknameOrEmail(keyword));
+    }
+
+    @Operation(summary = "특정 상담사 프로필 대기 상태로 수정", description = "특정 상담사 프로필 대기 상태로 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 상담사 아이디로 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "counselorId", description = "상담사 아이디")
+    })
+    @PatchMapping("/counselors/{counselorId}")
+    public ResponseEntity<Void> updateCounselorPending(@PathVariable Long counselorId) {
+        adminService.updateCounselorPending(counselorId);
+        return ResponseEntity.ok().build();
     }
 }
