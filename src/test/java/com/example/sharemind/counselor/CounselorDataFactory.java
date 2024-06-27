@@ -6,6 +6,12 @@ import java.util.List;
 
 public class CounselorDataFactory {
 
+    public static Counselor createCounselor() {
+        return Counselor.builder()
+                .nickname("김뫄뫄")
+                .build();
+    }
+
     public static List<Counselor> createCounselors(List<String> nicknames) {
         List<Counselor> counselors = new ArrayList<>();
         for (String nickname : nicknames) {
