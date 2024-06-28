@@ -57,4 +57,6 @@ public interface CounselorService {
     CounselorGetAccountResponse getAccount(Long customerId);
 
     void checkCounselorAndCustomerSame(Customer customer, Counselor counselor);
+
+    List<Counselor> getCounselorsByNicknameOrEmail(String keyword);
 }

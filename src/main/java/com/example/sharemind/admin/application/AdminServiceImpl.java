@@ -1,6 +1,7 @@
 package com.example.sharemind.admin.application;
 
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
+import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
@@ -90,7 +91,8 @@ public class AdminServiceImpl implements AdminService {
         Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
         if ((counselor.getProfileStatus() == null) ||
                 (!counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_PENDING))) {
-            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_IN_EVALUATION, counselorId.toString());
+            throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_IN_EVALUATION,
+                    counselorId.toString());
         }
 
         ProfileStatus profileStatus;
@@ -179,5 +181,21 @@ public class AdminServiceImpl implements AdminService {
     public void updateCustomerIsBanned(Long customerId, Boolean isBanned) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         customer.updateIsBanned(isBanned);
+    }
+
+    @Override
+    public List<CounselorGetByNicknameOrEmailResponse> getCounselorsByNicknameOrEmail(
+            String keyword) {
+        return counselorService.getCounselorsByNicknameOrEmail(keyword).stream()
+                .map(counselor -> CounselorGetByNicknameOrEmailResponse.of(counselor,
+                        customerService.getCustomerByCounselor(counselor).getEmail()))
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updateCounselorPending(Long counselorId) {
+        Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
+        counselor.updateProfileStatusAndProfileUpdatedAt(ProfileStatus.EVALUATION_PENDING);
     }
 }
