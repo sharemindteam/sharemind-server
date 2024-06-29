@@ -41,6 +41,9 @@ public class CounselorGetForConsultResponse {
     @Schema(description = "상담료", example = "10000")
     private final Long cost;
 
+    @Schema(description = "상담 횟수")
+    private final Long totalConsult;
+
     public static CounselorGetForConsultResponse of(Counselor counselor, ConsultType consultType) {
         List<String> consultCategories = counselor.getConsultCategories().stream()
                 .map(ConsultCategory::getDisplayName)
@@ -49,6 +52,6 @@ public class CounselorGetForConsultResponse {
         return new CounselorGetForConsultResponse(counselor.getCounselorId(), counselor.getNickname(),
                 counselor.getLevel(), counselor.getRatingAverage(), counselor.getTotalReview(), consultCategories,
                 counselor.getConsultStyle().getDisplayName(), consultType.getDisplayName(),
-                counselor.getConsultCost(consultType));
+                counselor.getConsultCost(consultType), counselor.getTotalConsult());
     }
 }
