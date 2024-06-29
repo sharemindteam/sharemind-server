@@ -218,10 +218,13 @@ public class CounselorServiceImpl implements CounselorService {
     private List<Counselor> getRealtimeCounselors(int index) {
         int start = index * COUNSELOR_PAGE;
         List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
+        if (counselorIds == null || (counselorIds.size() < COUNSELOR_PAGE && index != 0)
+                || start >= counselorIds.size()) {
+            return Collections.emptyList();
+        }
 
-        List<Long> counselorsSubList =
-                counselorIds != null && counselorIds.size() >= COUNSELOR_PAGE ? counselorIds.subList(start, start + COUNSELOR_PAGE)
-                        : counselorIds;
+        List<Long> counselorsSubList = (counselorIds.size() >= start + COUNSELOR_PAGE) ?
+                counselorIds.subList(start, start + COUNSELOR_PAGE) : counselorIds.subList(start, counselorIds.size());
         return counselorRepository.findAllById(counselorsSubList);
     }
 
