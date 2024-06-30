@@ -204,7 +204,7 @@ public class AdminController {
     @Operation(summary = "특정 사용자 로그인 제재 여부 수정", description = "특정 사용자 로그인 제재 여부 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 아이디로 요청",
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 사용자 아이디로 요청",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -236,7 +236,7 @@ public class AdminController {
     @Operation(summary = "특정 상담사 프로필 대기 상태로 수정", description = "특정 상담사 프로필 대기 상태로 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 상담사 아이디로 요청",
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사 아이디로 요청",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -253,7 +253,7 @@ public class AdminController {
     @Operation(summary = "아이디로 공개상담 조회", description = "아이디로 공개상담 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 공개상담 아이디로 요청",
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 공개상담 아이디로 요청",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -269,7 +269,7 @@ public class AdminController {
     @Operation(summary = "특정 공개상담 게시물 삭제", description = "특정 공개상담 게시물 비활성화 상태로 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 공개상담 아이디로 요청",
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 공개상담 아이디로 요청",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
