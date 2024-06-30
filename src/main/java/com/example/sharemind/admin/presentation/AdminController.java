@@ -6,6 +6,7 @@ import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailRes
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
+import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
@@ -247,5 +248,21 @@ public class AdminController {
     public ResponseEntity<Void> updateCounselorPending(@PathVariable Long counselorId) {
         adminService.updateCounselorPending(counselorId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "아이디로 공개상담 조회", description = "아이디로 공개상담 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 공개상담 아이디로 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "조회할 공개상담 아이디")
+    })
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<PostGetByIdResponse> getPostByPostId(@PathVariable Long postId) {
+        return ResponseEntity.ok(adminService.getPostByPostId(postId));
     }
 }
