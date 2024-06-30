@@ -5,6 +5,7 @@ import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailRes
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
+import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 
@@ -38,4 +39,6 @@ public interface AdminService {
     List<CounselorGetByNicknameOrEmailResponse> getCounselorsByNicknameOrEmail(String keyword);
 
     void updateCounselorPending(Long counselorId);
+
+    PostGetByIdResponse getPostByPostId(Long postId);
 }
