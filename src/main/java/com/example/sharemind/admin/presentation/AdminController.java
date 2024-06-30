@@ -265,4 +265,21 @@ public class AdminController {
     public ResponseEntity<PostGetByIdResponse> getPostByPostId(@PathVariable Long postId) {
         return ResponseEntity.ok(adminService.getPostByPostId(postId));
     }
+
+    @Operation(summary = "특정 공개상담 게시물 삭제", description = "특정 공개상담 게시물 비활성화 상태로 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 공개상담 아이디로 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "삭제할 공개상담 아이디")
+    })
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<Void> deletePostByPostId(@PathVariable Long postId) {
+        adminService.deletePostByPostId(postId);
+        return ResponseEntity.ok().build();
+    }
 }
