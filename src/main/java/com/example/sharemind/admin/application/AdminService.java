@@ -41,4 +41,6 @@ public interface AdminService {
     void updateCounselorPending(Long counselorId);
 
     PostGetByIdResponse getPostByPostId(Long postId);
+
+    void deletePostByPostId(Long postId);
 }

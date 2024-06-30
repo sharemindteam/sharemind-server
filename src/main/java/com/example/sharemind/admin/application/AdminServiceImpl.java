@@ -205,4 +205,11 @@ public class AdminServiceImpl implements AdminService {
         Post post = postService.getPostByPostId(postId);
         return PostGetByIdResponse.of(post);
     }
+
+    @Transactional
+    @Override
+    public void deletePostByPostId(Long postId) {
+        Post post = postService.getPostByPostId(postId);
+        post.updateIsActivatedFalse();
+    }
 }
