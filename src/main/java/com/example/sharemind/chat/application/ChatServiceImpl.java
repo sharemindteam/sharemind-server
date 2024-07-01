@@ -80,6 +80,11 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public List<Chat> getAllChats() {
+        return chatRepository.findAllByIsActivatedIsTrue();
+    }
+
+    @Override
     public void updateReadId(Chat chat, Long customerId, Boolean isCustomer) {
         validateChat(chat, isCustomer, customerId);
         ChatMessage chatMessage = chatMessageRepository.findTopByChatAndIsCustomerAndIsActivatedTrueOrderByMessageIdDesc(
