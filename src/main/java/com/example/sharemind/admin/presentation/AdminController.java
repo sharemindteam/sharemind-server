@@ -6,6 +6,7 @@ import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailRes
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
+import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
@@ -203,7 +204,7 @@ public class AdminController {
     @Operation(summary = "특정 사용자 로그인 제재 여부 수정", description = "특정 사용자 로그인 제재 여부 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 아이디로 요청",
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 사용자 아이디로 요청",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -235,7 +236,7 @@ public class AdminController {
     @Operation(summary = "특정 상담사 프로필 대기 상태로 수정", description = "특정 상담사 프로필 대기 상태로 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 상담사 아이디로 요청",
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 상담사 아이디로 요청",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -246,6 +247,39 @@ public class AdminController {
     @PatchMapping("/counselors/{counselorId}")
     public ResponseEntity<Void> updateCounselorPending(@PathVariable Long counselorId) {
         adminService.updateCounselorPending(counselorId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "아이디로 공개상담 조회", description = "아이디로 공개상담 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 공개상담 아이디로 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "조회할 공개상담 아이디")
+    })
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<PostGetByIdResponse> getPostByPostId(@PathVariable Long postId) {
+        return ResponseEntity.ok(adminService.getPostByPostId(postId));
+    }
+
+    @Operation(summary = "특정 공개상담 게시물 삭제", description = "특정 공개상담 게시물 비활성화 상태로 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 공개상담 아이디로 요청",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
+    })
+    @Parameters({
+            @Parameter(name = "postId", description = "삭제할 공개상담 아이디")
+    })
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<Void> deletePostByPostId(@PathVariable Long postId) {
+        adminService.deletePostByPostId(postId);
         return ResponseEntity.ok().build();
     }
 }

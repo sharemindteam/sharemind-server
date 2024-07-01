@@ -5,6 +5,7 @@ import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailRes
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
+import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.consult.application.ConsultService;
@@ -197,5 +198,18 @@ public class AdminServiceImpl implements AdminService {
     public void updateCounselorPending(Long counselorId) {
         Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
         counselor.updateProfileStatusAndProfileUpdatedAt(ProfileStatus.EVALUATION_PENDING);
+    }
+
+    @Override
+    public PostGetByIdResponse getPostByPostId(Long postId) {
+        Post post = postService.getPostByPostId(postId);
+        return PostGetByIdResponse.of(post);
+    }
+
+    @Transactional
+    @Override
+    public void deletePostByPostId(Long postId) {
+        Post post = postService.getPostByPostId(postId);
+        post.updateIsActivatedFalse();
     }
 }

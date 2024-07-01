@@ -120,6 +120,7 @@ public class PostServiceImpl implements PostService {
                 filter, postId, POST_PAGE_SIZE);
 
         return comments.stream()
+                .filter(comment -> comment.getPost().isActivated())
                 .map(comment -> PostGetCounselorListResponse.of(comment.getPost(), comment))
                 .toList();
     }
@@ -213,8 +214,7 @@ public class PostServiceImpl implements PostService {
         String sortColumn = getPostSortColumn(sortType);
         if (searchWordPostFindRequest.getPostId() == 0) {
             return postRepository.getFirstPostByWordWithSortType(searchWordPostFindRequest,
-                    sortColumn,
-                    POST_PAGE_SEARCH_SIZE);
+                    sortColumn, POST_PAGE_SEARCH_SIZE);
         }
         Post post = getPostByPostId(searchWordPostFindRequest.getPostId());
         return postRepository.getPostByWordWithSortType(searchWordPostFindRequest, sortColumn, post,

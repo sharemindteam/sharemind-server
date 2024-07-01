@@ -19,9 +19,13 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
             + "AND published_at <= CURRENT_TIMESTAMP - INTERVAL 3 DAY", nativeQuery = true)
     List<Post> findAllProceedingPublicPostsAfter72Hours();
 
-    @Query(value = "SELECT post_id FROM post WHERE post_status = 'PROCEEDING' AND published_at <= CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
+    @Query(value = "SELECT post_id FROM post "
+            + "WHERE post_status = 'PROCEEDING' AND is_activated = true "
+            + "AND published_at <= CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
     List<Long> findRandomProceedingPostIdsAfter24Hours();
 
-    @Query(value = "SELECT post_id FROM post WHERE post_status = 'PROCEEDING' AND published_at > CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
+    @Query(value = "SELECT post_id FROM post "
+            + "WHERE post_status = 'PROCEEDING' AND is_activated = true "
+            + "AND published_at > CURRENT_TIMESTAMP - INTERVAL 1 DAY ORDER BY RAND() LIMIT 50", nativeQuery = true)
     List<Long> findRandomProceedingPostIdsWithin24Hours();
 }
