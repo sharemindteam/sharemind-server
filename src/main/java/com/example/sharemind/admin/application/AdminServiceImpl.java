@@ -3,11 +3,14 @@ package com.example.sharemind.admin.application;
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
+import com.example.sharemind.admin.dto.response.InformationGetResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.chat.application.ChatService;
+import com.example.sharemind.chat.content.ChatStatus;
+import com.example.sharemind.chat.domain.Chat;
 import com.example.sharemind.consult.application.ConsultService;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.consult.exception.ConsultErrorCode;
@@ -24,6 +27,7 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.email.application.EmailService;
 import com.example.sharemind.email.content.EmailType;
 import com.example.sharemind.letter.application.LetterService;
+import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.payment.application.PaymentService;
 import com.example.sharemind.payment.content.PaymentCounselorStatus;
@@ -32,6 +36,7 @@ import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
 import com.example.sharemind.payment.exception.PaymentException;
 import com.example.sharemind.post.application.PostService;
+import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
@@ -211,5 +216,83 @@ public class AdminServiceImpl implements AdminService {
     public void deletePostByPostId(Long postId) {
         Post post = postService.getPostByPostId(postId);
         post.updateIsActivatedFalse();
+    }
+
+    @Override
+    public InformationGetResponse getInformation() {
+        long customers = customerService.countAllCustomers();
+
+        List<Counselor> counselors = counselorService.getAllCounselors();
+        long completedCounselors = 0, waitingCounselors = 0;
+        for (Counselor counselor : counselors) {
+            ProfileStatus profileStatus = counselor.getProfileStatus();
+
+            if (profileStatus.equals(ProfileStatus.EVALUATION_COMPLETE)) {
+                completedCounselors++;
+            } else if (profileStatus.equals(ProfileStatus.EVALUATION_PENDING)) {
+                waitingCounselors++;
+            }
+        }
+
+        List<Chat> chats = chatService.getAllChats();
+        long completedChats = 0, completedChatCosts = 0, canceledChats = 0, canceledChatCosts = 0;
+        for (Chat chat : chats) {
+            ChatStatus chatStatus = chat.getChatStatus();
+
+            if (chatStatus.equals(ChatStatus.FINISH)) {
+                completedChats++;
+                completedChatCosts += chat.getConsult().getCost();
+            } else if (chatStatus.equals(ChatStatus.COUNSELOR_CANCEL) || chatStatus.equals(
+                    ChatStatus.CUSTOMER_CANCEL)) {
+                canceledChats++;
+                canceledChatCosts += chat.getConsult().getCost();
+            }
+        }
+
+        List<Letter> letters = letterService.getAllLetters();
+        long completedLetters = 0, completedLetterCosts = 0, canceledLetters = 0, canceledLetterCosts = 0;
+        for (Letter letter : letters) {
+            LetterStatus letterStatus = letter.getLetterStatus();
+
+            if (letterStatus.equals(LetterStatus.FIRST_FINISH) || letterStatus.equals(
+                    LetterStatus.SECOND_FINISH)) {
+                completedLetters++;
+                completedLetterCosts += letter.getConsult().getCost();
+            } else if (letterStatus.equals(LetterStatus.CUSTOMER_CANCEL) || letterStatus.equals(
+                    LetterStatus.COUNSELOR_CANCEL)) {
+                canceledLetters++;
+                canceledLetterCosts += letter.getConsult().getCost();
+            }
+        }
+
+        List<Post> posts = postService.getAllPosts();
+        long publicPosts = 0, completedPublicPosts = 0, secretPosts = 0, secretPostCosts = 0,
+                completedSecretPosts = 0, completedSecretPostCosts = 0;
+        for (Post post : posts) {
+            boolean isPublic = post.getIsPublic();
+            PostStatus postStatus = post.getPostStatus();
+
+            if (isPublic) {
+                publicPosts++;
+                if (postStatus.equals(PostStatus.TIME_OUT) || postStatus.equals(
+                        PostStatus.COMPLETED)) {
+                    completedPublicPosts++;
+                }
+            } else {
+                secretPosts++;
+                secretPostCosts += post.getCost();
+                if (postStatus.equals(PostStatus.TIME_OUT) || postStatus.equals(
+                        PostStatus.COMPLETED)) {
+                    completedSecretPosts++;
+                    completedSecretPostCosts += post.getCost();
+                }
+            }
+        }
+
+        return InformationGetResponse.of(customers, completedCounselors, waitingCounselors,
+                completedChats, completedChatCosts, canceledChats, canceledChatCosts,
+                completedLetters, completedLetterCosts, canceledLetters, canceledLetterCosts,
+                publicPosts, completedPublicPosts, secretPosts, secretPostCosts,
+                completedSecretPosts, completedSecretPostCosts);
     }
 }

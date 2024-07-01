@@ -3,6 +3,7 @@ package com.example.sharemind.admin.application;
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
+import com.example.sharemind.admin.dto.response.InformationGetResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
@@ -43,4 +44,6 @@ public interface AdminService {
     PostGetByIdResponse getPostByPostId(Long postId);
 
     void deletePostByPostId(Long postId);
+
+    InformationGetResponse getInformation();
 }
