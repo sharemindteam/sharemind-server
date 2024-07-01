@@ -4,6 +4,7 @@ import com.example.sharemind.admin.application.AdminService;
 import com.example.sharemind.admin.dto.response.ConsultGetUnpaidResponse;
 import com.example.sharemind.admin.dto.response.CounselorGetByNicknameOrEmailResponse;
 import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResponse;
+import com.example.sharemind.admin.dto.response.InformationGetResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
@@ -281,5 +282,14 @@ public class AdminController {
     public ResponseEntity<Void> deletePostByPostId(@PathVariable Long postId) {
         adminService.deletePostByPostId(postId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "회원 관련 수치 정보 조회", description = "회원 관련 수치 정보 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/informations")
+    public ResponseEntity<InformationGetResponse> getInformation() {
+        return ResponseEntity.ok(adminService.getInformation());
     }
 }
