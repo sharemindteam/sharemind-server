@@ -39,4 +39,9 @@ public class CustomerServiceImpl implements CustomerService {
     public List<Customer> getCustomersByNicknameOrEmail(String keyword) {
         return customerRepository.findAllByNicknameOrEmail(keyword);
     }
+
+    @Override
+    public Long countAllCustomers() {
+        return customerRepository.countAllByIsActivatedIsTrue();
+    }
 }
