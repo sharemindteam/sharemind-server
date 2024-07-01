@@ -13,6 +13,8 @@ public interface LetterService {
 
     Letter getLetterByLetterId(Long letterId);
 
+    List<Letter> getAllLetters();
+
     LetterGetCounselorCategoriesResponse getCounselorCategories(Long letterId);
 
     String getCustomerCategory(Long letterId);

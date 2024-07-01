@@ -62,6 +62,11 @@ public class LetterServiceImpl implements LetterService {
     }
 
     @Override
+    public List<Letter> getAllLetters() {
+        return letterRepository.findAllByIsActivatedIsTrue();
+    }
+
+    @Override
     public LetterGetCounselorCategoriesResponse getCounselorCategories(Long letterId) {
         Letter letter = getLetterByLetterId(letterId);
 
