@@ -23,4 +23,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             + "WHERE (nickname LIKE %:keyword% OR email LIKE %:keyword%) "
             + "AND is_activated = true", nativeQuery = true)
     List<Customer> findAllByNicknameOrEmail(String keyword);
+
+    Long countAllByIsActivatedIsTrue();
 }

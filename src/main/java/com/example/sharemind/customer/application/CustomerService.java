@@ -12,4 +12,6 @@ public interface CustomerService {
     String getCustomerNickname(Long customerId);
 
     List<Customer> getCustomersByNicknameOrEmail(String keyword);
+
+    Long countAllCustomers();
 }

@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface LetterRepository extends JpaRepository<Letter, Long> {
     Optional<Letter> findByLetterIdAndIsActivatedIsTrue(Long letterId);
 
+    List<Letter> findAllByIsActivatedIsTrue();
+
     @Query("SELECT l FROM Letter l JOIN FETCH l.consult c " +
             "WHERE c.customer = :customer AND " +
             "(l.letterStatus = 'WAITING' OR l.letterStatus = 'FIRST_ASKING' OR l.letterStatus = 'FIRST_ANSWER' OR " +

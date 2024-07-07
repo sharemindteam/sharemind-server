@@ -13,6 +13,7 @@ public interface ChatService {
     void createChat(Consult consult);
 
     Chat getChatByChatId(Long chatId);
+    List<Chat> getAllChats();
 
     void validateChatWithWebSocket(Long chatId, Map<String, Object> sessionAttributes, Boolean isCustomer);
 
