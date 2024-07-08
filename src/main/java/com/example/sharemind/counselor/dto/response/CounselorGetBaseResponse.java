@@ -39,6 +39,7 @@ public abstract class CounselorGetBaseResponse {
         this.consultTypes = CounselorUtil.convertConsultTypes(counselor);
         this.consultCosts = CounselorUtil.convertConsultCosts(counselor);
         this.introduction = counselor.getIntroduction();
-        this.consultStyle = counselor.getConsultStyle().getDisplayName();
+        this.consultStyle = counselor.getConsultStyle() == null ? null
+                : counselor.getConsultStyle().getDisplayName();
     }
 }
