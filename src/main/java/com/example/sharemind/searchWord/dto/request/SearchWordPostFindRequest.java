@@ -12,5 +12,5 @@ public class SearchWordPostFindRequest {
     private String word;
 
     @Schema(description = "가장 마지막으로 받은 postId 반환, 처음 요청이라면 0을 반환", example = "0")
-    private Long postId;
+    private String postId;
 }

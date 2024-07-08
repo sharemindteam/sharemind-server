@@ -221,11 +221,11 @@ public class PostServiceImpl implements PostService {
     public List<Post> getPostByWordWithPagination(
             SearchWordPostFindRequest searchWordPostFindRequest, String sortType) {
         String sortColumn = getPostSortColumn(sortType);
-        if (searchWordPostFindRequest.getPostId() == 0) {
+        if ("0".equals(searchWordPostFindRequest.getPostId())) {
             return postRepository.getFirstPostByWordWithSortType(searchWordPostFindRequest,
                     sortColumn, POST_PAGE_SEARCH_SIZE);
         }
-        Post post = getPostByPostId(searchWordPostFindRequest.getPostId());
+        Post post = getPostByPostId(EncryptionUtil.decrypt(searchWordPostFindRequest.getPostId()));
         return postRepository.getPostByWordWithSortType(searchWordPostFindRequest, sortColumn, post,
                 POST_PAGE_SIZE);
     }

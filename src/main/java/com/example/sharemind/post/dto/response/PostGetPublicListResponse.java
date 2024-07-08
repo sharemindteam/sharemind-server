@@ -1,5 +1,6 @@
 package com.example.sharemind.post.dto.response;
 
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -13,7 +14,7 @@ import lombok.Getter;
 public class PostGetPublicListResponse {
 
     @Schema(description = "일대다 질문 아이디")
-    private final Long postId;
+    private final String postId;
 
     @Schema(description = "제목")
     private final String title;
@@ -47,7 +48,7 @@ public class PostGetPublicListResponse {
     public PostGetPublicListResponse(Long postId, String title, String content, Boolean isLiked,
             Long totalLike, Boolean isScrapped, Long totalScrap, Long totalComment,
             String updatedAt, LocalDateTime finishedAt) {
-        this.postId = postId;
+        this.postId = EncryptionUtil.encrypt(postId);
         this.title = title;
         this.content = content;
         this.isLiked = isLiked;
