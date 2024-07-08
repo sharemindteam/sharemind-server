@@ -48,7 +48,7 @@ public class ChatLetterGetResponse {
     private final Boolean reviewCompleted;
 
     @Schema(description = "상담 아이디")
-    private final Long consultId;
+    private final String consultId;
 
     @Schema(description = "채팅/편지 여부")
     private final Boolean isChat;
@@ -70,7 +70,7 @@ public class ChatLetterGetResponse {
                     chat.changeChatStatusForChatList().getDisplayName(), nickname,
                     TimeUtil.getUpdatedAt(chat.getConsult().getUpdatedAt()),
                     counselor.getNickname() + "님께 고민내용을 남겨주세요. " + counselor.getNickname() + "님이 24시간 내에 채팅 요청을 드립니다.",
-                    null, 0, reviewCompleted, chat.getConsult().getConsultId(),
+                    null, 0, reviewCompleted, EncryptionUtil.encrypt(chat.getConsult().getConsultId()),
                     IS_CHAT);
         }
         String chatMessageContent = chatMessage.getContent();
@@ -87,6 +87,6 @@ public class ChatLetterGetResponse {
                 chat.changeChatStatusForChatList().getDisplayName(), nickname,
                 TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
                 chatMessageContent, chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted,
-                chat.getConsult().getConsultId(), IS_CHAT);
+                EncryptionUtil.encrypt(chat.getConsult().getConsultId()), IS_CHAT);
     }
 }

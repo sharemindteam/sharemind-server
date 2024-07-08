@@ -1,6 +1,7 @@
 package com.example.sharemind.admin.dto.response;
 
 import com.example.sharemind.consult.domain.Consult;
+import com.example.sharemind.global.utils.EncryptionUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class ConsultGetUnpaidResponse {
 
     @Schema(description = "상담 아이디")
-    private final Long consultId;
+    private final String consultId;
 
     @Schema(description = "구매자 닉네임")
     private final String customerName;
@@ -31,7 +32,7 @@ public class ConsultGetUnpaidResponse {
     private final LocalDateTime createdAt;
 
     public static ConsultGetUnpaidResponse of(Consult consult) {
-        return new ConsultGetUnpaidResponse(consult.getConsultId(), consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
+        return new ConsultGetUnpaidResponse(EncryptionUtil.encrypt(consult.getConsultId()), consult.getCustomer().getNickname(), consult.getCounselor().getNickname(),
                 consult.getConsultType().getDisplayName(), consult.getCost(), consult.getCreatedAt());
     }
 }

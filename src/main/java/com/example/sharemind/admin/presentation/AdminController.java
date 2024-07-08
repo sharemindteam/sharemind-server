@@ -58,7 +58,7 @@ public class AdminController {
             @Parameter(name = "consultId", description = "상담 아이디")
     })
     @PatchMapping("/unpaid-consults/{consultId}")
-    public ResponseEntity<Void> updateConsultIsPaid(@PathVariable Long consultId) {
+    public ResponseEntity<Void> updateConsultIsPaid(@PathVariable String consultId) {
         adminService.updateConsultIsPaid(consultId);
         return ResponseEntity.ok().build();
     }

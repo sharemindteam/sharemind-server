@@ -36,7 +36,7 @@ public class LetterGetResponse {
     private final Boolean reviewCompleted;
 
     @Schema(description = "상담 아이디")
-    private final Long consultId;
+    private final String consultId;
 
     public static ChatLetterGetResponse of(Letter letter, LetterMessage recentMessage, Boolean isCustomer) {
         String letterStatus;
@@ -58,12 +58,13 @@ public class LetterGetResponse {
         if (recentMessage == null) {
             return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                     letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
-                    TimeUtil.getUpdatedAt(letter.getConsult().getUpdatedAt()), null, reviewCompleted, letter.getConsult().getConsultId()));
+                    TimeUtil.getUpdatedAt(letter.getConsult().getUpdatedAt()), null, reviewCompleted,
+                    EncryptionUtil.encrypt(letter.getConsult().getConsultId())));
         }
 
         return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                 letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
                 TimeUtil.getUpdatedAt((recentMessage.getUpdatedAt())), recentMessage.getContent(), reviewCompleted,
-                letter.getConsult().getConsultId()));
+                EncryptionUtil.encrypt(letter.getConsult().getConsultId())));
     }
 }

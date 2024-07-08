@@ -3,6 +3,7 @@ package com.example.sharemind.consult.dto.response;
 import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.content.ConsultCategory;
+import com.example.sharemind.global.utils.EncryptionUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConsultCreateResponse {
 
-    @Schema(description = "상담 아이디", example = "1")
-    private final Long consultId;
+    @Schema(description = "상담 아이디", example = "iYftB8H4maLpHs0OFPgg7A==")
+    private final String consultId;
 
     @Schema(description = "상담사 닉네임", example = "이롸롸")
     private final String nickname; // TODO 이런 식의 상담사 정보를 요청하는 api가 많아진다면 나중에 dto로 묶어버려도 될 듯
@@ -47,7 +48,7 @@ public class ConsultCreateResponse {
                 .map(ConsultCategory::getDisplayName)
                 .collect(Collectors.toSet());
 
-        return new ConsultCreateResponse(consult.getConsultId(),
+        return new ConsultCreateResponse(EncryptionUtil.encrypt(consult.getConsultId()),
                 counselor.getNickname(), counselor.getLevel(), counselor.getRatingAverage(),
                 counselor.getTotalReview(), consultCategories, counselor.getConsultStyle().getDisplayName(),
                 consult.getConsultType().getDisplayName(), consult.getCost());

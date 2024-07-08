@@ -26,6 +26,7 @@ import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.email.application.EmailService;
 import com.example.sharemind.email.content.EmailType;
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
@@ -68,10 +69,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional
-    public void updateConsultIsPaid(Long consultId) {
-        Consult consult = consultService.getConsultByConsultId(consultId);
+    public void updateConsultIsPaid(String consultId) {
+        Consult consult = consultService.getConsultByConsultId(EncryptionUtil.decrypt(consultId));
         if (consult.getPayment().getIsPaid()) {
-            throw new ConsultException(ConsultErrorCode.CONSULT_ALREADY_PAID, consultId.toString());
+            throw new ConsultException(ConsultErrorCode.CONSULT_ALREADY_PAID, consultId);
         }
 
         switch (consult.getConsultType()) {
