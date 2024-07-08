@@ -6,6 +6,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.content.PostListSortType;
 import com.example.sharemind.post.content.PostStatus;
@@ -241,12 +242,11 @@ public class PostServiceImpl implements PostService {
     @Scheduled(cron = "0 0 0/1 * * *", zone = "Asia/Seoul")
     @Transactional
     public void checkPostStatus() {
-        postRepository.findAllProceedingPublicPostsAfter72Hours()
-                .forEach(post -> {
-                    if (post.getTotalComment() > 0) {
-                        post.updatePostStatus(PostStatus.TIME_OUT);
-                    }
-                });
+        postRepository.findAllWaitingPublicPostsAfter24Hours()
+                        .forEach(BaseEntity::updateIsActivatedFalse);
+
+        postRepository.findAllCommentedProceedingPublicPostsAfter72Hours()
+                .forEach(post -> post.updatePostStatus(PostStatus.TIME_OUT));
     }
 
     private Boolean checkCounselorReadAuthority(Long postId, Long customerId) {

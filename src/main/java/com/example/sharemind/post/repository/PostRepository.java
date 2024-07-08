@@ -17,9 +17,15 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
     List<Post> findAllByIsPaidIsFalseAndIsActivatedIsTrue();
 
     @Query(value = "SELECT * FROM post " +
+            "WHERE is_public = true AND post_status = 'WAITING' AND is_activated = true "
+            + "AND created_at <= CURRENT_TIMESTAMP - INTERVAL 1 DAY ", nativeQuery = true)
+    List<Post> findAllWaitingPublicPostsAfter24Hours();
+
+    @Query(value = "SELECT * FROM post " +
             "WHERE is_public = true AND post_status = 'PROCEEDING' AND is_activated = true "
-            + "AND published_at <= CURRENT_TIMESTAMP - INTERVAL 3 DAY", nativeQuery = true)
-    List<Post> findAllProceedingPublicPostsAfter72Hours();
+            + "AND published_at <= CURRENT_TIMESTAMP - INTERVAL 3 DAY "
+            + "AND total_comment > 0", nativeQuery = true)
+    List<Post> findAllCommentedProceedingPublicPostsAfter72Hours();
 
     @Query(value = "SELECT post_id FROM post "
             + "WHERE post_status = 'PROCEEDING' AND is_activated = true "
