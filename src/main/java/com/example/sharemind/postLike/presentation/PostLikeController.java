@@ -46,7 +46,7 @@ public class PostLikeController {
             @Parameter(name = "postId", description = "일대다 질문 아이디")
     })
     @PostMapping("/{postId}")
-    public ResponseEntity<Void> createPostLike(@PathVariable Long postId,
+    public ResponseEntity<Void> createPostLike(@PathVariable String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         postLikeService.createPostLike(postId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -67,7 +67,7 @@ public class PostLikeController {
             @Parameter(name = "postId", description = "일대다 질문 아이디")
     })
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePostLike(@PathVariable Long postId,
+    public ResponseEntity<Void> deletePostLike(@PathVariable String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         postLikeService.deletePostLike(postId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();

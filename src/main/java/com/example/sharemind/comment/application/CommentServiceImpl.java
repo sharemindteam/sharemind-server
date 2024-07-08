@@ -11,6 +11,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
@@ -33,8 +34,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentLikeRepository commentLikeRepository;
 
     @Override
-    public List<CommentGetResponse> getCounselorComments(Long postId, Long customerId) {
-        Post post = postService.checkAndGetCounselorPost(postId, customerId);
+    public List<CommentGetResponse> getCounselorComments(String postId, Long customerId) {
+        Post post = postService.checkAndGetCounselorPost(EncryptionUtil.decrypt(postId), customerId);
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
@@ -46,8 +47,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentGetResponse> getCustomerComments(Long postId, Long customerId) {
-        Post post = postService.getPostByPostId(postId);
+    public List<CommentGetResponse> getCustomerComments(String postId, Long customerId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         post.checkReadAuthority(customerId);
 
         List<Comment> comments = commentRepository.findByPostAndIsActivatedIsTrue(post);
@@ -70,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void createComment(CommentCreateRequest commentCreateRequest, Long customerId) {
-        Post post = postService.checkAndGetCounselorPost(commentCreateRequest.getPostId(),
+        Post post = postService.checkAndGetCounselorPost(EncryptionUtil.decrypt(commentCreateRequest.getPostId()),
                 customerId);
         Customer customer = post.getCustomer();
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
@@ -95,9 +96,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void updateCustomerChosenComment(Long postId, Long commentId, Long customerId) {
+    public void updateCustomerChosenComment(String postId, Long commentId, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Post post = postService.getPostByPostId(postId);
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         post.checkWriteAuthority(customer);
         post.checkPostProceedingOrTimeOut();
 
@@ -110,8 +111,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Boolean getIsCommentOwner(Long postId, Long customerId) {
-        Post post = postService.getPostByPostId(postId);
+    public Boolean getIsCommentOwner(String postId, Long customerId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
         return commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null;

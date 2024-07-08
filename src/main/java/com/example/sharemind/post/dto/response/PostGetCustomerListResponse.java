@@ -1,5 +1,6 @@
 package com.example.sharemind.post.dto.response;
 
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -12,7 +13,7 @@ import lombok.Getter;
 public class PostGetCustomerListResponse {
 
     @Schema(description = "일대다 질문 아이디")
-    private final Long postId;
+    private final String postId;
 
     @Schema(description = "임시저장 여부")
     private final Boolean isCompleted;
@@ -52,7 +53,7 @@ public class PostGetCustomerListResponse {
     public PostGetCustomerListResponse(Long postId, Boolean isCompleted, String title,
             String content, Boolean isPublic, Boolean isLiked, Long totalLike, Boolean isScrapped,
             Long totalScrap, Long totalComment, String updatedAt, LocalDateTime finishedAt) {
-        this.postId = postId;
+        this.postId = EncryptionUtil.encrypt(postId);
         this.isCompleted = isCompleted;
         this.title = title;
         this.content = content;

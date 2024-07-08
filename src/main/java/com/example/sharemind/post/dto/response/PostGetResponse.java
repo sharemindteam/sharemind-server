@@ -1,5 +1,6 @@
 package com.example.sharemind.post.dto.response;
 
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,7 +11,7 @@ import lombok.Getter;
 public class PostGetResponse {
 
     @Schema(description = "일대다 질문 아이디")
-    private final Long postId;
+    private final String postId;
 
     @Schema(description = "상담 카테고리", example = "권태기")
     private final String consultCategory;
@@ -43,7 +44,7 @@ public class PostGetResponse {
     public PostGetResponse(Long postId, String consultCategory, String title, String content,
             Boolean isPublic, Boolean isLiked, Long totalLike, Boolean isScrapped, Long totalScrap,
             String updatedAt) {
-        this.postId = postId;
+        this.postId = EncryptionUtil.encrypt(postId);
         this.consultCategory = consultCategory;
         this.title = title;
         this.content = content;

@@ -184,7 +184,7 @@ public class AdminController {
             @Parameter(name = "postId", description = "일대다 상담 아이디")
     })
     @PatchMapping("/unpaid-posts/{postId}")
-    public ResponseEntity<Void> updatePostIsPaid(@PathVariable Long postId) {
+    public ResponseEntity<Void> updatePostIsPaid(@PathVariable String postId) {
         adminService.updatePostIsPaid(postId);
         return ResponseEntity.ok().build();
     }
@@ -263,7 +263,7 @@ public class AdminController {
             @Parameter(name = "postId", description = "조회할 공개상담 아이디")
     })
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostGetByIdResponse> getPostByPostId(@PathVariable Long postId) {
+    public ResponseEntity<PostGetByIdResponse> getPostByPostId(@PathVariable String postId) {
         return ResponseEntity.ok(adminService.getPostByPostId(postId));
     }
 
@@ -279,7 +279,7 @@ public class AdminController {
             @Parameter(name = "postId", description = "삭제할 공개상담 아이디")
     })
     @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<Void> deletePostByPostId(@PathVariable Long postId) {
+    public ResponseEntity<Void> deletePostByPostId(@PathVariable String postId) {
         adminService.deletePostByPostId(postId);
         return ResponseEntity.ok().build();
     }

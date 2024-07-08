@@ -1,5 +1,6 @@
 package com.example.sharemind.admin.dto.response;
 
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ import lombok.Getter;
 public class PostGetUnpaidPrivateResponse {
 
     @Schema(description = "일대다 상담 아이디")
-    private final Long postId;
+    private final String postId;
 
     @Schema(description = "구매자 닉네임")
     private final String customerName;
@@ -26,8 +27,8 @@ public class PostGetUnpaidPrivateResponse {
 
     @Builder
     public PostGetUnpaidPrivateResponse(Long postId, String customerName, Long cost,
-            Boolean isPublic, LocalDateTime createdAt) {
-        this.postId = postId;
+                                        Boolean isPublic, LocalDateTime createdAt) {
+        this.postId = EncryptionUtil.encrypt(postId);
         this.customerName = customerName;
         this.cost = cost;
         this.isPublic = isPublic;

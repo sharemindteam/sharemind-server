@@ -52,7 +52,7 @@ public class PostScrapController {
             @Parameter(name = "postId", description = "일대다 질문 아이디")
     })
     @PostMapping("/{postId}")
-    public ResponseEntity<Void> createPostScrap(@PathVariable Long postId,
+    public ResponseEntity<Void> createPostScrap(@PathVariable String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         postScrapService.createPostScrap(postId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -73,7 +73,7 @@ public class PostScrapController {
             @Parameter(name = "postId", description = "일대다 질문 아이디")
     })
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePostScrap(@PathVariable Long postId,
+    public ResponseEntity<Void> deletePostScrap(@PathVariable String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         postScrapService.deletePostScrap(postId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();

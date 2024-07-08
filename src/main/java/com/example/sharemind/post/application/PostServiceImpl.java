@@ -7,6 +7,7 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.post.content.PostListSortType;
 import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
@@ -76,7 +77,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void updatePost(PostUpdateRequest postUpdateRequest, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Post post = getPostByPostId(postUpdateRequest.getPostId());
+        Post post = getPostByPostId(EncryptionUtil.decrypt(postUpdateRequest.getPostId()));
         ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
                 postUpdateRequest.getConsultCategory());
 
@@ -85,8 +86,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostGetResponse getPost(Long postId, Long customerId) {
-        Post post = getPostByPostId(postId);
+    public PostGetResponse getPost(String postId, Long customerId) {
+        Post post = getPostByPostId(EncryptionUtil.decrypt(postId));
         post.checkReadAuthority(customerId);
 
         if (customerId != 0) {
@@ -102,10 +103,10 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId,
-            Long customerId) {
+    public List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, String encryptedId,
+                                                                Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-
+        Long postId = "0".equals(encryptedId) ? 0L : EncryptionUtil.decrypt(encryptedId);
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
                         POST_PAGE_SIZE).stream()
                 .map(post -> (post.getIsCompleted() != null && post.getIsCompleted())
@@ -118,8 +119,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId,
-            Long customerId) {
+    public List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, String encryptedId,
+                                                                  Long customerId) {
+        Long postId = "0".equals(encryptedId) ? 0L : EncryptionUtil.decrypt(encryptedId);
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
         List<Comment> comments = commentRepository.findAllByCounselorAndIsActivatedIsTrue(counselor,
                 filter, postId, POST_PAGE_SIZE);
@@ -131,8 +133,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId,
-            LocalDateTime finishedAt, Long customerId) {
+    public List<PostGetPublicListResponse> getPublicPostsByCustomer(String encryptedId,
+                                                                    LocalDateTime finishedAt, Long customerId) {
+        Long postId = "0".equals(encryptedId) ? 0L : EncryptionUtil.decrypt(encryptedId);
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
@@ -154,8 +157,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetPublicListResponse> getPopularityPosts(Long postId, LocalDateTime finishedAt,
-            Long customerId) {
+    public List<PostGetPublicListResponse> getPopularityPosts(String encryptedId, LocalDateTime finishedAt,
+                                                              Long customerId) {
+        Long postId = "0".equals(encryptedId) ? 0L : EncryptionUtil.decrypt(encryptedId);
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
@@ -198,8 +202,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostGetResponse getCounselorPostContent(Long postId, Long customerId) {
-        Post post = checkAndGetCounselorPost(postId, customerId);
+    public PostGetResponse getCounselorPostContent(String postId, Long customerId) {
+        Post post = checkAndGetCounselorPost(EncryptionUtil.decrypt(postId), customerId);
 
         return PostGetResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED);
     }
@@ -227,9 +231,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Boolean getIsPostOwner(Long postId, Long customerId) {
+    public Boolean getIsPostOwner(String postId, Long customerId) {
         if (customerId != 0) {
-            Post post = getPostByPostId(postId);
+            Post post = getPostByPostId(EncryptionUtil.decrypt(postId));
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
             return post.checkOwner(customer.getCustomerId());

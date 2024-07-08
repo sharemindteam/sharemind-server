@@ -166,10 +166,10 @@ public class AdminServiceImpl implements AdminService {
 
     @Transactional
     @Override
-    public void updatePostIsPaid(Long postId) {
-        Post post = postService.getPostByPostId(postId);
+    public void updatePostIsPaid(String postId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         if (post.getIsPaid()) {
-            throw new PostException(PostErrorCode.POST_ALREADY_PAID, postId.toString());
+            throw new PostException(PostErrorCode.POST_ALREADY_PAID, postId);
         }
 
         post.updateIsPaid();
@@ -207,15 +207,15 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public PostGetByIdResponse getPostByPostId(Long postId) {
-        Post post = postService.getPostByPostId(postId);
+    public PostGetByIdResponse getPostByPostId(String postId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         return PostGetByIdResponse.of(post);
     }
 
     @Transactional
     @Override
-    public void deletePostByPostId(Long postId) {
-        Post post = postService.getPostByPostId(postId);
+    public void deletePostByPostId(String postId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         post.updateIsActivatedFalse();
     }
 

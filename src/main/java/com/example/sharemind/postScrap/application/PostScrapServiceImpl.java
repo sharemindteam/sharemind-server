@@ -2,6 +2,7 @@ package com.example.sharemind.postScrap.application;
 
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.postLike.repository.PostLikeRepository;
@@ -30,8 +31,8 @@ public class PostScrapServiceImpl implements PostScrapService {
 
     @Transactional
     @Override
-    public void createPostScrap(Long postId, Long customerId) {
-        Post post = postService.getPostByPostId(postId);
+    public void createPostScrap(String postId, Long customerId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         if (postScrapRepository.existsByPostAndCustomer(post, customer)) {
@@ -52,8 +53,8 @@ public class PostScrapServiceImpl implements PostScrapService {
 
     @Transactional
     @Override
-    public void deletePostScrap(Long postId, Long customerId) {
-        Post post = postService.getPostByPostId(postId);
+    public void deletePostScrap(String postId, Long customerId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         PostScrap postScrap = postScrapRepository.findByPostAndCustomerAndIsActivatedIsTrue(post,

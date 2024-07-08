@@ -7,15 +7,15 @@ import com.example.sharemind.comment.dto.response.CommentGetResponse;
 import java.util.List;
 
 public interface CommentService {
-    List<CommentGetResponse> getCounselorComments(Long postId, Long customerId);
+    List<CommentGetResponse> getCounselorComments(String postId, Long customerId);
 
-    List<CommentGetResponse> getCustomerComments(Long postId, Long customerId);
+    List<CommentGetResponse> getCustomerComments(String postId, Long customerId);
 
     void createComment(CommentCreateRequest commentCreateRequest, Long customerId);
 
     Comment getCommentByCommentId(Long commentId);
 
-    void updateCustomerChosenComment(Long postId, Long commentId, Long customerId);
+    void updateCustomerChosenComment(String postId, Long commentId, Long customerId);
 
-    Boolean getIsCommentOwner(Long postId, Long customerId);
+    Boolean getIsCommentOwner(String postId, Long customerId);
 }

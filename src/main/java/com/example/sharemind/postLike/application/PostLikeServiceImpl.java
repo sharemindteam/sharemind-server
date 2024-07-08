@@ -2,6 +2,7 @@ package com.example.sharemind.postLike.application;
 
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.postLike.domain.PostLike;
@@ -23,8 +24,8 @@ public class PostLikeServiceImpl implements PostLikeService {
 
     @Transactional
     @Override
-    public void createPostLike(Long postId, Long customerId) {
-        Post post = postService.getPostByPostId(postId);
+    public void createPostLike(String postId, Long customerId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         if (postLikeRepository.existsByPostAndCustomer(post, customer)) {
@@ -45,8 +46,8 @@ public class PostLikeServiceImpl implements PostLikeService {
 
     @Transactional
     @Override
-    public void deletePostLike(Long postId, Long customerId) {
-        Post post = postService.getPostByPostId(postId);
+    public void deletePostLike(String postId, Long customerId) {
+        Post post = postService.getPostByPostId(EncryptionUtil.decrypt(postId));
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
         PostLike postLike = postLikeRepository.findByPostAndCustomerAndIsActivatedIsTrue(post,

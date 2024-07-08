@@ -12,7 +12,7 @@ public class CommentCreateRequest {
 
     @Schema(description = "상담 id")
     @NotNull
-    private Long postId;
+    private String postId;
 
     @Schema(description = "content")
     private String content;

@@ -31,7 +31,7 @@ public interface AdminService {
 
     List<PostGetUnpaidPrivateResponse> getUnpaidPrivatePosts();
 
-    void updatePostIsPaid(Long postId);
+    void updatePostIsPaid(String postId);
 
     List<CustomerGetByNicknameOrEmailResponse> getCustomersByNicknameOrEmail(String keyword);
 
@@ -41,9 +41,9 @@ public interface AdminService {
 
     void updateCounselorPending(Long counselorId);
 
-    PostGetByIdResponse getPostByPostId(Long postId);
+    PostGetByIdResponse getPostByPostId(String postId);
 
-    void deletePostByPostId(Long postId);
+    void deletePostByPostId(String postId);
 
     InformationGetResponse getInformation();
 }

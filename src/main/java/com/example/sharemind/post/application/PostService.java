@@ -21,28 +21,28 @@ public interface PostService {
 
     void updatePost(PostUpdateRequest postUpdateRequest, Long customerId);
 
-    PostGetResponse getPost(Long postId, Long customerId);
+    PostGetResponse getPost(String postId, Long customerId);
 
-    List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId,
+    List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, String encryptedId,
             Long customerId);
 
-    List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId,
+    List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, String encryptedId,
             Long customerId);
 
-    List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+    List<PostGetPublicListResponse> getPublicPostsByCustomer(String encryptedId, LocalDateTime finishedAt,
             Long customerId);
 
-    List<PostGetPublicListResponse> getPopularityPosts(Long postId, LocalDateTime finishedAt,
+    List<PostGetPublicListResponse> getPopularityPosts(String encryptedId, LocalDateTime finishedAt,
             Long customerId);
 
     List<Long> getRandomPosts();
 
-    PostGetResponse getCounselorPostContent(Long postId, Long customerId);
+    PostGetResponse getCounselorPostContent(String postId, Long customerId);
 
     Post checkAndGetCounselorPost(Long postId, Long customerId);
 
     List<Post> getPostByWordWithPagination(SearchWordPostFindRequest searchWordPostFindRequest,
             String sortType);
 
-    Boolean getIsPostOwner(Long postId, Long customerId);
+    Boolean getIsPostOwner(String postId, Long customerId);
 }

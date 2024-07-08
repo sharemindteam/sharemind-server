@@ -43,7 +43,7 @@ public class CommentController {
             @Parameter(name = "postId", description = "일대다 상담 ID")
     })
     @GetMapping("/counselors/{postId}")
-    public ResponseEntity<List<CommentGetResponse>> getCounselorComments(@PathVariable Long postId,
+    public ResponseEntity<List<CommentGetResponse>> getCounselorComments(@PathVariable String postId,
                                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(commentService.getCounselorComments(postId,
                 customUserDetails.getCustomer().getCustomerId()));
@@ -83,7 +83,7 @@ public class CommentController {
             @Parameter(name = "postId", description = "일대다 상담 ID")
     })
     @GetMapping("/customers/{postId}")
-    public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable Long postId,
+    public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable String postId,
                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(commentService.getCustomerComments(postId,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
@@ -112,7 +112,7 @@ public class CommentController {
             @Parameter(name = "commentId", description = "답변 ID")
     })
     @PatchMapping("/customers/{postId}")
-    public ResponseEntity<Void> updateCustomerChosenComment(@PathVariable Long postId, @RequestParam Long commentId,
+    public ResponseEntity<Void> updateCustomerChosenComment(@PathVariable String postId, @RequestParam Long commentId,
                                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         commentService.updateCustomerChosenComment(postId, commentId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
@@ -131,7 +131,7 @@ public class CommentController {
             @Parameter(name = "postId", description = "일대다 상담 ID"),
     })
     @GetMapping("/counselors/authentication/{postId}")
-    public Boolean getIsCommentOwner(@PathVariable Long postId,
+    public Boolean getIsCommentOwner(@PathVariable String postId,
                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return commentService.getIsCommentOwner(postId, customUserDetails.getCustomer().getCustomerId());
     }

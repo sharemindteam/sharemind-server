@@ -1,5 +1,6 @@
 package com.example.sharemind.postScrap.dto.response;
 
+import com.example.sharemind.global.utils.EncryptionUtil;
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.postScrap.domain.PostScrap;
@@ -16,7 +17,7 @@ public class PostScrapGetResponse {
     private final Long postScrapId;
 
     @Schema(description = "일대다 질문 아이디")
-    private final Long postId;
+    private final String postId;
 
     @Schema(description = "제목")
     private final String title;
@@ -54,7 +55,7 @@ public class PostScrapGetResponse {
             Boolean isPublic, Boolean isLiked, Long totalLike, Boolean isScrapped, Long totalScrap,
             Long totalComment, String updatedAt, LocalDateTime scrappedAt) {
         this.postScrapId = postScrapId;
-        this.postId = postId;
+        this.postId = EncryptionUtil.encrypt(postId);
         this.title = title;
         this.content = content;
         this.isPublic = isPublic;

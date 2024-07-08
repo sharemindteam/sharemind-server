@@ -95,7 +95,7 @@ public class PostController {
             @Parameter(name = "postId", description = "일대다 질문 아이디")
     })
     @GetMapping("/{postId}")
-    public ResponseEntity<PostGetResponse> getPost(@PathVariable Long postId,
+    public ResponseEntity<PostGetResponse> getPost(@PathVariable String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPost(postId,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
@@ -121,7 +121,7 @@ public class PostController {
     @GetMapping("/customers")
     public ResponseEntity<List<PostGetCustomerListResponse>> getPostsByCustomer(
             @RequestParam Boolean filter,
-            @RequestParam Long postId,
+            @RequestParam String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPostsByCustomer(filter, postId,
                 customUserDetails.getCustomer().getCustomerId()));
@@ -143,7 +143,7 @@ public class PostController {
     @GetMapping("/counselors")
     public ResponseEntity<List<PostGetCounselorListResponse>> getPostsByCounselor(
             @RequestParam Boolean filter,
-            @RequestParam Long postId,
+            @RequestParam String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPostsByCounselor(filter, postId,
                 customUserDetails.getCustomer().getCustomerId()));
@@ -168,7 +168,7 @@ public class PostController {
     })
     @GetMapping("/customers/public")
     public ResponseEntity<List<PostGetPublicListResponse>> getPublicPostsByCustomer(
-            @RequestParam Long postId,
+            @RequestParam String postId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPublicPostsByCustomer(postId, finishedAt,
@@ -194,7 +194,7 @@ public class PostController {
     })
     @GetMapping("/customers/public/likes")
     public ResponseEntity<List<PostGetPublicListResponse>> getPopularityPosts(
-            @RequestParam Long postId,
+            @RequestParam String postId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPopularityPosts(postId, finishedAt,
@@ -228,7 +228,7 @@ public class PostController {
                     - 일대다 상담 ID""")
     })
     @GetMapping("/counselors/{postId}")
-    public ResponseEntity<PostGetResponse> getPostInfo(@PathVariable Long postId,
+    public ResponseEntity<PostGetResponse> getPostInfo(@PathVariable String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getCounselorPostContent(postId,
                 customUserDetails.getCustomer().getCustomerId()));
@@ -247,7 +247,7 @@ public class PostController {
             @Parameter(name = "postId", description = "일대다 질문 아이디")
     })
     @GetMapping("/customers/public/{postId}")
-    public Boolean getIsPostOwner(@PathVariable Long postId,
+    public Boolean getIsPostOwner(@PathVariable String postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return postService.getIsPostOwner(postId,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId());
