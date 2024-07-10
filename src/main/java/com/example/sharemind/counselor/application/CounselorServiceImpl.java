@@ -10,6 +10,7 @@ import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.counselor.domain.ProfileRecord;
 import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateAccountRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
@@ -17,6 +18,7 @@ import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
+import com.example.sharemind.counselor.repository.ProfileRecordRepository;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
@@ -49,6 +51,7 @@ public class CounselorServiceImpl implements CounselorService {
     private static final String SPLIT_HOURS = "~";
 
     private final CounselorRepository counselorRepository;
+    private final ProfileRecordRepository profileRecordRepository;
     private final CustomerService customerService;
     private final WishListCounselorService wishListCounselorService;
     private final RedisTemplate<String, List<Long>> redisTemplate;
@@ -178,6 +181,19 @@ public class CounselorServiceImpl implements CounselorService {
             List<String> times = rawTimes.get(day);
             consultTimes.add(ConsultTime.builder().day(day).times(times).build());
         }
+
+        ProfileRecord profileRecord = ProfileRecord.builder()
+                .counselor(counselor)
+                .nickname(counselorUpdateProfileRequest.getNickname())
+                .consultCosts(consultCosts)
+                .consultTimes(consultTimes)
+                .consultTypes(consultTypes)
+                .consultCategories(consultCategories)
+                .consultStyle(consultStyle)
+                .experience(counselorUpdateProfileRequest.getExperience())
+                .introduction(counselorUpdateProfileRequest.getIntroduction())
+                .build();
+        profileRecordRepository.save(profileRecord);
 
         counselor.updateProfile(counselorUpdateProfileRequest.getNickname(), consultCategories,
                 consultStyle, consultTypes, consultTimes, consultCosts,
