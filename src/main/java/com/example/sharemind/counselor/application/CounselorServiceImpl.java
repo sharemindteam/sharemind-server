@@ -118,7 +118,7 @@ public class CounselorServiceImpl implements CounselorService {
     @Transactional
     @Override
     public void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest,
-                                       Long customerId) {
+            Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
         if ((counselor.getIsEducated() == null) || (!counselor.getIsEducated())) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_EDUCATED);
@@ -232,8 +232,8 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId,
-                                                                             String sortType,
-                                                                             CounselorGetRequest counselorGetRequest) {
+            String sortType,
+            CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
                 sortType);
         List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
@@ -255,7 +255,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public List<CounselorGetListResponse> getAllCounselorsByCategory(String sortType,
-                                                                     CounselorGetRequest counselorGetRequest) {
+            CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
                 sortType);
         List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
@@ -272,7 +272,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId,
-                                                                                 Long customerId) {
+            Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = getCounselorByCounselorId(counselorId);
 
@@ -290,7 +290,7 @@ public class CounselorServiceImpl implements CounselorService {
     @Transactional
     @Override
     public void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest,
-                              Long customerId) {
+            Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
         Bank.existsByDisplayName(counselorUpdateAccountRequest.getBank());
         counselor.updateAccountInfo(counselorUpdateAccountRequest.getAccount(),
@@ -318,7 +318,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId,
-                                                                         String type) {
+            String type) {
         Counselor counselor = getCounselorByCounselorId(counselorId);
         ConsultType consultType = ConsultType.getConsultTypeByName(type);
         if (!counselor.getConsultTypes().contains(consultType)) {
@@ -365,7 +365,8 @@ public class CounselorServiceImpl implements CounselorService {
         int currentHour = LocalTime.now().getHour();
 
         List<Counselor> realtimeCounselors = counselors.stream()
-                .filter(counselor -> isAvailableAtRealTime(counselor.getConsultTimes(), currentDay, currentHour))
+                .filter(counselor -> isAvailableAtRealTime(counselor.getConsultTimes(), currentDay,
+                        currentHour))
                 .sorted((c1, c2) -> Long.compare(c2.getTotalConsult(), c1.getTotalConsult()))
                 .toList();
 
@@ -405,7 +406,8 @@ public class CounselorServiceImpl implements CounselorService {
         }
 
         List<Long> counselorsSubList = (counselorIds.size() >= start + COUNSELOR_PAGE) ?
-                counselorIds.subList(start, start + COUNSELOR_PAGE) : counselorIds.subList(start, counselorIds.size());
+                counselorIds.subList(start, start + COUNSELOR_PAGE)
+                : counselorIds.subList(start, counselorIds.size());
         return counselorRepository.findAllById(counselorsSubList);
     }
 
