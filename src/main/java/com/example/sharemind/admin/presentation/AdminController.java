@@ -304,4 +304,13 @@ public class AdminController {
     public ResponseEntity<Boolean> updateShutdown(@RequestParam Boolean shutdown) {
         return ResponseEntity.ok(adminService.updateShutdown(shutdown));
     }
+
+    @Operation(summary = "서비스 셧다운 여부 조회", description = "서비스 셧다운 여부 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공")
+    })
+    @GetMapping("/managements")
+    public ResponseEntity<Boolean> getShutdown() {
+        return ResponseEntity.ok(adminService.getShutdown());
+    }
 }
