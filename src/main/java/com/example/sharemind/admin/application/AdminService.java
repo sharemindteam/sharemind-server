@@ -46,4 +46,6 @@ public interface AdminService {
     void deletePostByPostId(Long postId);
 
     InformationGetResponse getInformation();
+
+    Boolean updateShutdown(Boolean shutdown);
 }
