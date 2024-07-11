@@ -48,4 +48,6 @@ public interface AdminService {
     InformationGetResponse getInformation();
 
     Boolean updateShutdown(Boolean shutdown);
+
+    Boolean getShutdown();
 }

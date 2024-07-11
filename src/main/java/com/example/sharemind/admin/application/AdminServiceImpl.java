@@ -307,4 +307,10 @@ public class AdminServiceImpl implements AdminService {
 
         return valueOperations.get(SHUT_DOWN_KEY);
     }
+
+    @Override
+    public Boolean getShutdown() {
+        ValueOperations<String, Boolean> valueOperations = redisTemplate.opsForValue();
+        return valueOperations.get(SHUT_DOWN_KEY);
+    }
 }
