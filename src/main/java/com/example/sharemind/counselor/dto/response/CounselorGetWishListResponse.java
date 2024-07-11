@@ -32,7 +32,13 @@ public class CounselorGetWishListResponse extends CounselorGetBaseResponse {
     @Schema(description = "해당 위시리스트 업데이트 시간", example = "a")
     private final LocalDateTime updatedAt;
 
-    private CounselorGetWishListResponse(Counselor counselor, WishList wishList) {
+    @Schema(description = "상담 완료 횟수")
+    private final Long totalConsult;
+
+    @Schema(description = "현재 접속 여부", example = "true")
+    private final Boolean isRealtime;
+
+    private CounselorGetWishListResponse(Counselor counselor, WishList wishList, Boolean isRealtime) {
         super(counselor);
         this.wishlistId = wishList.getWishlistId();
         this.counselorId = counselor.getCounselorId();
@@ -40,9 +46,11 @@ public class CounselorGetWishListResponse extends CounselorGetBaseResponse {
         this.totalReview = counselor.getTotalReview();
         this.ratingAverage = counselor.getRatingAverage();
         this.updatedAt = wishList.getUpdatedAt();
+        this.totalConsult = counselor.getTotalConsult();
+        this.isRealtime = isRealtime;
     }
 
-    public static CounselorGetWishListResponse of(WishList wishList) {
-        return new CounselorGetWishListResponse(wishList.getCounselor(), wishList);
+    public static CounselorGetWishListResponse of(WishList wishList, Boolean isRealtime) {
+        return new CounselorGetWishListResponse(wishList.getCounselor(), wishList, isRealtime);
     }
 }
