@@ -363,8 +363,11 @@ public class CounselorServiceImpl implements CounselorService {
             WishListGetRequest wishListGetRequest, Long customerId) {
         List<WishList> wishLists = wishListCounselorService.getWishList(wishListGetRequest,
                 customerId);
+        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
+
         return wishLists.stream()
-                .map(CounselorGetWishListResponse::of)
+                .map(wishList -> CounselorGetWishListResponse.of(wishList,
+                        counselorIds != null && counselorIds.contains(wishList.getCounselor().getCounselorId())))
                 .toList();
     }
 
