@@ -292,4 +292,25 @@ public class AdminController {
     public ResponseEntity<InformationGetResponse> getInformation() {
         return ResponseEntity.ok(adminService.getInformation());
     }
+
+    @Operation(summary = "서비스 셧다운 여부 수정", description = "서비스 셧다운 여부 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공")
+    })
+    @Parameters({
+            @Parameter(name = "shutdown", description = "true: 서비스 셧다운, false: 서비스 정상 동작")
+    })
+    @PatchMapping("/managements")
+    public ResponseEntity<Boolean> updateShutdown(@RequestParam Boolean shutdown) {
+        return ResponseEntity.ok(adminService.updateShutdown(shutdown));
+    }
+
+    @Operation(summary = "서비스 셧다운 여부 조회", description = "서비스 셧다운 여부 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공")
+    })
+    @GetMapping("/managements")
+    public ResponseEntity<Boolean> getShutdown() {
+        return ResponseEntity.ok(adminService.getShutdown());
+    }
 }
