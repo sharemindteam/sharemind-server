@@ -6,6 +6,7 @@ import com.example.sharemind.letter.content.LetterStatus;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.letterMessage.domain.LetterMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +36,8 @@ public class LetterGetResponse {
     @Schema(description = "리뷰 작성 여부")
     private final Boolean reviewCompleted;
 
-    @Schema(description = "상담 아이디")
-    private final Long consultId;
+    @Schema(description = "상담 uuid")
+    private final UUID consultUuid;
 
     public static ChatLetterGetResponse of(Letter letter, LetterMessage recentMessage, Boolean isCustomer) {
         String letterStatus;
@@ -58,12 +59,13 @@ public class LetterGetResponse {
         if (recentMessage == null) {
             return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                     letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
-                    TimeUtil.getUpdatedAt(letter.getConsult().getUpdatedAt()), null, reviewCompleted, letter.getConsult().getConsultId()));
+                    TimeUtil.getUpdatedAt(letter.getConsult().getUpdatedAt()), null, reviewCompleted,
+                    letter.getConsult().getConsultUuid()));
         }
 
         return ChatLetterGetResponse.of(new LetterGetResponse(letter.getLetterId(), letterStatus,
                 letter.getConsult().getCounselor().getConsultStyle().getDisplayName(), opponentName,
                 TimeUtil.getUpdatedAt((recentMessage.getUpdatedAt())), recentMessage.getContent(), reviewCompleted,
-                letter.getConsult().getConsultId()));
+                letter.getConsult().getConsultUuid()));
     }
 }
