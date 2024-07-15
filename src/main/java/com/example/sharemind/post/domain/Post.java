@@ -16,8 +16,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +36,9 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     private Long postId;
+
+    @Column(columnDefinition = "BINARY(16)", updatable = false)
+    private UUID postUuid;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id")
@@ -79,6 +84,11 @@ public class Post extends BaseEntity {
 
     @Column(name = "finished_at")
     private LocalDateTime finishedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.postUuid = UUID.randomUUID();
+    }
 
     @Builder
     public Post(Customer customer, Long cost, Boolean isPublic) {
