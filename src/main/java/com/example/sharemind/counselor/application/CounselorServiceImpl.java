@@ -10,6 +10,7 @@ import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.domain.ConsultCost;
 import com.example.sharemind.counselor.domain.ConsultTime;
 import com.example.sharemind.counselor.domain.Counselor;
+import com.example.sharemind.counselor.domain.ProfileRecord;
 import com.example.sharemind.counselor.dto.request.CounselorGetRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateAccountRequest;
 import com.example.sharemind.counselor.dto.request.CounselorUpdateProfileRequest;
@@ -17,6 +18,7 @@ import com.example.sharemind.counselor.dto.response.*;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import com.example.sharemind.counselor.repository.CounselorRepository;
+import com.example.sharemind.counselor.repository.ProfileRecordRepository;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.global.content.ConsultCategory;
@@ -49,6 +51,7 @@ public class CounselorServiceImpl implements CounselorService {
     private static final String SPLIT_HOURS = "~";
 
     private final CounselorRepository counselorRepository;
+    private final ProfileRecordRepository profileRecordRepository;
     private final CustomerService customerService;
     private final WishListCounselorService wishListCounselorService;
     private final RedisTemplate<String, List<Long>> redisTemplate;
@@ -115,7 +118,7 @@ public class CounselorServiceImpl implements CounselorService {
     @Transactional
     @Override
     public void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest,
-                                       Long customerId) {
+            Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
         if ((counselor.getIsEducated() == null) || (!counselor.getIsEducated())) {
             throw new CounselorException(CounselorErrorCode.COUNSELOR_NOT_EDUCATED);
@@ -179,6 +182,20 @@ public class CounselorServiceImpl implements CounselorService {
             consultTimes.add(ConsultTime.builder().day(day).times(times).build());
         }
 
+        ProfileRecord profileRecord = ProfileRecord.builder()
+                .counselor(counselor)
+                .nickname(counselorUpdateProfileRequest.getNickname())
+                .consultCosts(consultCosts)
+                .consultTimes(consultTimes)
+                .consultTypes(consultTypes)
+                .consultCategories(consultCategories)
+                .consultStyle(consultStyle)
+                .experience(counselorUpdateProfileRequest.getExperience())
+                .introduction(counselorUpdateProfileRequest.getIntroduction())
+                .profileStatus(counselor.getProfileStatus())
+                .build();
+        profileRecordRepository.save(profileRecord);
+
         counselor.updateProfile(counselorUpdateProfileRequest.getNickname(), consultCategories,
                 consultStyle, consultTypes, consultTimes, consultCosts,
                 counselorUpdateProfileRequest.getIntroduction(),
@@ -200,33 +217,6 @@ public class CounselorServiceImpl implements CounselorService {
         return counselorRepository.findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
     }
 
-    private List<Counselor> getCounselorByCategoryWithPagination(
-            CounselorGetRequest counselorGetRequest, String sortType) {
-        String sortColumn = getCounselorSortColumn(sortType);
-        Pageable pageable = PageRequest.of(counselorGetRequest.getIndex(), COUNSELOR_PAGE,
-                Sort.by(sortColumn).descending());
-        if (counselorGetRequest.getConsultCategory() == null) {
-            return getRealtimeCounselors(counselorGetRequest.getIndex());
-        }
-
-        ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
-                counselorGetRequest.getConsultCategory());
-        return counselorRepository.findByConsultCategoryAndLevelAndStatus(consultCategory, pageable)
-                .getContent();
-    }
-
-    private List<Counselor> getRealtimeCounselors(int index) {
-        int start = index * COUNSELOR_PAGE;
-        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
-        if (counselorIds == null || start >= counselorIds.size()) {
-            return Collections.emptyList();
-        }
-
-        List<Long> counselorsSubList = (counselorIds.size() >= start + COUNSELOR_PAGE) ?
-                counselorIds.subList(start, start + COUNSELOR_PAGE) : counselorIds.subList(start, counselorIds.size());
-        return counselorRepository.findAllById(counselorsSubList);
-    }
-
     @Override
     public List<Counselor> getCounselorByWordWithPagination(
             SearchWordCounselorFindRequest searchWordCounselorFindRequest,
@@ -243,8 +233,8 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId,
-                                                                             String sortType,
-                                                                             CounselorGetRequest counselorGetRequest) {
+            String sortType,
+            CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
                 sortType);
         List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
@@ -266,7 +256,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public List<CounselorGetListResponse> getAllCounselorsByCategory(String sortType,
-                                                                     CounselorGetRequest counselorGetRequest) {
+            CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
                 sortType);
         List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
@@ -283,7 +273,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId,
-                                                                                 Long customerId) {
+            Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = getCounselorByCounselorId(counselorId);
 
@@ -301,7 +291,7 @@ public class CounselorServiceImpl implements CounselorService {
     @Transactional
     @Override
     public void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest,
-                              Long customerId) {
+            Long customerId) {
         Counselor counselor = getCounselorByCustomerId(customerId);
         Bank.existsByDisplayName(counselorUpdateAccountRequest.getBank());
         counselor.updateAccountInfo(counselorUpdateAccountRequest.getAccount(),
@@ -314,12 +304,6 @@ public class CounselorServiceImpl implements CounselorService {
         Counselor counselor = getCounselorByCustomerId(customerId);
 
         return CounselorGetAccountResponse.of(counselor);
-    }
-
-    private String getCounselorSortColumn(String sortType) {
-        CounselorListSortType counselorListSortType = CounselorListSortType.getSortTypeByName(
-                sortType);
-        return counselorListSortType.getSortColumn();
     }
 
     @Override
@@ -335,7 +319,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId,
-                                                                         String type) {
+            String type) {
         Counselor counselor = getCounselorByCounselorId(counselorId);
         ConsultType consultType = ConsultType.getConsultTypeByName(type);
         if (!counselor.getConsultTypes().contains(consultType)) {
@@ -343,12 +327,6 @@ public class CounselorServiceImpl implements CounselorService {
         }
 
         return CounselorGetForConsultResponse.of(counselor, consultType);
-    }
-
-    private void checkDuplicateNickname(String nickname, Long counselorId) {
-        if (counselorRepository.existsByNicknameAndCounselorIdNot(nickname, counselorId)) {
-            throw new CounselorException(CounselorErrorCode.DUPLICATE_NICKNAME);
-        }
     }
 
     @Override
@@ -391,7 +369,8 @@ public class CounselorServiceImpl implements CounselorService {
         int currentHour = LocalTime.now().getHour();
 
         List<Counselor> realtimeCounselors = counselors.stream()
-                .filter(counselor -> isAvailableAtRealTime(counselor.getConsultTimes(), currentDay, currentHour))
+                .filter(counselor -> isAvailableAtRealTime(counselor.getConsultTimes(), currentDay,
+                        currentHour))
                 .sorted((c1, c2) -> Long.compare(c2.getTotalConsult(), c1.getTotalConsult()))
                 .toList();
 
@@ -400,6 +379,46 @@ public class CounselorServiceImpl implements CounselorService {
                 .toList();
 
         redisTemplate.opsForValue().set(REALTIME_COUNSELOR, counselorIds);
+    }
+
+    private List<Counselor> getCounselorByCategoryWithPagination(
+            CounselorGetRequest counselorGetRequest, String sortType) {
+        String sortColumn = getCounselorSortColumn(sortType);
+        Pageable pageable = PageRequest.of(counselorGetRequest.getIndex(), COUNSELOR_PAGE,
+                Sort.by(sortColumn).descending());
+        if (counselorGetRequest.getConsultCategory() == null) {
+            return getRealtimeCounselors(counselorGetRequest.getIndex());
+        }
+
+        ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
+                counselorGetRequest.getConsultCategory());
+        return counselorRepository.findByConsultCategoryAndLevelAndStatus(consultCategory, pageable)
+                .getContent();
+    }
+
+    private String getCounselorSortColumn(String sortType) {
+        CounselorListSortType counselorListSortType = CounselorListSortType.getSortTypeByName(
+                sortType);
+        return counselorListSortType.getSortColumn();
+    }
+
+    private List<Counselor> getRealtimeCounselors(int index) {
+        int start = index * COUNSELOR_PAGE;
+        List<Long> counselorIds = redisTemplate.opsForValue().get(REALTIME_COUNSELOR);
+        if (counselorIds == null || start >= counselorIds.size()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> counselorsSubList = (counselorIds.size() >= start + COUNSELOR_PAGE) ?
+                counselorIds.subList(start, start + COUNSELOR_PAGE)
+                : counselorIds.subList(start, counselorIds.size());
+        return counselorRepository.findAllById(counselorsSubList);
+    }
+
+    private void checkDuplicateNickname(String nickname, Long counselorId) {
+        if (counselorRepository.existsByNicknameAndCounselorIdNot(nickname, counselorId)) {
+            throw new CounselorException(CounselorErrorCode.DUPLICATE_NICKNAME);
+        }
     }
 
     private boolean isAvailableAtRealTime(Set<ConsultTime> consultTimes, String day, int hour) {

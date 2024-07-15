@@ -60,4 +60,14 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
+
+    @Bean
+    public RedisTemplate<String, Boolean> booleanRedisTemplate() {
+        RedisTemplate<String, Boolean> redisTemplate = new RedisTemplate<>();
+
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+
+        return redisTemplate;
+    }
 }
