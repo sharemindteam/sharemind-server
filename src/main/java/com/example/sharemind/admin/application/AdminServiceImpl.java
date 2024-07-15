@@ -41,8 +41,6 @@ import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +50,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
-    private static final String SHUT_DOWN_KEY = "SHUT_DOWN";
 
     private final ConsultService consultService;
     private final LetterService letterService;
@@ -62,7 +59,6 @@ public class AdminServiceImpl implements AdminService {
     private final CustomerService customerService;
     private final PostService postService;
     private final EmailService emailService;
-    private final RedisTemplate<String, Boolean> redisTemplate;
 
     @Override
     public List<ConsultGetUnpaidResponse> getUnpaidConsults() {
@@ -298,19 +294,5 @@ public class AdminServiceImpl implements AdminService {
                 completedLetters, completedLetterCosts, canceledLetters, canceledLetterCosts,
                 publicPosts, completedPublicPosts, secretPosts, secretPostCosts,
                 completedSecretPosts, completedSecretPostCosts);
-    }
-
-    @Override
-    public Boolean updateShutdown(Boolean shutdown) {
-        ValueOperations<String, Boolean> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(SHUT_DOWN_KEY, shutdown);
-
-        return valueOperations.get(SHUT_DOWN_KEY);
-    }
-
-    @Override
-    public Boolean getShutdown() {
-        ValueOperations<String, Boolean> valueOperations = redisTemplate.opsForValue();
-        return valueOperations.get(SHUT_DOWN_KEY);
     }
 }
