@@ -29,7 +29,7 @@ public class Consult extends BaseEntity {
     @Column(name = "consult_id")
     private Long consultId;
 
-    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
+    @Column(columnDefinition = "BINARY(16)", updatable = false)
     private UUID consultUuid;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
