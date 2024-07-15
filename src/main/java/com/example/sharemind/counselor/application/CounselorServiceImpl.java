@@ -192,6 +192,7 @@ public class CounselorServiceImpl implements CounselorService {
                 .consultStyle(consultStyle)
                 .experience(counselorUpdateProfileRequest.getExperience())
                 .introduction(counselorUpdateProfileRequest.getIntroduction())
+                .profileStatus(counselor.getProfileStatus())
                 .build();
         profileRecordRepository.save(profileRecord);
 

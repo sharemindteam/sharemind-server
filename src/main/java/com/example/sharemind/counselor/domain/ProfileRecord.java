@@ -1,6 +1,7 @@
 package com.example.sharemind.counselor.domain;
 
 import com.example.sharemind.counselor.content.ConsultStyle;
+import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
 import jakarta.persistence.Column;
@@ -68,11 +69,15 @@ public class ProfileRecord {
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
+    @Column(name = "profile_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ProfileStatus profileStatus;
+
     @Builder
     public ProfileRecord(Counselor counselor, String nickname, Set<ConsultCost> consultCosts,
             Set<ConsultTime> consultTimes, Set<ConsultType> consultTypes,
             Set<ConsultCategory> consultCategories, ConsultStyle consultStyle, String experience,
-            String introduction) {
+            String introduction, ProfileStatus profileStatus) {
         this.counselor = counselor;
         this.nickname = nickname;
         this.consultCosts = consultCosts;
@@ -82,5 +87,6 @@ public class ProfileRecord {
         this.consultStyle = consultStyle;
         this.experience = experience;
         this.introduction = introduction;
+        this.profileStatus = profileStatus;
     }
 }
