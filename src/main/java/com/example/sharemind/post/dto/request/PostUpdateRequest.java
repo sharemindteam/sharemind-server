@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.UUID;
 import lombok.Getter;
 
 @Getter
@@ -11,7 +12,7 @@ public class PostUpdateRequest {
 
     @Schema(description = "일대다 상담 아이디")
     @NotNull(message = "일대다 상담 아이디는 공백일 수 없습니다.")
-    private Long postId;
+    private UUID postUuid;
 
     @Schema(description = "선택한 상담 카테고리", example = "BOREDOM")
     @NotBlank(message = "상담 카테고리는 공백일 수 없습니다.")

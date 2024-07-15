@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,7 +14,7 @@ import lombok.Getter;
 public class PostGetPublicListResponse {
 
     @Schema(description = "일대다 질문 아이디")
-    private final Long postId;
+    private final UUID postUuid;
 
     @Schema(description = "제목")
     private final String title;
@@ -44,10 +45,10 @@ public class PostGetPublicListResponse {
     private final LocalDateTime finishedAt;
 
     @Builder
-    public PostGetPublicListResponse(Long postId, String title, String content, Boolean isLiked,
+    public PostGetPublicListResponse(UUID postUuid, String title, String content, Boolean isLiked,
             Long totalLike, Boolean isScrapped, Long totalScrap, Long totalComment,
             String updatedAt, LocalDateTime finishedAt) {
-        this.postId = postId;
+        this.postUuid = postUuid;
         this.title = title;
         this.content = content;
         this.isLiked = isLiked;
@@ -61,7 +62,7 @@ public class PostGetPublicListResponse {
 
     public static PostGetPublicListResponse of(Post post, Boolean isLiked, Boolean isScrapped) {
         return PostGetPublicListResponse.builder()
-                .postId(post.getPostId())
+                .postUuid(post.getPostUuid())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .isLiked(isLiked)
