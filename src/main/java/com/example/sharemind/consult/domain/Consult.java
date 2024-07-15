@@ -13,6 +13,7 @@ import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.review.domain.Review;
 import com.example.sharemind.customer.domain.Customer;
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,9 @@ public class Consult extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "consult_id")
     private Long consultId;
+
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
+    private UUID consultUuid;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id")
@@ -65,6 +69,11 @@ public class Consult extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "payment_id", unique = true)
     private Payment payment;
+
+    @PrePersist
+    public void prePersist() {
+        this.consultUuid = UUID.randomUUID();
+    }
 
     @Builder
     public Consult(Customer customer, Counselor counselor, Long cost, ConsultType consultType) {
