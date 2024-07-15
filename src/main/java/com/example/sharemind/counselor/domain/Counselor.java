@@ -43,23 +43,23 @@ public class Counselor extends BaseEntity {
     private ProfileStatus profileStatus;
 
     @ElementCollection(targetClass = ConsultCost.class, fetch = FetchType.LAZY)
-    @JoinTable(name = "costs", joinColumns = @JoinColumn(name = "counselor_id"))
+    @JoinTable(name = "consult_costs", joinColumns = @JoinColumn(name = "counselor_id"))
     @Column(name = "consult_costs")
     private Set<ConsultCost> consultCosts;
 
     @ElementCollection(targetClass = ConsultTime.class, fetch = FetchType.LAZY)
-    @JoinTable(name = "times", joinColumns = @JoinColumn(name = "counselor_id"))
+    @JoinTable(name = "consult_times", joinColumns = @JoinColumn(name = "counselor_id"))
     @Column(name = "consult_times")
     private Set<ConsultTime> consultTimes;
 
     @ElementCollection(targetClass = ConsultType.class, fetch = FetchType.LAZY)
-    @JoinTable(name = "types", joinColumns = @JoinColumn(name = "counselor_id"))
+    @JoinTable(name = "consult_types", joinColumns = @JoinColumn(name = "counselor_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "consult_types")
     private Set<ConsultType> consultTypes;
 
     @ElementCollection(targetClass = ConsultCategory.class, fetch = FetchType.LAZY)
-    @JoinTable(name = "categories", joinColumns = @JoinColumn(name = "counselor_id"))
+    @JoinTable(name = "consult_categories", joinColumns = @JoinColumn(name = "counselor_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "consult_categories")
     private Set<ConsultCategory> consultCategories;
