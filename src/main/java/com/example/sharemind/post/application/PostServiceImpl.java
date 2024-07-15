@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -73,11 +74,17 @@ public class PostServiceImpl implements PostService {
                 () -> new PostException(PostErrorCode.POST_NOT_FOUND, postId.toString()));
     }
 
+    @Override
+    public Post getPostByPostUuid(UUID postUuid) {
+        return postRepository.findByPostUuidAndIsActivatedIsTrue(postUuid).orElseThrow(
+                () -> new PostException(PostErrorCode.POST_NOT_FOUND, postUuid.toString()));
+    }
+
     @Transactional
     @Override
     public void updatePost(PostUpdateRequest postUpdateRequest, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Post post = getPostByPostId(postUpdateRequest.getPostId());
+        Post post = getPostByPostUuid(postUpdateRequest.getPostUuid());
         ConsultCategory consultCategory = ConsultCategory.getConsultCategoryByName(
                 postUpdateRequest.getConsultCategory());
 
@@ -86,8 +93,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostGetResponse getPost(Long postId, Long customerId) {
-        Post post = getPostByPostId(postId);
+    public PostGetResponse getPost(UUID postId, Long customerId) {
+        Post post = getPostByPostUuid(postId);
         post.checkReadAuthority(customerId);
 
         if (customerId != 0) {
@@ -103,9 +110,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId,
-            Long customerId) {
+    public List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, UUID postUuid,
+                                                                Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
+        UUID zeroUuid = new UUID(0L, 0L);
+        Long postId = postUuid.equals(zeroUuid) ? 0L : getPostByPostUuid(postUuid).getPostId();
 
         return postRepository.findAllByCustomerAndIsActivatedIsTrue(customer, filter, postId,
                         POST_PAGE_SIZE).stream()
@@ -119,9 +128,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId,
-            Long customerId) {
+    public List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, UUID postUuid,
+                                                                  Long customerId) {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
+        UUID zeroUuid = new UUID(0L, 0L);
+        Long postId = postUuid.equals(zeroUuid) ? 0L : getPostByPostUuid(postUuid).getPostId();
+
         List<Comment> comments = commentRepository.findAllByCounselorAndIsActivatedIsTrue(counselor,
                 filter, postId, POST_PAGE_SIZE);
 
@@ -132,11 +144,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId,
-            LocalDateTime finishedAt, Long customerId) {
+    public List<PostGetPublicListResponse> getPublicPostsByCustomer(UUID postUuid,
+                                                                    LocalDateTime finishedAt, Long customerId) {
+        UUID zeroUuid = new UUID(0L, 0L);
+        Long postId = postUuid.equals(zeroUuid) ? 0L : getPostByPostUuid(postUuid).getPostId();
+
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
-
             return postRepository.findAllByIsPublicAndIsActivatedIsTrue(postId, finishedAt,
                             POST_PAGE_SIZE).stream()
                     .map(post -> PostGetPublicListResponse.of(post,
@@ -155,8 +169,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostGetPublicListResponse> getPopularityPosts(Long postId, LocalDateTime finishedAt,
-            Long customerId) {
+    public List<PostGetPublicListResponse> getPopularityPosts(UUID postUuid, LocalDateTime finishedAt,
+                                                              Long customerId) {
+        UUID zeroUuid = new UUID(0L, 0L);
+        Long postId = postUuid.equals(zeroUuid) ? 0L : getPostByPostUuid(postUuid).getPostId();
+
         if (customerId != 0) {
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
@@ -176,17 +193,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Long> getRandomPosts() {
-        List<Long> postsAfter24h = postRepository.findRandomProceedingPostIdsAfter24Hours();
-        List<Long> postsWithin24h = postRepository.findRandomProceedingPostIdsWithin24Hours();
+    public List<UUID> getRandomPosts() {
+        List<UUID> postsAfter24h = postRepository.findRandomProceedingPostIdsAfter24Hours();
+        List<UUID> postsWithin24h = postRepository.findRandomProceedingPostIdsWithin24Hours();
 
-        List<Long> randomPosts = new ArrayList<>(TOTAL_POSTS);
+        List<UUID> randomPosts = new ArrayList<>(TOTAL_POSTS);
 
         for (int i = 0; i < Math.min(POSTS_AFTER_24H_COUNT, postsAfter24h.size()); i++) {
             randomPosts.add(postsAfter24h.get(i));
         }
 
-        List<Long> remainingPosts = new ArrayList<>(postsWithin24h);
+        List<UUID> remainingPosts = new ArrayList<>(postsWithin24h);
         remainingPosts.addAll(postsAfter24h.subList(randomPosts.size(), postsAfter24h.size()));
         Collections.shuffle(remainingPosts);
 
@@ -199,7 +216,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostGetResponse getCounselorPostContent(Long postId, Long customerId) {
+    public PostGetResponse getCounselorPostContent(UUID postUuid, Long customerId) {
+        Long postId = getPostByPostUuid(postUuid).getPostId();
         Post post = checkAndGetCounselorPost(postId, customerId);
 
         return PostGetResponse.of(post, POST_IS_NOT_LIKED, POST_IS_NOT_SCRAPPED);
@@ -228,9 +246,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Boolean getIsPostOwner(Long postId, Long customerId) {
+    public Boolean getIsPostOwner(UUID postUuid, Long customerId) {
         if (customerId != 0) {
-            Post post = getPostByPostId(postId);
+            Post post = getPostByPostUuid(postUuid);
             Customer customer = customerService.getCustomerByCustomerId(customerId);
 
             return post.checkOwner(customer.getCustomerId());
@@ -243,7 +261,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void checkPostStatus() {
         postRepository.findAllWaitingPublicPostsAfter24Hours()
-                        .forEach(BaseEntity::updateIsActivatedFalse);
+                .forEach(BaseEntity::updateIsActivatedFalse);
 
         postRepository.findAllCommentedProceedingPublicPostsAfter72Hours()
                 .forEach(post -> post.updatePostStatus(PostStatus.TIME_OUT));
