@@ -14,6 +14,7 @@ import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentLikeRepository commentLikeRepository;
 
     @Override
-    public List<CommentGetResponse> getCounselorComments(Long postId, Long customerId) {
+    public List<CommentGetResponse> getCounselorComments(UUID postUuid, Long customerId) {
+        Long postId = postService.getPostByPostUuid(postUuid).getPostId();
         Post post = postService.checkAndGetCounselorPost(postId, customerId);
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
@@ -46,7 +48,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentGetResponse> getCustomerComments(Long postId, Long customerId) {
+    public List<CommentGetResponse> getCustomerComments(UUID postUuid, Long customerId) {
+        Long postId = postService.getPostByPostUuid(postUuid).getPostId();
         Post post = postService.getPostByPostId(postId);
         post.checkReadAuthority(customerId);
 
@@ -70,7 +73,8 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void createComment(CommentCreateRequest commentCreateRequest, Long customerId) {
-        Post post = postService.checkAndGetCounselorPost(commentCreateRequest.getPostId(),
+        Long postId = postService.getPostByPostUuid(commentCreateRequest.getPostUuid()).getPostId();
+        Post post = postService.checkAndGetCounselorPost(postId,
                 customerId);
         Customer customer = post.getCustomer();
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
@@ -95,9 +99,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void updateCustomerChosenComment(Long postId, Long commentId, Long customerId) {
+    public void updateCustomerChosenComment(UUID postUuid, Long commentId, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        Post post = postService.getPostByPostId(postId);
+        Post post = postService.getPostByPostUuid(postUuid);
         post.checkWriteAuthority(customer);
         post.checkPostProceedingOrTimeOut();
 
@@ -110,8 +114,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Boolean getIsCommentOwner(Long postId, Long customerId) {
-        Post post = postService.getPostByPostId(postId);
+    public Boolean getIsCommentOwner(UUID postUuid, Long customerId) {
+        Post post = postService.getPostByPostUuid(postUuid);
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
         return commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null;
