@@ -31,7 +31,7 @@ public class CounselorUpdateProfileRequest {
     private Map<String, List<String>> consultTimes;
 
     @Schema(description = "편지 상담료")
-    @Min(value = 5000, message = "편지 상담료는 최소 5000원입니다.")
+    @Min(value = 3000, message = "편지 상담료는 최소 3000원입니다.")
     @Max(value = 50000, message = "편지 상담료는 최대 50000원입니다.")
     private Long letterCost;
 
