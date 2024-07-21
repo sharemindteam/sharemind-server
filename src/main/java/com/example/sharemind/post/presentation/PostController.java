@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -95,7 +96,7 @@ public class PostController {
             @Parameter(name = "postId", description = "일대다 질문 아이디")
     })
     @GetMapping("/{postId}")
-    public ResponseEntity<PostGetResponse> getPost(@PathVariable Long postId,
+    public ResponseEntity<PostGetResponse> getPost(@PathVariable UUID postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPost(postId,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
@@ -115,13 +116,13 @@ public class PostController {
             @Parameter(name = "filter", description = "완료/취소된 상담 제외: true, 포함: false"),
             @Parameter(name = "postId", description = """
                     - 조회 결과는 4개씩 반환하며, postId로 구분
-                    1. 최초 조회 요청이면 postId는 0
+                    1. 최초 조회 요청이면 postId는 00000000-0000-0000-0000-000000000000
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId""")
     })
     @GetMapping("/customers")
     public ResponseEntity<List<PostGetCustomerListResponse>> getPostsByCustomer(
             @RequestParam Boolean filter,
-            @RequestParam Long postId,
+            @RequestParam UUID postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPostsByCustomer(filter, postId,
                 customUserDetails.getCustomer().getCustomerId()));
@@ -137,13 +138,13 @@ public class PostController {
             @Parameter(name = "filter", description = "완료/취소된 상담 제외: true, 포함: false"),
             @Parameter(name = "postId", description = """
                     - 조회 결과는 4개씩 반환하며, postId로 구분
-                    1. 최초 조회 요청이면 postId는 0
+                    1. 최초 조회 요청이면 postId는 00000000-0000-0000-0000-000000000000
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId""")
     })
     @GetMapping("/counselors")
     public ResponseEntity<List<PostGetCounselorListResponse>> getPostsByCounselor(
             @RequestParam Boolean filter,
-            @RequestParam Long postId,
+            @RequestParam UUID postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPostsByCounselor(filter, postId,
                 customUserDetails.getCustomer().getCustomerId()));
@@ -159,7 +160,7 @@ public class PostController {
     @Parameters({
             @Parameter(name = "postId", description = """
                     - 조회 결과는 4개씩 반환하며, postId와 finishedAt으로 구분
-                    1. 최초 조회 요청이면 postId는 0
+                    1. 최초 조회 요청이면 postId는 00000000-0000-0000-0000-000000000000
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId"""),
             @Parameter(name = "finishedAt", description = """
                     1. 최초 조회 요청이면 지금 시간
@@ -168,7 +169,7 @@ public class PostController {
     })
     @GetMapping("/customers/public")
     public ResponseEntity<List<PostGetPublicListResponse>> getPublicPostsByCustomer(
-            @RequestParam Long postId,
+            @RequestParam UUID postId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPublicPostsByCustomer(postId, finishedAt,
@@ -185,7 +186,7 @@ public class PostController {
     @Parameters({
             @Parameter(name = "postId", description = """
                     - 조회 결과는 4개씩 반환하며, postId와 finishedAt으로 구분
-                    1. 최초 조회 요청이면 postId는 0
+                    1. 최초 조회 요청이면 postId는 00000000-0000-0000-0000-000000000000
                     2. 2번째 요청부터 postId는 직전 요청의 조회 결과 4개 중 마지막 postId"""),
             @Parameter(name = "finishedAt", description = """
                     1. 최초 조회 요청이면 지금 시간
@@ -194,7 +195,7 @@ public class PostController {
     })
     @GetMapping("/customers/public/likes")
     public ResponseEntity<List<PostGetPublicListResponse>> getPopularityPosts(
-            @RequestParam Long postId,
+            @RequestParam UUID postId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime finishedAt,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getPopularityPosts(postId, finishedAt,
@@ -209,7 +210,7 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
     })
     @GetMapping("/counselors/random")
-    public ResponseEntity<List<Long>> getRandomPosts() {
+    public ResponseEntity<List<UUID>> getRandomPosts() {
         return ResponseEntity.ok(postService.getRandomPosts());
     }
 
@@ -228,7 +229,7 @@ public class PostController {
                     - 일대다 상담 ID""")
     })
     @GetMapping("/counselors/{postId}")
-    public ResponseEntity<PostGetResponse> getPostInfo(@PathVariable Long postId,
+    public ResponseEntity<PostGetResponse> getPostInfo(@PathVariable UUID postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(postService.getCounselorPostContent(postId,
                 customUserDetails.getCustomer().getCustomerId()));
@@ -247,7 +248,7 @@ public class PostController {
             @Parameter(name = "postId", description = "일대다 질문 아이디")
     })
     @GetMapping("/customers/public/{postId}")
-    public Boolean getIsPostOwner(@PathVariable Long postId,
+    public Boolean getIsPostOwner(@PathVariable UUID postId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return postService.getIsPostOwner(postId,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId());

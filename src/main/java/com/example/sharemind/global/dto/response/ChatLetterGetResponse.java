@@ -9,6 +9,7 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.global.utils.*;
 import com.example.sharemind.letter.dto.response.LetterGetResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +48,8 @@ public class ChatLetterGetResponse {
     @Schema(description = "리뷰 작성 여부")
     private final Boolean reviewCompleted;
 
-    @Schema(description = "상담 아이디")
-    private final Long consultId;
+    @Schema(description = "상담 uuid")
+    private final UUID consultUuid;
 
     @Schema(description = "채팅/편지 여부")
     private final Boolean isChat;
@@ -57,7 +58,8 @@ public class ChatLetterGetResponse {
         return new ChatLetterGetResponse(letterGetResponse.getLetterId(), letterGetResponse.getConsultStyle(),
                 letterGetResponse.getLetterStatus(), letterGetResponse.getOpponentName(),
                 letterGetResponse.getUpdatedAt(), letterGetResponse.getRecentContent(), null,
-                null, letterGetResponse.getReviewCompleted(), letterGetResponse.getConsultId(),
+                null, letterGetResponse.getReviewCompleted(),
+                letterGetResponse.getConsultUuid(),
                 IS_LETTER);
     }
 
@@ -70,7 +72,7 @@ public class ChatLetterGetResponse {
                     chat.changeChatStatusForChatList().getDisplayName(), nickname,
                     TimeUtil.getUpdatedAt(chat.getConsult().getUpdatedAt()),
                     counselor.getNickname() + "님께 고민내용을 남겨주세요. " + counselor.getNickname() + "님이 24시간 내에 채팅 요청을 드립니다.",
-                    null, 0, reviewCompleted, chat.getConsult().getConsultId(),
+                    null, 0, reviewCompleted, chat.getConsult().getConsultUuid(),
                     IS_CHAT);
         }
         String chatMessageContent = chatMessage.getContent();
@@ -87,6 +89,6 @@ public class ChatLetterGetResponse {
                 chat.changeChatStatusForChatList().getDisplayName(), nickname,
                 TimeUtil.getUpdatedAt(chatMessage.getUpdatedAt()),
                 chatMessageContent, chatMessage.getIsCustomer(), unreadMessageCount, reviewCompleted,
-                chat.getConsult().getConsultId(), IS_CHAT);
+                chat.getConsult().getConsultUuid(), IS_CHAT);
     }
 }

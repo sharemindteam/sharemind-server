@@ -8,6 +8,7 @@ import com.example.sharemind.post.dto.response.*;
 import com.example.sharemind.searchWord.dto.request.SearchWordPostFindRequest;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public interface PostService {
 
@@ -19,30 +20,32 @@ public interface PostService {
 
     Post getPostByPostId(Long postId);
 
+    Post getPostByPostUuid(UUID postUuid);
+
     void updatePost(PostUpdateRequest postUpdateRequest, Long customerId);
 
-    PostGetResponse getPost(Long postId, Long customerId);
+    PostGetResponse getPost(UUID postId, Long customerId);
 
-    List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, Long postId,
+    List<PostGetCustomerListResponse> getPostsByCustomer(Boolean filter, UUID postId,
             Long customerId);
 
-    List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, Long postId,
+    List<PostGetCounselorListResponse> getPostsByCounselor(Boolean filter, UUID postUuid,
             Long customerId);
 
-    List<PostGetPublicListResponse> getPublicPostsByCustomer(Long postId, LocalDateTime finishedAt,
+    List<PostGetPublicListResponse> getPublicPostsByCustomer(UUID postUuid, LocalDateTime finishedAt,
             Long customerId);
 
-    List<PostGetPublicListResponse> getPopularityPosts(Long postId, LocalDateTime finishedAt,
+    List<PostGetPublicListResponse> getPopularityPosts(UUID postUuid, LocalDateTime finishedAt,
             Long customerId);
 
-    List<Long> getRandomPosts();
+    List<UUID> getRandomPosts();
 
-    PostGetResponse getCounselorPostContent(Long postId, Long customerId);
+    PostGetResponse getCounselorPostContent(UUID postId, Long customerId);
 
     Post checkAndGetCounselorPost(Long postId, Long customerId);
 
     List<Post> getPostByWordWithPagination(SearchWordPostFindRequest searchWordPostFindRequest,
             String sortType);
 
-    Boolean getIsPostOwner(Long postId, Long customerId);
+    Boolean getIsPostOwner(UUID postUuid, Long customerId);
 }
