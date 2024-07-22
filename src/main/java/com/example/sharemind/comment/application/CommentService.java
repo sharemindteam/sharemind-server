@@ -5,18 +5,17 @@ import com.example.sharemind.comment.dto.request.CommentCreateRequest;
 import com.example.sharemind.comment.dto.response.CommentGetResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface CommentService {
-    List<CommentGetResponse> getCounselorComments(UUID postUuid, Long customerId);
+    List<CommentGetResponse> getCounselorComments(Long postId, Long customerId);
 
-    List<CommentGetResponse> getCustomerComments(UUID postUuid, Long customerId);
+    List<CommentGetResponse> getCustomerComments(Long postId, Long customerId);
 
     void createComment(CommentCreateRequest commentCreateRequest, Long customerId);
 
     Comment getCommentByCommentId(Long commentId);
 
-    void updateCustomerChosenComment(UUID postUuid, Long commentId, Long customerId);
+    void updateCustomerChosenComment(Long postId, Long commentId, Long customerId);
 
-    Boolean getIsCommentOwner(UUID postUuid, Long customerId);
+    Boolean getIsCommentOwner(Long postId, Long customerId);
 }

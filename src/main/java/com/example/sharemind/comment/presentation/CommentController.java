@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +31,7 @@ public class CommentController {
 
     @Operation(summary = "상담사 사이드 일대다 상담 질문 단건의 댓글 조회", description = """
             - 상담사가 일대다 상담 질문에 대답하기 위한 상담 질문 단건의 댓글 조회
-            - 주소 형식: /api/v1/comments/counselors/dd88d0d8-fc70-4394-b64a-726f31f48f9e""")
+            - 주소 형식: /api/v1/comments/counselors/1""")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담\n 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담",
@@ -44,7 +43,7 @@ public class CommentController {
             @Parameter(name = "postId", description = "일대다 상담 ID")
     })
     @GetMapping("/counselors/{postId}")
-    public ResponseEntity<List<CommentGetResponse>> getCounselorComments(@PathVariable UUID postId,
+    public ResponseEntity<List<CommentGetResponse>> getCounselorComments(@PathVariable Long postId,
                                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(commentService.getCounselorComments(postId,
                 customUserDetails.getCustomer().getCustomerId()));
@@ -84,7 +83,7 @@ public class CommentController {
             @Parameter(name = "postId", description = "일대다 상담 ID")
     })
     @GetMapping("/customers/{postId}")
-    public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable UUID postId,
+    public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable Long postId,
                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(commentService.getCustomerComments(postId,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
@@ -113,7 +112,7 @@ public class CommentController {
             @Parameter(name = "commentId", description = "답변 ID")
     })
     @PatchMapping("/customers/{postId}")
-    public ResponseEntity<Void> updateCustomerChosenComment(@PathVariable UUID postId, @RequestParam Long commentId,
+    public ResponseEntity<Void> updateCustomerChosenComment(@PathVariable Long postId, @RequestParam Long commentId,
                                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         commentService.updateCustomerChosenComment(postId, commentId, customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
@@ -132,7 +131,7 @@ public class CommentController {
             @Parameter(name = "postId", description = "일대다 상담 ID"),
     })
     @GetMapping("/counselors/authentication/{postId}")
-    public Boolean getIsCommentOwner(@PathVariable UUID postId,
+    public Boolean getIsCommentOwner(@PathVariable Long postId,
                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return commentService.getIsCommentOwner(postId, customUserDetails.getCustomer().getCustomerId());
     }

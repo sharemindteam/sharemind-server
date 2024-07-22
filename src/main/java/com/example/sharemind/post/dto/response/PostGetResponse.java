@@ -3,7 +3,6 @@ package com.example.sharemind.post.dto.response;
 import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,7 +10,7 @@ import lombok.Getter;
 public class PostGetResponse {
 
     @Schema(description = "일대다 질문 아이디")
-    private final UUID postUuid;
+    private final Long postId;
 
     @Schema(description = "상담 카테고리", example = "권태기")
     private final String consultCategory;
@@ -41,10 +40,10 @@ public class PostGetResponse {
     private final String updatedAt;
 
     @Builder
-    public PostGetResponse(UUID postUuid, String consultCategory, String title, String content,
+    public PostGetResponse(Long postId, String consultCategory, String title, String content,
             Boolean isPublic, Boolean isLiked, Long totalLike, Boolean isScrapped, Long totalScrap,
             String updatedAt) {
-        this.postUuid = postUuid;
+        this.postId = postId;
         this.consultCategory = consultCategory;
         this.title = title;
         this.content = content;
@@ -58,7 +57,7 @@ public class PostGetResponse {
 
     public static PostGetResponse of(Post post, Boolean isLiked, Boolean isScrapped) {
         return PostGetResponse.builder()
-                .postUuid(post.getPostUuid())
+                .postId(post.getPostId())
                 .consultCategory(post.getConsultCategory().getDisplayName())
                 .title(post.getTitle())
                 .content(post.getContent())

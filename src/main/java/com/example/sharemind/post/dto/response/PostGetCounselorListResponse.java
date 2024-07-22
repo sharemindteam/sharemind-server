@@ -5,7 +5,6 @@ import com.example.sharemind.global.utils.TimeUtil;
 import com.example.sharemind.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,7 +12,7 @@ import lombok.Getter;
 public class PostGetCounselorListResponse {
 
     @Schema(description = "일대다 질문 아이디")
-    private final UUID postUuid;
+    private final Long postId;
 
     @Schema(description = "제목")
     private final String title;
@@ -43,10 +42,10 @@ public class PostGetCounselorListResponse {
     private final Boolean isChosen;
 
     @Builder
-    public PostGetCounselorListResponse(UUID postUuid, String title, String content, String consultCategory,
+    public PostGetCounselorListResponse(Long postId, String title, String content, String consultCategory,
                                         Boolean isPublic, Long totalLike, Long totalScrap, Long totalComment,
                                         String publishedAt, Boolean isChosen) {
-        this.postUuid = postUuid;
+        this.postId = postId;
         this.title = title;
         this.content = content;
         this.consultCategory = consultCategory;
@@ -60,7 +59,7 @@ public class PostGetCounselorListResponse {
 
     public static PostGetCounselorListResponse of(Post post, Comment comment) {
         return PostGetCounselorListResponse.builder()
-                .postUuid(post.getPostUuid())
+                .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .consultCategory(post.getConsultCategory().getDisplayName())

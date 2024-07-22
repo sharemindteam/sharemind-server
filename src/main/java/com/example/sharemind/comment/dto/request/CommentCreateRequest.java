@@ -5,7 +5,6 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import java.util.UUID;
 import lombok.Getter;
 
 @Getter
@@ -13,7 +12,7 @@ public class CommentCreateRequest {
 
     @Schema(description = "상담 id")
     @NotNull
-    private UUID postUuid;
+    private Long postId;
 
     @Schema(description = "content")
     private String content;
