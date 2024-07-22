@@ -6,7 +6,7 @@ import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResp
 import com.example.sharemind.admin.dto.response.InformationGetResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
-import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
+import com.example.sharemind.admin.dto.response.PostGetByUuidResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.content.ChatStatus;
@@ -40,6 +40,7 @@ import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -210,15 +211,15 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public PostGetByIdResponse getPostByPostId(Long postId) {
-        Post post = postService.getPostByPostId(postId);
-        return PostGetByIdResponse.of(post);
+    public PostGetByUuidResponse getPostByPostUuid(UUID postUuid) {
+        Post post = postService.getPostByPostUuid(postUuid);
+        return PostGetByUuidResponse.of(post);
     }
 
     @Transactional
     @Override
-    public void deletePostByPostId(Long postId) {
-        Post post = postService.getPostByPostId(postId);
+    public void deletePostByPostUuid(UUID postUuid) {
+        Post post = postService.getPostByPostUuid(postUuid);
         post.updateIsActivatedFalse();
     }
 
