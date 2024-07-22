@@ -21,6 +21,9 @@ public interface CounselorRepository extends JpaRepository<Counselor, Long> {
 
     List<Counselor> findAllByIsEducatedIsTrueAndIsActivatedIsTrue();
 
+    @Query("SELECT c FROM Counselor c WHERE  c.profileStatus = 'EVALUATION_COMPLETE' AND c.isActivated = true")
+    List<Counselor> findAllByProfileStatusIsEvaluationCompleteAndIsActivatedIsTrue();
+
     @Query("SELECT c FROM Counselor c WHERE  c.profileStatus = 'EVALUATION_PENDING' AND c.isActivated = true")
     List<Counselor> findAllByProfileStatusIsEvaluationPendingAndIsActivatedIsTrue();
 
