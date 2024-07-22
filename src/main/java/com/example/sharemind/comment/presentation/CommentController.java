@@ -41,12 +41,13 @@ public class CommentController {
             )
     })
     @Parameters({
-            @Parameter(name = "postId", description = "일대다 상담 ID")
+            @Parameter(name = "postUuid", description = "일대다 상담 ID")
     })
-    @GetMapping("/counselors/{postId}")
-    public ResponseEntity<List<CommentGetResponse>> getCounselorComments(@PathVariable UUID postId,
-                                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(commentService.getCounselorComments(postId,
+    @GetMapping("/counselors/{postUuid}")
+    public ResponseEntity<List<CommentGetResponse>> getCounselorComments(
+            @PathVariable UUID postUuid,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(commentService.getCounselorComments(postUuid,
                 customUserDetails.getCustomer().getCustomerId()));
     }
 
@@ -55,8 +56,9 @@ public class CommentController {
             - 주소 형식: /api/v1/comments/counselors""")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "댓글 생성 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 진행중이지 않은 상담\n 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담" +
-                    "3. 이미 답변을 작성한 상담 4. 자기자신에게 댓글 작성한 상담",
+            @ApiResponse(responseCode = "400", description =
+                    "1. 진행중이지 않은 상담\n 2. 마감된 상담 중 상담사 본인이 답변을 작성하지 않은 상담" +
+                            "3. 이미 답변을 작성한 상담 4. 자기자신에게 댓글 작성한 상담",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
@@ -81,12 +83,12 @@ public class CommentController {
             )
     })
     @Parameters({
-            @Parameter(name = "postId", description = "일대다 상담 ID")
+            @Parameter(name = "postUuid", description = "일대다 상담 ID")
     })
-    @GetMapping("/customers/{postId}")
-    public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable UUID postId,
-                                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(commentService.getCustomerComments(postId,
+    @GetMapping("/customers/{postUuid}")
+    public ResponseEntity<List<CommentGetResponse>> getCustomerComments(@PathVariable UUID postUuid,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(commentService.getCustomerComments(postUuid,
                 customUserDetails == null ? 0 : customUserDetails.getCustomer().getCustomerId()));
     }
 
@@ -102,20 +104,23 @@ public class CommentController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
-            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 사용자일 때 2. 존재하지 않는 일대다 상담 ID 일 때 "
-                    + "3. 존재하지 않는 답변 ID 일 때 4. 해당 게시물에 달린 답변이 아닐 때",
+            @ApiResponse(responseCode = "404", description =
+                    "1. 존재하지 않는 사용자일 때 2. 존재하지 않는 일대다 상담 ID 일 때 "
+                            + "3. 존재하지 않는 답변 ID 일 때 4. 해당 게시물에 달린 답변이 아닐 때",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
     @Parameters({
-            @Parameter(name = "postId", description = "일대다 상담 ID"),
+            @Parameter(name = "postUuid", description = "일대다 상담 ID"),
             @Parameter(name = "commentId", description = "답변 ID")
     })
-    @PatchMapping("/customers/{postId}")
-    public ResponseEntity<Void> updateCustomerChosenComment(@PathVariable UUID postId, @RequestParam Long commentId,
-                                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        commentService.updateCustomerChosenComment(postId, commentId, customUserDetails.getCustomer().getCustomerId());
+    @PatchMapping("/customers/{postUuid}")
+    public ResponseEntity<Void> updateCustomerChosenComment(@PathVariable UUID postUuid,
+            @RequestParam Long commentId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        commentService.updateCustomerChosenComment(postUuid, commentId,
+                customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
     }
 
@@ -129,11 +134,12 @@ public class CommentController {
             )
     })
     @Parameters({
-            @Parameter(name = "postId", description = "일대다 상담 ID"),
+            @Parameter(name = "postUuid", description = "일대다 상담 ID"),
     })
-    @GetMapping("/counselors/authentication/{postId}")
-    public Boolean getIsCommentOwner(@PathVariable UUID postId,
-                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return commentService.getIsCommentOwner(postId, customUserDetails.getCustomer().getCustomerId());
+    @GetMapping("/counselors/authentication/{postUuid}")
+    public Boolean getIsCommentOwner(@PathVariable UUID postUuid,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return commentService.getIsCommentOwner(postUuid,
+                customUserDetails.getCustomer().getCustomerId());
     }
 }
