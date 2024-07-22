@@ -7,7 +7,7 @@ import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResp
 import com.example.sharemind.admin.dto.response.InformationGetResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
-import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
+import com.example.sharemind.admin.dto.response.PostGetByUuidResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -260,11 +261,11 @@ public class AdminController {
             )
     })
     @Parameters({
-            @Parameter(name = "postId", description = "조회할 공개상담 아이디")
+            @Parameter(name = "postUuid", description = "조회할 공개상담 아이디")
     })
-    @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostGetByIdResponse> getPostByPostId(@PathVariable Long postId) {
-        return ResponseEntity.ok(adminService.getPostByPostId(postId));
+    @GetMapping("/posts/{postUuid}")
+    public ResponseEntity<PostGetByUuidResponse> getPostByPostUuid(@PathVariable UUID postUuid) {
+        return ResponseEntity.ok(adminService.getPostByPostUuid(postUuid));
     }
 
     @Operation(summary = "특정 공개상담 게시물 삭제", description = "특정 공개상담 게시물 비활성화 상태로 수정")
@@ -276,11 +277,11 @@ public class AdminController {
             )
     })
     @Parameters({
-            @Parameter(name = "postId", description = "삭제할 공개상담 아이디")
+            @Parameter(name = "postUuid", description = "삭제할 공개상담 아이디")
     })
-    @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<Void> deletePostByPostId(@PathVariable Long postId) {
-        adminService.deletePostByPostId(postId);
+    @DeleteMapping("/posts/{postUuid}")
+    public ResponseEntity<Void> deletePostByPostUuid(@PathVariable UUID postUuid) {
+        adminService.deletePostByPostUuid(postUuid);
         return ResponseEntity.ok().build();
     }
 
