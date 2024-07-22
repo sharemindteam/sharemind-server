@@ -5,7 +5,6 @@ import com.example.sharemind.post.domain.Post;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,7 +12,7 @@ import lombok.Getter;
 public class PostGetCustomerListResponse {
 
     @Schema(description = "일대다 질문 아이디")
-    private final UUID postUuid;
+    private final Long postId;
 
     @Schema(description = "임시저장 여부")
     private final Boolean isCompleted;
@@ -50,10 +49,10 @@ public class PostGetCustomerListResponse {
     private final LocalDateTime finishedAt;
 
     @Builder
-    public PostGetCustomerListResponse(UUID postUuid, Boolean isCompleted, String title,
+    public PostGetCustomerListResponse(Long postId, Boolean isCompleted, String title,
             String content, Boolean isPublic, Boolean isLiked, Long totalLike, Boolean isScrapped,
             Long totalScrap, Long totalComment, String updatedAt, LocalDateTime finishedAt) {
-        this.postUuid = postUuid;
+        this.postId = postId;
         this.isCompleted = isCompleted;
         this.title = title;
         this.content = content;
@@ -69,7 +68,7 @@ public class PostGetCustomerListResponse {
 
     public static PostGetCustomerListResponse of(Post post, Boolean isLiked, Boolean isScrapped) {
         return PostGetCustomerListResponse.builder()
-                .postUuid(post.getPostUuid())
+                .postId(post.getPostId())
                 .isCompleted(post.getIsCompleted())
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -86,7 +85,7 @@ public class PostGetCustomerListResponse {
 
     public static PostGetCustomerListResponse ofIsNotCompleted(Post post) {
         return PostGetCustomerListResponse.builder()
-                .postUuid(post.getPostUuid())
+                .postId(post.getPostId())
                 .isCompleted(post.getIsCompleted())
                 .title(null)
                 .content(null)
