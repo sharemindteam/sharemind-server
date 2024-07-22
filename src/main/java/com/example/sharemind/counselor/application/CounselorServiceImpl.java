@@ -345,7 +345,8 @@ public class CounselorServiceImpl implements CounselorService {
 
         return wishLists.stream()
                 .map(wishList -> CounselorGetWishListResponse.of(wishList,
-                        counselorIds != null && counselorIds.contains(wishList.getCounselor().getCounselorId())))
+                        counselorIds != null && counselorIds.contains(
+                                wishList.getCounselor().getCounselorId())))
                 .toList();
     }
 
@@ -364,7 +365,7 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul")
     public void updateRealtimeCounselors() {
-        List<Counselor> counselors = counselorRepository.findAllByIsEducatedIsTrueAndIsActivatedIsTrue();
+        List<Counselor> counselors = counselorRepository.findAllByProfileStatusIsEvaluationCompleteAndIsActivatedIsTrue();
         String currentDay = LocalDate.now().getDayOfWeek().toString().substring(0, 3).toUpperCase();
         int currentHour = LocalTime.now().getHour();
 
