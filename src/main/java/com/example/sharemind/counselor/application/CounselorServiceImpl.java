@@ -255,8 +255,9 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
-    public List<CounselorGetRandomListResponse> getRandomCounselorsByCustomer(Long customerId, String sortType,
-                                                                              int index) {
+    public List<CounselorGetRandomListResponse> getRandomCounselorsByCustomer(Long customerId,
+            String sortType,
+            int index) {
 
         String randomSortType = getCounselorSortType(sortType);
         List<Counselor> counselors = getCounselorWithPagination(index, randomSortType);
@@ -265,7 +266,8 @@ public class CounselorServiceImpl implements CounselorService {
                 customer);
         return counselors.stream()
                 .map(counselor -> CounselorGetRandomListResponse.of(counselor,
-                        wishListCounselorIds.contains(counselor.getCounselorId()), false, randomSortType))
+                        wishListCounselorIds.contains(counselor.getCounselorId()), false,
+                        randomSortType))
                 .toList();
     }
 

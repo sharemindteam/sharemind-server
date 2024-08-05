@@ -50,7 +50,7 @@ public class CounselorController {
     })
     @PostMapping("/quiz")
     public ResponseEntity<Void> updateIsEducated(@RequestParam Boolean isEducated,
-                                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         counselorService.updateIsEducated(isEducated,
                 customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
@@ -124,7 +124,8 @@ public class CounselorController {
     @GetMapping("/profiles")
     public ResponseEntity<CounselorGetProfileResponse> getCounselorProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(counselorService.getCounselorProfile(customUserDetails.getCustomer().getCustomerId()));
+        return ResponseEntity.ok(counselorService.getCounselorProfile(
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "상담사 내 정보 조회", description = "내 정보 페이지에 필요한 상담사 정보 조회")
@@ -216,10 +217,12 @@ public class CounselorController {
         }
 
         if (customUserDetails == null) {
-            return ResponseEntity.ok(counselorService.getAllCounselorsByCategory(sortType, counselorGetRequest));
+            return ResponseEntity.ok(
+                    counselorService.getAllCounselorsByCategory(sortType, counselorGetRequest));
         }
         return ResponseEntity.ok(
-                counselorService.getCounselorsByCategoryAndCustomer(customUserDetails.getCustomer().getCustomerId(),
+                counselorService.getCounselorsByCategoryAndCustomer(
+                        customUserDetails.getCustomer().getCustomerId(),
                         sortType, counselorGetRequest));
     }
 
@@ -235,8 +238,9 @@ public class CounselorController {
         if (customUserDetails == null) {
             return ResponseEntity.ok(counselorService.getAllRandomCounselors(sortType, index));
         }
-        return ResponseEntity.ok(counselorService.getRandomCounselorsByCustomer(customUserDetails.getCustomer()
-                .getCustomerId(), sortType, index));
+        return ResponseEntity.ok(
+                counselorService.getRandomCounselorsByCustomer(customUserDetails.getCustomer()
+                        .getCustomerId(), sortType, index));
     }
 
     @Operation(summary = "구매자 페이지에서 마인더 프로필 조회",
@@ -298,8 +302,10 @@ public class CounselorController {
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping()
-    public ResponseEntity<Long> getCounselorId(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(counselorService.getCounselorByCustomerId(customUserDetails.getCustomer()
-                .getCustomerId()).getCounselorId());
+    public ResponseEntity<Long> getCounselorId(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                counselorService.getCounselorByCustomerId(customUserDetails.getCustomer()
+                        .getCustomerId()).getCounselorId());
     }
 }
