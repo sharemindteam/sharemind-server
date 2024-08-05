@@ -9,6 +9,7 @@ import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.global.content.ConsultType;
 import jakarta.persistence.*;
 
+import jakarta.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -31,6 +32,10 @@ public class Counselor extends BaseEntity {
     @Size(min = 1, max = 8, message = "닉네임은 최대 8자입니다.")
     @Column(unique = true, nullable = false)
     private String nickname;
+
+    @Email(message = "이메일 형식이 올바르지 않습니다.")
+    @Column(nullable = false)
+    private String email;
 
     @Column(name = "is_educated")
     private Boolean isEducated;
@@ -106,8 +111,9 @@ public class Counselor extends BaseEntity {
     private Settlement settlement;
 
     @Builder
-    public Counselor(String nickname) {
+    public Counselor(String nickname, String email) {
         this.nickname = nickname;
+        this.email = email;
         this.level = 0;
         this.totalReview = 0L;
         this.ratingAverage = 0.0;
