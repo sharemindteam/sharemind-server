@@ -124,8 +124,7 @@ public class CounselorController {
     @GetMapping("/profiles")
     public ResponseEntity<CounselorGetProfileResponse> getCounselorProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(counselorService.getCounselorProfile(
-                customUserDetails.getCustomer().getCustomerId()));
+        return ResponseEntity.ok(counselorService.getCounselorProfile(customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "상담사 내 정보 조회", description = "내 정보 페이지에 필요한 상담사 정보 조회")
@@ -217,12 +216,27 @@ public class CounselorController {
         }
 
         if (customUserDetails == null) {
-            return ResponseEntity.ok(
-                    counselorService.getAllCounselorsByCategory(sortType, counselorGetRequest));
+            return ResponseEntity.ok(counselorService.getAllCounselorsByCategory(sortType, counselorGetRequest));
         }
         return ResponseEntity.ok(
-                counselorService.getCounselorsByCategoryAndCustomer(customUserDetails.getCustomer()
-                        .getCustomerId(), sortType, counselorGetRequest));
+                counselorService.getCounselorsByCategoryAndCustomer(customUserDetails.getCustomer().getCustomerId(),
+                        sortType, counselorGetRequest));
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<List<CounselorGetRandomListResponse>> getRandomCounselorList(
+            @RequestParam String sortType,
+            @RequestParam int index,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (index < 0) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        if (customUserDetails == null) {
+            return ResponseEntity.ok(counselorService.getAllRandomCounselors(sortType, index));
+        }
+        return ResponseEntity.ok(counselorService.getRandomCounselorsByCustomer(customUserDetails.getCustomer()
+                .getCustomerId(), sortType, index));
     }
 
     @Operation(summary = "구매자 페이지에서 마인더 프로필 조회",
