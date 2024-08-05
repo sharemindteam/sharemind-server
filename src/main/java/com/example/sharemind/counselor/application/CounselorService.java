@@ -59,4 +59,8 @@ public interface CounselorService {
     void checkCounselorAndCustomerSame(Customer customer, Counselor counselor);
 
     List<Counselor> getCounselorsByNicknameOrEmail(String keyword);
+
+    List<CounselorGetRandomListResponse> getRandomCounselorsByCustomer(Long customerId, String sortType, int index);
+
+    List<CounselorGetRandomListResponse> getAllRandomCounselors(String sortType, int index);
 }

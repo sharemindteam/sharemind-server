@@ -255,6 +255,21 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
+    public List<CounselorGetRandomListResponse> getRandomCounselorsByCustomer(Long customerId, String sortType,
+                                                                              int index) {
+
+        String randomSortType = getCounselorSortType(sortType);
+        List<Counselor> counselors = getCounselorWithPagination(index, randomSortType);
+        Customer customer = customerService.getCustomerByCustomerId(customerId);
+        Set<Long> wishListCounselorIds = wishListCounselorService.getWishListCounselorIdsByCustomer(
+                customer);
+        return counselors.stream()
+                .map(counselor -> CounselorGetRandomListResponse.of(counselor,
+                        wishListCounselorIds.contains(counselor.getCounselorId()), false, randomSortType))
+                .toList();
+    }
+
+    @Override
     public List<CounselorGetListResponse> getAllCounselorsByCategory(String sortType,
             CounselorGetRequest counselorGetRequest) {
         List<Counselor> counselors = getCounselorByCategoryWithPagination(counselorGetRequest,
@@ -272,6 +287,16 @@ public class CounselorServiceImpl implements CounselorService {
     }
 
     @Override
+    public List<CounselorGetRandomListResponse> getAllRandomCounselors(String sortType, int index) {
+        String randomSortType = getCounselorSortType(sortType);
+        List<Counselor> counselors = getCounselorWithPagination(index, randomSortType);
+
+        return counselors.stream()
+                .map(counselor -> CounselorGetRandomListResponse.of(counselor,
+                        false, false, randomSortType))
+                .toList();
+    }
+
     public CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId,
             Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
@@ -397,6 +422,13 @@ public class CounselorServiceImpl implements CounselorService {
                 .getContent();
     }
 
+    private List<Counselor> getCounselorWithPagination(int index, String sortType) {
+        String sortColumn = getCounselorSortColumn(sortType);
+        Pageable pageable = PageRequest.of(index, COUNSELOR_PAGE,
+                Sort.by(sortColumn).descending());
+        return counselorRepository.findByLevelAndStatus(pageable).getContent();
+    }
+
     private String getCounselorSortColumn(String sortType) {
         CounselorListSortType counselorListSortType = CounselorListSortType.getSortTypeByName(
                 sortType);
@@ -436,5 +468,12 @@ public class CounselorServiceImpl implements CounselorService {
             }
         }
         return false;
+    }
+
+    private String getCounselorSortType(String sortType) {
+        if ("RANDOM".equals(sortType)) {
+            return CounselorListSortType.getRandomSortType();
+        }
+        return sortType;
     }
 }
