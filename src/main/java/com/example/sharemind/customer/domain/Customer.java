@@ -28,7 +28,7 @@ public class Customer extends BaseEntity {
     private String nickname;
 
     @Email(message = "이메일 형식이 올바르지 않습니다.")
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private String email;
 
     @Column(nullable = false)
