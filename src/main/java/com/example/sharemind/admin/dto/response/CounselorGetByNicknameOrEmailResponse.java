@@ -29,11 +29,11 @@ public class CounselorGetByNicknameOrEmailResponse {
         this.profileStatus = profileStatus;
     }
 
-    public static CounselorGetByNicknameOrEmailResponse of(Counselor counselor, String email) {
+    public static CounselorGetByNicknameOrEmailResponse of(Counselor counselor) {
         return CounselorGetByNicknameOrEmailResponse.builder()
                 .counselorId(counselor.getCounselorId())
                 .nickname(counselor.getNickname())
-                .email(email)
+                .email(counselor.getEmail())
                 .profileStatus(counselor.getProfileStatus().getDisplayName())
                 .build();
     }

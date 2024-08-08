@@ -197,8 +197,7 @@ public class AdminServiceImpl implements AdminService {
     public List<CounselorGetByNicknameOrEmailResponse> getCounselorsByNicknameOrEmail(
             String keyword) {
         return counselorService.getCounselorsByNicknameOrEmail(keyword).stream()
-                .map(counselor -> CounselorGetByNicknameOrEmailResponse.of(counselor,
-                        customerService.getCustomerByCounselor(counselor).getEmail()))
+                .map(CounselorGetByNicknameOrEmailResponse::of)
                 .toList();
     }
 

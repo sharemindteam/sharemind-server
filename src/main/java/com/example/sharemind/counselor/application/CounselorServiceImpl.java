@@ -93,6 +93,7 @@ public class CounselorServiceImpl implements CounselorService {
             Counselor counselor = counselorRepository.save(
                     Counselor.builder()
                             .nickname(nickname)
+                            .email(customer.getEmail())
                             .build()
             );
             customer.setCounselor(counselor);
