@@ -104,7 +104,7 @@ public class Post extends BaseEntity {
         }
 
         if (this.postStatus == PostStatus.COMPLETED) {
-            this.finishedAt = LocalDateTime.now().withNano(0);
+            this.finishedAt = LocalDateTime.now();
         }
     }
 
