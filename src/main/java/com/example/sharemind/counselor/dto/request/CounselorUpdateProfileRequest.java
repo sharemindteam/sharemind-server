@@ -15,6 +15,10 @@ public class CounselorUpdateProfileRequest {
     @NotBlank(message = "닉네임은 공백일 수 없습니다.")
     private String nickname;
 
+    @Schema(description = "전화번호(하이픈 필수)", example = "010-1234-5678")
+    @NotBlank(message = "전화번호는 공백일 수 없습니다.")
+    private String phoneNumber;
+
     @Schema(description = "상담 카테고리", example = "[\"DATING\", \"One_SiDed\", \"male_psychology\"]")
     @NotEmpty(message = "상담 카테고리는 공백일 수 없습니다.")
     private List<String> consultCategories;

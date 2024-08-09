@@ -186,6 +186,7 @@ public class CounselorServiceImpl implements CounselorService {
         ProfileRecord profileRecord = ProfileRecord.builder()
                 .counselor(counselor)
                 .nickname(counselorUpdateProfileRequest.getNickname())
+                .phoneNumber(counselorUpdateProfileRequest.getPhoneNumber())
                 .consultCosts(consultCosts)
                 .consultTimes(consultTimes)
                 .consultTypes(consultTypes)
@@ -197,8 +198,9 @@ public class CounselorServiceImpl implements CounselorService {
                 .build();
         profileRecordRepository.save(profileRecord);
 
-        counselor.updateProfile(counselorUpdateProfileRequest.getNickname(), consultCategories,
-                consultStyle, consultTypes, consultTimes, consultCosts,
+        counselor.updateProfile(counselorUpdateProfileRequest.getNickname(),
+                counselorUpdateProfileRequest.getPhoneNumber(), consultCategories, consultStyle,
+                consultTypes, consultTimes, consultCosts,
                 counselorUpdateProfileRequest.getIntroduction(),
                 counselorUpdateProfileRequest.getExperience());
     }
