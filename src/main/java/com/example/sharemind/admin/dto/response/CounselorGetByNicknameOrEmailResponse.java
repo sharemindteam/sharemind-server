@@ -17,15 +17,19 @@ public class CounselorGetByNicknameOrEmailResponse {
     @Schema(description = "이메일")
     private final String email;
 
+    @Schema(description = "전화번호")
+    private final String phoneNumber;
+
     @Schema(description = "프로필 상태")
     private final String profileStatus;
 
     @Builder
     public CounselorGetByNicknameOrEmailResponse(Long counselorId, String nickname, String email,
-            String profileStatus) {
+            String phoneNumber, String profileStatus) {
         this.counselorId = counselorId;
         this.nickname = nickname;
         this.email = email;
+        this.phoneNumber = phoneNumber;
         this.profileStatus = profileStatus;
     }
 
@@ -34,6 +38,7 @@ public class CounselorGetByNicknameOrEmailResponse {
                 .counselorId(counselor.getCounselorId())
                 .nickname(counselor.getNickname())
                 .email(counselor.getEmail())
+                .phoneNumber(counselor.getPhoneNumber())
                 .profileStatus(counselor.getProfileStatus().getDisplayName())
                 .build();
     }
