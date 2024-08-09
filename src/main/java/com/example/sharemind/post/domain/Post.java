@@ -101,10 +101,8 @@ public class Post extends BaseEntity {
 
         if (this.postStatus == PostStatus.PROCEEDING) {
             this.publishedAt = LocalDateTime.now();
-        }
-
-        if (this.postStatus == PostStatus.COMPLETED) {
-            this.finishedAt = LocalDateTime.now();
+        } else if (this.postStatus == PostStatus.COMPLETED || this.postStatus == PostStatus.TIME_OUT) {
+            this.finishedAt = LocalDateTime.now().withNano(0);
         }
     }
 
