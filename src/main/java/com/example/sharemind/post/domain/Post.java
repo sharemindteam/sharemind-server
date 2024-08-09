@@ -18,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -104,7 +105,7 @@ public class Post extends BaseEntity {
         }
 
         if (this.postStatus == PostStatus.COMPLETED || this.postStatus == PostStatus.TIME_OUT) {
-            this.finishedAt = LocalDateTime.now().withNano(0);
+            this.finishedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         }
     }
 
