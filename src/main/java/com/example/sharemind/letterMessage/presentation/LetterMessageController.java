@@ -4,8 +4,8 @@ import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.letterMessage.application.LetterMessageService;
 import com.example.sharemind.letterMessage.dto.request.*;
-import com.example.sharemind.letterMessage.dto.response.LetterMessageGetDeadlineResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetIsSavedResponse;
+import com.example.sharemind.letterMessage.dto.response.LetterMessageGetRecentTypeResponse;
 import com.example.sharemind.letterMessage.dto.response.LetterMessageGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,9 +49,11 @@ public class LetterMessageController {
             )
     })
     @PostMapping
-    public ResponseEntity<Void> createLetterMessage(@Valid @RequestBody LetterMessageCreateRequest letterMessageCreateRequest,
-                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        letterMessageService.createLetterMessage(letterMessageCreateRequest, customUserDetails.getCustomer());
+    public ResponseEntity<Void> createLetterMessage(
+            @Valid @RequestBody LetterMessageCreateRequest letterMessageCreateRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.createLetterMessage(letterMessageCreateRequest,
+                customUserDetails.getCustomer());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -74,9 +76,11 @@ public class LetterMessageController {
             )
     })
     @PatchMapping
-    public ResponseEntity<Void> updateLetterMessage(@Valid @RequestBody LetterMessageUpdateRequest letterMessageUpdateRequest,
-                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        letterMessageService.updateLetterMessage(letterMessageUpdateRequest, customUserDetails.getCustomer());
+    public ResponseEntity<Void> updateLetterMessage(
+            @Valid @RequestBody LetterMessageUpdateRequest letterMessageUpdateRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.updateLetterMessage(letterMessageUpdateRequest,
+                customUserDetails.getCustomer());
         return ResponseEntity.ok().build();
     }
 
@@ -84,7 +88,7 @@ public class LetterMessageController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "생성 성공"),
             @ApiResponse(responseCode = "400",
-                    description = "1. 이미 최초 생성된 메시지 유형에 대한 요청\n 2. 올바른 순서의 메시지 유형이 아님(ex. 첫번째 답장 순서에 추가 질문 생성 요청",
+                    description = "1. 이미 최초 생성된 메시지 유형에 대한 요청\n 2. 올바른 순서의 메시지 유형이 아님(ex. 첫번째 답장 순서에 추가 질문 생성 요청)",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             ),
@@ -99,9 +103,11 @@ public class LetterMessageController {
             )
     })
     @PostMapping("/first-question")
-    public ResponseEntity<Void> createFirstQuestion(@Valid @RequestBody LetterMessageCreateFirstRequest letterMessageCreateFirstRequest,
-                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        letterMessageService.createFirstQuestion(letterMessageCreateFirstRequest, customUserDetails.getCustomer());
+    public ResponseEntity<Void> createFirstQuestion(
+            @Valid @RequestBody LetterMessageCreateFirstRequest letterMessageCreateFirstRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.createFirstQuestion(letterMessageCreateFirstRequest,
+                customUserDetails.getCustomer());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -124,16 +130,23 @@ public class LetterMessageController {
             )
     })
     @PatchMapping("/first-question")
-    public ResponseEntity<Void> updateFirstQuestion(@Valid @RequestBody LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest,
-                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        letterMessageService.updateFirstQuestion(letterMessageUpdateFirstRequest, customUserDetails.getCustomer());
+    public ResponseEntity<Void> updateFirstQuestion(
+            @Valid @RequestBody LetterMessageUpdateFirstRequest letterMessageUpdateFirstRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        letterMessageService.updateFirstQuestion(letterMessageUpdateFirstRequest,
+                customUserDetails.getCustomer());
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "임시저장 메시지 존재 여부 조회",
             description = "특정 편지의 특정 메시지 유형에 대한 임시저장 메시지 존재 여부 조회, 주소 형식: /api/v1/letterMessages/drafts/{letterId}?messageType=first_reply")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "200", description = "조회 성공(임시저장 메시지 존재하지 않으면 수정일시는 null로 반환됨)"),
+            @ApiResponse(responseCode = "403",
+                    description = "접근 권한이 없는 메시지에 대한 요청(ex. 해당 상담의 참여자가 아님)",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 편지 아이디로 요청됨\n 2. 존재하지 않는 메시지 유형으로 요청됨",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
@@ -144,14 +157,18 @@ public class LetterMessageController {
             @Parameter(name = "messageType", description = "메시지 유형")
     })
     @GetMapping("/drafts/{letterId}")
-    public ResponseEntity<LetterMessageGetIsSavedResponse> getIsSaved(@PathVariable Long letterId, @RequestParam String messageType) {
-        return ResponseEntity.ok(letterMessageService.getIsSaved(letterId, messageType));
+    public ResponseEntity<LetterMessageGetIsSavedResponse> getIsSaved(@PathVariable Long letterId,
+            @RequestParam String messageType,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(letterMessageService.getIsSaved(letterId, messageType,
+                customUserDetails.getCustomer().getCustomerId()));
     }
 
     @Operation(summary = "메시지 조회",
             description = "메시지 조회, 주소 형식: /api/v1/letterMessages/{letterId}?messageType=first_reply&isCompleted=true")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "200",
+                    description = "1. 조회 성공\n 2. 올바른 편지 아이디와 메시지 유형으로 요청되었으나 해당하는 메시지가 아직 작성되지 않음(필드값이 모두 null로 반환됨)"),
             @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 편지 아이디로 요청됨\n 2. 존재하지 않는 메시지 유형으로 요청됨",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
@@ -164,31 +181,28 @@ public class LetterMessageController {
     })
     @GetMapping("/{letterId}")
     public ResponseEntity<LetterMessageGetResponse> getLetterMessage(@PathVariable Long letterId,
-                                                                     @RequestParam String messageType, @RequestParam Boolean isCompleted) {
-        return ResponseEntity.ok(letterMessageService.getLetterMessage(letterId, messageType, isCompleted));
+            @RequestParam String messageType, @RequestParam Boolean isCompleted,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                letterMessageService.getLetterMessage(letterId, messageType, isCompleted,
+                        customUserDetails.getCustomer()));
     }
 
-    @Operation(summary = "메시지 마감일시 조회",
-            description = "메시지 마감일시 조회, 주소 형식: /api/v1/letterMessages/deadline/{letterId}?messageType=first_reply")
+    @Operation(summary = "편지 진행 상태 조회",
+            description = "편지에서 가장 최근에 작성된 메시지 종류 조회")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400",
-                    description = "마감기한이 존재하지 않음(ex. 순서 상 아직 마감기한이 존재하는 메시지 유형이 아님, 이미 제출된 메시지 유형임)",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomExceptionResponse.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "1. 존재하지 않는 편지 아이디로 요청됨\n 2. 존재하지 않는 메시지 유형으로 요청됨",
+            @ApiResponse(responseCode = "200", description = "조회 성공(아직 아무 메시지도 작성되지 않은 경우도 포함)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 편지 아이디로 요청됨",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
     })
     @Parameters({
-            @Parameter(name = "letterId", description = "편지 아이디"),
-            @Parameter(name = "messageType", description = "메시지 유형"),
-            @Parameter(name = "isCompleted", description = "조회하려는 메시지가 임시저장된건지 최종 제출된건지")
+            @Parameter(name = "letterId", description = "편지 아이디")
     })
-    @GetMapping("/deadline/{letterId}")
-    public ResponseEntity<LetterMessageGetDeadlineResponse> getDeadline(@PathVariable Long letterId, @RequestParam String messageType) {
-        return ResponseEntity.ok(letterMessageService.getDeadline(letterId, messageType));
+    @GetMapping("/recent-type/{letterId}")
+    public ResponseEntity<LetterMessageGetRecentTypeResponse> getRecentMessageType(
+            @PathVariable Long letterId) {
+        return ResponseEntity.ok(letterMessageService.getRecentMessageType(letterId));
     }
 }

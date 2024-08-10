@@ -1,6 +1,8 @@
 package com.example.sharemind.global.jwt;
 
-import com.example.sharemind.auth.repository.RefreshTokenRepository;
+import static com.example.sharemind.global.constants.Constants.TOKEN_PREFIX;
+
+import com.example.sharemind.auth.repository.TokenRepository;
 import com.example.sharemind.customer.content.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -26,7 +28,7 @@ public class TokenProvider implements InitializingBean {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenRepository tokenRepository;
 
     private final String secret;
     private final Long accessExpirationTime;
@@ -34,19 +36,19 @@ public class TokenProvider implements InitializingBean {
     private Key key;
 
     public TokenProvider(CustomUserDetailsService customUserDetailsService,
-                         RefreshTokenRepository refreshTokenRepository,
+                         TokenRepository tokenRepository,
                          @Value("${jwt.secret}") String secret,
                          @Value("${jwt.access-expiration-time}") Long accessExpirationTime,
                          @Value("${jwt.refresh-expiration-time}") Long refreshExpirationTime) {
         this.customUserDetailsService = customUserDetailsService;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.tokenRepository = tokenRepository;
         this.secret = secret;
         this.accessExpirationTime = accessExpirationTime;
         this.refreshExpirationTime = refreshExpirationTime;
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -69,7 +71,7 @@ public class TokenProvider implements InitializingBean {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return "Bearer " + accessToken;
+        return TOKEN_PREFIX + accessToken;
     }
 
     public String createRefreshToken(String email) {
@@ -86,7 +88,7 @@ public class TokenProvider implements InitializingBean {
                 .compact();
 
         Duration duration = Duration.between(Instant.now(), expirationTime.toInstant());
-        refreshTokenRepository.save(email, refreshToken, duration);
+        tokenRepository.save(email, refreshToken, duration);
 
         return refreshToken;
     }
@@ -102,7 +104,9 @@ public class TokenProvider implements InitializingBean {
     public boolean validateAccessToken(String accessToken) {
         try {
             Claims claims = parseClaims(accessToken);
-            return !claims.getExpiration().before(new Date());
+            String signOutToken = tokenRepository.findByKey(accessToken);
+
+            return !claims.getExpiration().before(new Date()) && (signOutToken == null);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.warn("잘못된 JWT 서명입니다.", e);
         } catch (ExpiredJwtException e) {
@@ -121,7 +125,7 @@ public class TokenProvider implements InitializingBean {
             Claims claims = parseClaims(refreshToken);
 
             String email = claims.getSubject();
-            String savedRefreshToken = refreshTokenRepository.findByKey(email);
+            String savedRefreshToken = tokenRepository.findByKey(email);
 
             return refreshToken.equals(savedRefreshToken);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
@@ -139,6 +143,14 @@ public class TokenProvider implements InitializingBean {
 
     public String getEmail(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public Duration getRestExpirationTime(String token) {
+        return Duration.between(Instant.now(), parseClaims(token).getExpiration().toInstant());
+    }
+
+    public String getTokenWithNoPrefix(String accessToken) {
+        return accessToken.replace(TOKEN_PREFIX, "");
     }
 
     private Claims parseClaims(String token) {

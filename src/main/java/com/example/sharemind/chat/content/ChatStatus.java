@@ -2,7 +2,9 @@ package com.example.sharemind.chat.content;
 
 import com.example.sharemind.chat.exception.ChatErrorCode;
 import com.example.sharemind.chat.exception.ChatException;
+
 import java.util.Arrays;
+
 import lombok.Getter;
 
 @Getter
@@ -12,7 +14,9 @@ public enum ChatStatus {
     SEND_REQUEST("상담 시작 요청"),
     FIVE_MINUTE_LEFT("상담 종료 5분 전"),
     TIME_OVER("시간 종료"),
-    FINISH("상담 종료");
+    FINISH("상담 종료"),
+    COUNSELOR_CANCEL("상담 취소"),
+    CUSTOMER_CANCEL("상담 취소");
 
     private final String displayName;
 

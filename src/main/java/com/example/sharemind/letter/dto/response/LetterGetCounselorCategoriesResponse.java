@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LetterGetCounselorCategoriesResponse {
 
-    @Schema(description = "상담 카테고리", example = "이별/재회, 권태기, 기타")
+    @Schema(description = "상담 카테고리", example = "[\"연애갈등\", \"짝사랑\", \"남자심리\"]")
     private final List<String> categories;
 
     public static LetterGetCounselorCategoriesResponse of(Letter letter) {

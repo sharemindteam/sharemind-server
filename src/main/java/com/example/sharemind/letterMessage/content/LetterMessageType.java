@@ -13,7 +13,7 @@ public enum LetterMessageType {
     FIRST_QUESTION("질문", LetterStatus.FIRST_ASKING),
     FIRST_REPLY("답장", LetterStatus.FIRST_ANSWER),
     SECOND_QUESTION("추가 질문", LetterStatus.SECOND_ASKING),
-    SECOND_REPLY("추가 답장", LetterStatus.FINISH);
+    SECOND_REPLY("추가 답장", LetterStatus.SECOND_FINISH);
 
     private final String displayName;
     private final LetterStatus letterStatus;
@@ -28,7 +28,17 @@ public enum LetterMessageType {
                 .filter(messageType -> messageType.name().equalsIgnoreCase(name))
                 .findAny().orElseThrow(
                         () -> new LetterMessageException(
-                                LetterMessageErrorCode.Letter_MESSAGE_TYPE_NOT_FOUND, name
+                                LetterMessageErrorCode.LETTER_MESSAGE_TYPE_NOT_FOUND, name
+                        )
+                );
+    }
+
+    public static LetterMessageType getLetterMessageTypeByStatus(LetterStatus letterStatus) {
+        return Arrays.stream(LetterMessageType.values())
+                .filter(messageType -> messageType.getLetterStatus().equals(letterStatus))
+                .findAny().orElseThrow(
+                        () -> new LetterMessageException(
+                                LetterMessageErrorCode.LETTER_MESSAGE_TYPE_NOT_FOUND
                         )
                 );
     }

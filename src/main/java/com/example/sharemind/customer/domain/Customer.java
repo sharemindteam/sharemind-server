@@ -3,14 +3,13 @@ package com.example.sharemind.customer.domain;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.content.Role;
 import com.example.sharemind.global.common.BaseEntity;
-import com.example.sharemind.global.content.Bank;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -28,45 +27,53 @@ public class Customer extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호는 하이픈(-)을 포함한 10~11자리이어야 합니다.")
-    @Column(name = "phone_number", nullable = false)
-    private String phoneNumber;
-
     @Email(message = "이메일 형식이 올바르지 않습니다.")
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "optional_agreement")
-    private Boolean optionalAgreement;
+    @Column(nullable = false)
+    private Boolean isBanned;
 
-    private String account;
-
-    private Bank bank;
-
-    @Column(name = "account_holder")
-    private String accountHolder;
-
-    @Email(message = "복구 이메일 형식이 올바르지 않습니다.")
-    @Column(name = "recovery_email", nullable = false)
-    private String recoveryEmail;
-
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "counselor_id", unique = true)
     private Counselor counselor;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quit_id", unique = true)
+    private Quit quit;
+
     @Builder
-    public Customer(String nickname, String email, String password, String phoneNumber, String recoveryEmail) {
-        this.nickname = nickname;
+    public Customer(String email, String password) {
+        this.nickname = "셰어" + new Random().nextInt(999999);
         this.email = email;
         this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.recoveryEmail = recoveryEmail;
+        this.isBanned = false;
 
         this.roles = new ArrayList<>() {{
             add(Role.ROLE_CUSTOMER);
         }};
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateIsBanned(Boolean isBanned) {
+        this.isBanned = isBanned;
+    }
+
+    public void setCounselor(Counselor counselor) {
+        this.counselor = counselor;
+    }
+
+    public void setQuit(Quit quit) {
+        this.quit = quit;
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
     }
 }

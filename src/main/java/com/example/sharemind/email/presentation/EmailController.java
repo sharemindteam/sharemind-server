@@ -1,10 +1,14 @@
 package com.example.sharemind.email.presentation;
 
-import com.example.sharemind.customer.application.CustomerService;
+import com.example.sharemind.auth.application.AuthService;
 import com.example.sharemind.email.application.EmailService;
 import com.example.sharemind.email.dto.request.EmailPostCodeRequest;
 import com.example.sharemind.email.dto.request.EmailPostRequest;
+import com.example.sharemind.email.dto.response.EmailGetSendCountResponse;
+import com.example.sharemind.global.exception.CustomExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,25 +27,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmailController {
 
     private final EmailService emailService;
-    private final CustomerService customerService;
+    private final AuthService authService;
 
     @Operation(summary = "이메일 인증코드 발송", description = "회원가입 시 이메일 인증코드를 발송")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "해당 이메일로 인증 코드 발송 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 이미 회원으로 등록된 이메일\n 2. 유효기간이 만료되지 않은 코드가 남아있을 경우\n3. 올바르지 않은 이메일 형식")
+            @ApiResponse(responseCode = "400", description = "1. 5분 내에 코드 전송 5회 횟수를 초과 했을 경우\n"
+                    + "2. 올바르지 않은 이메일 형식", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "409", description = "1. 이미 회원으로 등록된 이메일", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
     })
     @PostMapping
-    public ResponseEntity<Void> sendVerificationCode(@Valid @RequestBody EmailPostRequest emailPostRequest) {
-        customerService.checkDuplicateEmail(emailPostRequest.getEmail());
+    public ResponseEntity<EmailGetSendCountResponse> sendVerificationCode(
+            @Valid @RequestBody EmailPostRequest emailPostRequest) {
+        authService.checkDuplicateEmail(emailPostRequest.getEmail());
 
-        emailService.sendVerificationCode(emailPostRequest.getEmail());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(emailService.sendVerificationCode(emailPostRequest.getEmail()));
     }
 
     @Operation(summary = "회원가입 이메일 인증코드 검증", description = "회원가입 이메일 인증코드가 일치하는지 검증")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "검증 성공"),
-            @ApiResponse(responseCode = "400", description = "1. 잘못된 인증코드\n2. 올바르지 않은 이메일 형식")
+            @ApiResponse(responseCode = "400", description = "1. 잘못된 인증코드\n"
+                    + "2. 올바르지 않은 이메일 형식", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomExceptionResponse.class))
+            )
     })
     @PostMapping("/code")
     public ResponseEntity<Void> verifyCode(@Valid @RequestBody EmailPostCodeRequest emailPostCodeRequest) {

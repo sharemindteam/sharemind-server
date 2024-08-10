@@ -6,6 +6,7 @@ import com.example.sharemind.global.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private static final String ROLE_CUSTOMER = "CUSTOMER";
+    private static final String ROLE_COUNSELOR = "COUNSELOR";
     private static final String ROLE_ADMIN = "ADMIN";
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -46,11 +48,26 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**", "/api/v1/auth/**", "/api/v1/emails/**").permitAll()
-                                .requestMatchers("/api/v1/consults/**").hasRole(ROLE_CUSTOMER)
+                .authorizeHttpRequests( // TODO 여기 더 나은 방법이 있을 것 같은데 일단 동작은 하니까 두고 추후에 리팩토링...ㅠㅠ
+                        requests -> requests.requestMatchers("/error", "/swagger-ui/**", "/api-docs/**",
+                                        "/api/v1/auth/signUp", "/api/v1/auth/signIn", "/api/v1/auth/reissue",
+                                        "/api/v1/auth/find-id", "/api/v1/auth/find-password", "/api/v1/auth/recovery-email/**", "/api/v1/emails/**").permitAll()
+                                .requestMatchers("/api/v1/counselors/all/**", "/api/v1/searchWords/results/**", "/api/v1/reviews/all/**").permitAll()
+                                .requestMatchers("/index.html", "/favicon.ico", "/chat/**", "/customer.html", "/customer2.html",
+                                        "/counselor.html").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/admins/managements").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/posts/customers/public/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/comments/customers/{postId}").permitAll()
                                 .requestMatchers("/api/v1/admins/**").hasRole(ROLE_ADMIN)
-                                .requestMatchers("/index.html","/app.js", "/customerChat/**").permitAll()
+                                .requestMatchers("/api/v1/letters/counselors/**", "/api/v1/reviews/counselors**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/chats/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/chatMessages/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/consults/counselors").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/payments/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/posts/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers("/api/v1/comments/counselors/**").hasRole(ROLE_COUNSELOR)
+                                .requestMatchers(("/api/v1/counselors/account")).hasRole(ROLE_COUNSELOR)
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer
