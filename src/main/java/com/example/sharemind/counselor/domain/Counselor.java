@@ -10,6 +10,7 @@ import com.example.sharemind.global.content.ConsultType;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import lombok.*;
 @Getter
 @Entity
 public class Counselor extends BaseEntity {
+
     private static final Integer RETRY_EDUCATION_OFFSET = 1;
     private static final Integer COUNSELOR_BASIC_LEVEL = 1;
 
@@ -36,6 +38,10 @@ public class Counselor extends BaseEntity {
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     @Column(nullable = false, updatable = false)
     private String email;
+
+    @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호는 하이픈(-)을 포함한 10~11자리이어야 합니다.")
+    @Column(name = "phone_number", unique = true)
+    private String phoneNumber;
 
     @Column(name = "is_educated")
     private Boolean isEducated;
@@ -126,15 +132,17 @@ public class Counselor extends BaseEntity {
     public Long getConsultCost(ConsultType consultType) {
         return this.consultCosts.stream()
                 .filter(consultCost -> consultCost.getConsultType().equals(consultType))
-                .findAny().orElseThrow(() -> new CounselorException(CounselorErrorCode.COST_NOT_FOUND))
+                .findAny()
+                .orElseThrow(() -> new CounselorException(CounselorErrorCode.COST_NOT_FOUND))
                 .getCost();
     }
 
-    public void updateProfile(String nickname, Set<ConsultCategory> consultCategories, ConsultStyle consultStyle,
-                              Set<ConsultType> consultTypes, Set<ConsultTime> consultTimes,
-                              Set<ConsultCost> consultCosts,
-                              String introduction, String experience) {
+    public void updateProfile(String nickname, String phoneNumber,
+            Set<ConsultCategory> consultCategories, ConsultStyle consultStyle,
+            Set<ConsultType> consultTypes, Set<ConsultTime> consultTimes,
+            Set<ConsultCost> consultCosts, String introduction, String experience) {
         this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
         this.consultCategories = consultCategories;
         this.consultStyle = consultStyle;
         this.consultTypes = consultTypes;

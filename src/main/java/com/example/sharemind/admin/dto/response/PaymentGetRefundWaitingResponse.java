@@ -29,6 +29,9 @@ public class PaymentGetRefundWaitingResponse {
     @Schema(description = "상담사 이메일")
     private final String counselorEmail;
 
+    @Schema(description = "상담사 전화번호")
+    private final String counselorPhoneNumber;
+
     @Schema(description = "상담 진행 상태", example = "상담 중")
     private final String status;
 
@@ -51,14 +54,15 @@ public class PaymentGetRefundWaitingResponse {
 
     @Builder
     public PaymentGetRefundWaitingResponse(Long paymentId, String customerNickname,
-            String customerEmail, String counselorNickname, String counselorEmail, String status,
-            String consultType, LocalDateTime consultedAt, Long cost, LocalDateTime paidAt,
-            String method) {
+            String customerEmail, String counselorNickname, String counselorEmail,
+            String counselorPhoneNumber, String status, String consultType,
+            LocalDateTime consultedAt, Long cost, LocalDateTime paidAt, String method) {
         this.paymentId = paymentId;
         this.customerNickname = customerNickname;
         this.customerEmail = customerEmail;
         this.counselorNickname = counselorNickname;
         this.counselorEmail = counselorEmail;
+        this.counselorPhoneNumber = counselorPhoneNumber;
         this.status = status;
         this.consultType = consultType;
         this.consultedAt = consultedAt;
@@ -78,6 +82,7 @@ public class PaymentGetRefundWaitingResponse {
                 .customerEmail(customer.getEmail())
                 .counselorNickname(counselor.getNickname())
                 .counselorEmail(counselor.getEmail())
+                .counselorPhoneNumber(counselor.getPhoneNumber())
                 .status(consult.getConsultStatus().getDisplayName())
                 .consultType(consult.getConsultType().getDisplayName())
                 .consultedAt(consult.getConsultedAt())

@@ -29,6 +29,9 @@ public class PaymentGetSettlementOngoingResponse {
     @Schema(description = "상담사 이메일")
     private final String counselorEmail;
 
+    @Schema(description = "상담사 전화번호")
+    private final String counselorPhoneNumber;
+
     @Schema(description = "상담 유형", example = "편지")
     private final String consultType;
 
@@ -51,13 +54,14 @@ public class PaymentGetSettlementOngoingResponse {
     @Builder
     public PaymentGetSettlementOngoingResponse(Long paymentId, String customerNickname,
             String customerEmail, String counselorNickname, String counselorEmail,
-            String consultType, LocalDateTime consultedAt, Long cost, String bank, String account,
-            String accountHolder) {
+            String counselorPhoneNumber, String consultType, LocalDateTime consultedAt, Long cost,
+            String bank, String account, String accountHolder) {
         this.paymentId = paymentId;
         this.customerNickname = customerNickname;
         this.customerEmail = customerEmail;
         this.counselorNickname = counselorNickname;
         this.counselorEmail = counselorEmail;
+        this.counselorPhoneNumber = counselorPhoneNumber;
         this.consultType = consultType;
         this.consultedAt = consultedAt;
         this.cost = cost;
@@ -77,6 +81,7 @@ public class PaymentGetSettlementOngoingResponse {
                 .customerEmail(customer.getEmail())
                 .counselorNickname(counselor.getNickname())
                 .counselorEmail(counselor.getEmail())
+                .counselorPhoneNumber(counselor.getPhoneNumber())
                 .consultType(consult.getConsultType().getDisplayName())
                 .consultedAt(consult.getConsultedAt())
                 .cost(consult.getCost())
