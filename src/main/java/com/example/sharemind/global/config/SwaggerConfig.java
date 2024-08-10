@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI openAPI(@Value("${springdoc.version}") String springdocVersion) {
+    public OpenAPI openAPI(@Value("${springdoc.version}") String springdocVersion,
+            @Value("${swagger.url}") String swaggerUrl) {
         Info info = new Info()
                 .title("Sharemind API Document")
                 .version(springdocVersion)
@@ -31,7 +32,7 @@ public class SwaggerConfig {
                         .bearerFormat("JWT"));
 
         return new OpenAPI()
-                .addServersItem(new Server().url("https://server.sharemindapp.com"))
+                .addServersItem(new Server().url(swaggerUrl))
                 .components(new Components())
                 .info(info)
                 .addSecurityItem(securityRequirement)

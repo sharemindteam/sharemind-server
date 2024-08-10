@@ -1,9 +1,9 @@
-name: sharemind-deploy
+name: sharemind-prod-deploy
 
 on:
   push:
     branches:
-      - 'develop'
+      - 'main'
 
 jobs:
   build:
