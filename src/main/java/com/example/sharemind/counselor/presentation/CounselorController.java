@@ -50,7 +50,7 @@ public class CounselorController {
     })
     @PostMapping("/quiz")
     public ResponseEntity<Void> updateIsEducated(@RequestParam Boolean isEducated,
-                                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         counselorService.updateIsEducated(isEducated,
                 customUserDetails.getCustomer().getCustomerId());
         return ResponseEntity.ok().build();
@@ -221,8 +221,40 @@ public class CounselorController {
                     counselorService.getAllCounselorsByCategory(sortType, counselorGetRequest));
         }
         return ResponseEntity.ok(
-                counselorService.getCounselorsByCategoryAndCustomer(customUserDetails.getCustomer()
-                        .getCustomerId(), sortType, counselorGetRequest));
+                counselorService.getCounselorsByCategoryAndCustomer(
+                        customUserDetails.getCustomer().getCustomerId(),
+                        sortType, counselorGetRequest));
+    }
+
+    @Operation(summary = "들을 준비가 된 마인더들 리스트가 비었을 때 랜덤 기준으로 반환",
+            description = """
+                    - 들을 준비가 된 마인더들이 없을 때 랜덤 기준으로 상담사 리스트 반환하는 api
+                     - 주소 형식: /api/v1/counselors/all/random?sortType=RANDOM&index=0
+                     - 결과는 4개씩 반환하며, index는 페이지 번호 입니다(ex index 0 : id 0~3에 해당하는 값 반환 index 1: 4~7에 해당하는 값 반환)
+                    - 해당하는 검색 결과가 없을 때(범위를 벗어난 인덱스 혹은 음수 인덱스)는 빈배열을 리턴합니다.
+                    - 처음 요청시에는 sortType에 RANDOM으로 요청주시고 다음에는 해당하는 sortType으로 요청주시면 됩니다""")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @Parameters({
+            @Parameter(name = "sortType", description = "RANDOM : 랜덤 반환, LATEST: 최근순, POPULARITY: 인기순, STAR_RATING: 별점 평균 순"),
+            @Parameter(name = "index", description = "index 0 : id 0~3에 해당하는 값 반환 index 1: 4~7에 해당하는 값 반환")
+    })
+    @GetMapping("/all/random")
+    public ResponseEntity<List<CounselorGetRandomListResponse>> getRandomCounselorList(
+            @RequestParam String sortType,
+            @RequestParam int index,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (index < 0) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        if (customUserDetails == null) {
+            return ResponseEntity.ok(counselorService.getAllRandomCounselors(sortType, index));
+        }
+        return ResponseEntity.ok(
+                counselorService.getRandomCounselorsByCustomer(customUserDetails.getCustomer()
+                        .getCustomerId(), sortType, index));
     }
 
     @Operation(summary = "구매자 페이지에서 마인더 프로필 조회",
@@ -284,8 +316,10 @@ public class CounselorController {
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping()
-    public ResponseEntity<Long> getCounselorId(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(counselorService.getCounselorByCustomerId(customUserDetails.getCustomer()
-                .getCustomerId()).getCounselorId());
+    public ResponseEntity<Long> getCounselorId(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                counselorService.getCounselorByCustomerId(customUserDetails.getCustomer()
+                        .getCustomerId()).getCounselorId());
     }
 }

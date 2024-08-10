@@ -3,6 +3,7 @@ package com.example.sharemind.counselor.content;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
 import java.util.Arrays;
+import java.util.Random;
 import lombok.Getter;
 
 @Getter
@@ -23,5 +24,11 @@ public enum CounselorListSortType {
                 .filter(sortType -> sortType.name().equalsIgnoreCase(name))
                 .findAny()
                 .orElseThrow(() -> new CounselorException(CounselorErrorCode.COUNSELOR_SORT_TYPE_NOT_FOUND, name));
+    }
+
+    public static String getRandomSortType() {
+        Random random = new Random();
+        CounselorListSortType[] values = CounselorListSortType.values();
+        return values[random.nextInt(values.length)].toString();
     }
 }

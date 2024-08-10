@@ -29,7 +29,7 @@ public class CounselorGetListResponse extends CounselorGetBaseResponse {
     @Schema(description = "상담 완료 횟수")
     private final Long totalConsult;
 
-    private CounselorGetListResponse(Counselor counselor, Boolean isWishList, Boolean isRealtime) {
+    protected CounselorGetListResponse(Counselor counselor, Boolean isWishList, Boolean isRealtime) {
         super(counselor);
         this.counselorId = counselor.getCounselorId();
         this.level = counselor.getLevel();

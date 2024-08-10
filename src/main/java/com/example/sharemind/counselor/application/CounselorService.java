@@ -25,38 +25,50 @@ public interface CounselorService {
 
     Boolean getRetryPermission(Long customerId);
 
-    void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest, Long customerId);
+    void updateCounselorProfile(CounselorUpdateProfileRequest counselorUpdateProfileRequest,
+            Long customerId);
 
     CounselorGetProfileResponse getCounselorProfile(Long customerId);
 
     List<Counselor> getEvaluationPendingConsults();
 
-    List<Counselor> getCounselorByWordWithPagination(SearchWordCounselorFindRequest searchWordCounselorFindRequest,
-                                                     String sortType);
+    List<Counselor> getCounselorByWordWithPagination(
+            SearchWordCounselorFindRequest searchWordCounselorFindRequest,
+            String sortType);
 
     CounselorGetInfoResponse getCounselorMyInfo(Long customerId);
 
-    CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId, String consultType);
+    CounselorGetForConsultResponse getCounselorForConsultCreation(Long counselorId,
+            String consultType);
 
     CounselorGetBannerResponse getCounselorChatBanner(Chat chat);
 
-    List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId, String sortType,
-                                                                      CounselorGetRequest counselorGetRequest);
+    List<CounselorGetListResponse> getCounselorsByCategoryAndCustomer(Long customerId,
+            String sortType,
+            CounselorGetRequest counselorGetRequest);
 
     List<CounselorGetListResponse> getAllCounselorsByCategory(String sortType,
-                                                              CounselorGetRequest counselorGetRequest);
+            CounselorGetRequest counselorGetRequest);
 
-    List<CounselorGetWishListResponse> getCounselorWishListByCustomer(WishListGetRequest wishListGetRequest, Long customerId);
+    List<CounselorGetWishListResponse> getCounselorWishListByCustomer(
+            WishListGetRequest wishListGetRequest, Long customerId);
 
-    CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId, Long customerId);
+    CounselorGetMinderProfileResponse getCounselorMinderProfileByCustomer(Long counselorId,
+            Long customerId);
 
     CounselorGetMinderProfileResponse getAllCounselorMinderProfile(Long counselorId);
 
-    void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest, Long customerId);
+    void updateAccount(CounselorUpdateAccountRequest counselorUpdateAccountRequest,
+            Long customerId);
 
     CounselorGetAccountResponse getAccount(Long customerId);
 
     void checkCounselorAndCustomerSame(Customer customer, Counselor counselor);
 
     List<Counselor> getCounselorsByNicknameOrEmail(String keyword);
+
+    List<CounselorGetRandomListResponse> getRandomCounselorsByCustomer(Long customerId,
+            String sortType, int index);
+
+    List<CounselorGetRandomListResponse> getAllRandomCounselors(String sortType, int index);
 }
