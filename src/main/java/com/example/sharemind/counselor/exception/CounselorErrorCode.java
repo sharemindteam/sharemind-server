@@ -17,6 +17,7 @@ public enum CounselorErrorCode {
     CONSULT_TIME_OVERFLOW(HttpStatus.BAD_REQUEST, "한 요일에 설정 가능한 상담 가능 시간은 최대 2개입니다."),
     CONSULT_TIME_DUPLICATE(HttpStatus.CONFLICT, "설정한 상담 가능 시간이 서로 겹칩니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
+    DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, "이미 존재하는 전화번호입니다."),
     INVALID_CONSULT_TYPE(HttpStatus.BAD_REQUEST, "상담사가 제공하는 상담 유형이 아닙니다."),
     COST_NOT_FOUND(HttpStatus.NOT_FOUND, "상담료 정보가 존재하지 않습니다."),
     BANK_NOT_FOUND(HttpStatus.NOT_FOUND, "은행이 존재하지 않습니다."),
