@@ -95,7 +95,8 @@ public class CounselorController {
             ),
             @ApiResponse(responseCode = "409", description = """
                     1. 한 요일에 대한 상담 가능 시간이 서로 겹침(ex. 13~15, 14~20)
-                    2. 이미 존재하는 닉네임""",
+                    2. 이미 존재하는 닉네임
+                    3. 이미 존재하는 전화번호""",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
             )
