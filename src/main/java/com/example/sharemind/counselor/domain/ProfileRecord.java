@@ -2,6 +2,7 @@ package com.example.sharemind.counselor.domain;
 
 import com.example.sharemind.counselor.content.ConsultStyle;
 import com.example.sharemind.counselor.content.ProfileStatus;
+import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.global.content.ConsultType;
 import jakarta.persistence.Column;
@@ -23,7 +24,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class ProfileRecord {
+public class ProfileRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
