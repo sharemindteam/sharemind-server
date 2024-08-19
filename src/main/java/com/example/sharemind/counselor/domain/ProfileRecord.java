@@ -37,6 +37,9 @@ public class ProfileRecord {
     @Column(nullable = false)
     private String nickname;
 
+    @Column(nullable = false)
+    private String phoneNumber;
+
     @ElementCollection(targetClass = ConsultCost.class, fetch = FetchType.LAZY)
     @JoinTable(name = "consult_costs_record", joinColumns = @JoinColumn(name = "profile_record_id"))
     @Column(name = "consult_costs")
@@ -74,12 +77,14 @@ public class ProfileRecord {
     private ProfileStatus profileStatus;
 
     @Builder
-    public ProfileRecord(Counselor counselor, String nickname, Set<ConsultCost> consultCosts,
-            Set<ConsultTime> consultTimes, Set<ConsultType> consultTypes,
-            Set<ConsultCategory> consultCategories, ConsultStyle consultStyle, String experience,
-            String introduction, ProfileStatus profileStatus) {
+    public ProfileRecord(Counselor counselor, String nickname, String phoneNumber,
+            Set<ConsultCost> consultCosts, Set<ConsultTime> consultTimes,
+            Set<ConsultType> consultTypes, Set<ConsultCategory> consultCategories,
+            ConsultStyle consultStyle, String experience, String introduction,
+            ProfileStatus profileStatus) {
         this.counselor = counselor;
         this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
         this.consultCosts = consultCosts;
         this.consultTimes = consultTimes;
         this.consultTypes = consultTypes;

@@ -129,7 +129,8 @@ public class CounselorServiceImpl implements CounselorService {
 
         checkDuplicateNickname(counselorUpdateProfileRequest.getNickname(),
                 counselor.getCounselorId());
-
+        checkDuplicatePhoneNumber(counselorUpdateProfileRequest.getPhoneNumber(),
+                counselor.getCounselorId());
         Set<ConsultCategory> consultCategories = new HashSet<>();
         for (String consultCategory : counselorUpdateProfileRequest.getConsultCategories()) {
             consultCategories.add(ConsultCategory.getConsultCategoryByName(consultCategory));
@@ -186,6 +187,7 @@ public class CounselorServiceImpl implements CounselorService {
         ProfileRecord profileRecord = ProfileRecord.builder()
                 .counselor(counselor)
                 .nickname(counselorUpdateProfileRequest.getNickname())
+                .phoneNumber(counselorUpdateProfileRequest.getPhoneNumber())
                 .consultCosts(consultCosts)
                 .consultTimes(consultTimes)
                 .consultTypes(consultTypes)
@@ -197,8 +199,9 @@ public class CounselorServiceImpl implements CounselorService {
                 .build();
         profileRecordRepository.save(profileRecord);
 
-        counselor.updateProfile(counselorUpdateProfileRequest.getNickname(), consultCategories,
-                consultStyle, consultTypes, consultTimes, consultCosts,
+        counselor.updateProfile(counselorUpdateProfileRequest.getNickname(),
+                counselorUpdateProfileRequest.getPhoneNumber(), consultCategories, consultStyle,
+                consultTypes, consultTimes, consultCosts,
                 counselorUpdateProfileRequest.getIntroduction(),
                 counselorUpdateProfileRequest.getExperience());
     }
@@ -454,6 +457,12 @@ public class CounselorServiceImpl implements CounselorService {
     private void checkDuplicateNickname(String nickname, Long counselorId) {
         if (counselorRepository.existsByNicknameAndCounselorIdNot(nickname, counselorId)) {
             throw new CounselorException(CounselorErrorCode.DUPLICATE_NICKNAME);
+        }
+    }
+
+    private void checkDuplicatePhoneNumber(String phoneNumber, Long counselorId) {
+        if (counselorRepository.existsByPhoneNumberAndCounselorIdNot(phoneNumber, counselorId)) {
+            throw new CounselorException(CounselorErrorCode.DUPLICATE_PHONE_NUMBER);
         }
     }
 

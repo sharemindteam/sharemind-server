@@ -17,6 +17,8 @@ public interface CounselorRepository extends JpaRepository<Counselor, Long> {
 
     Boolean existsByNicknameAndCounselorIdNot(String nickname, Long counselorId);
 
+    Boolean existsByPhoneNumberAndCounselorIdNot(String phoneNumber, Long counselorId);
+
     Optional<Counselor> findByCounselorIdAndIsActivatedIsTrue(Long id);
 
     List<Counselor> findAllByIsEducatedIsTrueAndIsActivatedIsTrue();
