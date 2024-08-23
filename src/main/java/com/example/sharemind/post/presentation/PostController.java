@@ -49,14 +49,19 @@ public class PostController {
             )
     })
     @PostMapping
-    public ResponseEntity<String> createPost(
+    public ResponseEntity<?> createPost(
             @Valid @RequestBody PostCreateRequest postCreateRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long postId = postService.createPost(postCreateRequest,
                 customUserDetails.getCustomer().getCustomerId());
-        String payUrl = payAppService.payPost(postId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(payUrl);
+        if (postCreateRequest.getIsPublic()) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } else {
+            String payUrl = payAppService.payPost(postId);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(payUrl);
+        }
     }
 
     @Operation(summary = "일대다 상담 질문 내용 작성", description = "일대다 상담 질문 내용 작성")
