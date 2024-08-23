@@ -2,6 +2,7 @@ package com.example.sharemind.post.presentation;
 
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
+import com.example.sharemind.payApp.application.PayAppService;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.dto.request.PostCreateRequest;
 import com.example.sharemind.post.dto.request.PostUpdateRequest;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
+    private final PayAppService payAppService;
 
     @Operation(summary = "일대다 상담 질문 신청", description = "일대다 상담 질문 신청")
     @ApiResponses({
@@ -47,10 +49,14 @@ public class PostController {
             )
     })
     @PostMapping
-    public ResponseEntity<Void> createPost(@Valid @RequestBody PostCreateRequest postCreateRequest,
+    public ResponseEntity<String> createPost(
+            @Valid @RequestBody PostCreateRequest postCreateRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        postService.createPost(postCreateRequest, customUserDetails.getCustomer().getCustomerId());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Long postId = postService.createPost(postCreateRequest,
+                customUserDetails.getCustomer().getCustomerId());
+        String payUrl = payAppService.payPost(postId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(payUrl);
     }
 
     @Operation(summary = "일대다 상담 질문 내용 작성", description = "일대다 상담 질문 내용 작성")

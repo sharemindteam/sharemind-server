@@ -51,10 +51,11 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void createPost(PostCreateRequest postCreateRequest, Long customerId) {
+    public Long createPost(PostCreateRequest postCreateRequest, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
-        postRepository.save(postCreateRequest.toEntity(customer));
+        Post post = postRepository.save(postCreateRequest.toEntity(customer));
+        return post.getPostId();
     }
 
     @Override
