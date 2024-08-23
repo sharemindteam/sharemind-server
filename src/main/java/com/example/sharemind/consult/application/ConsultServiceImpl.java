@@ -64,6 +64,7 @@ public class ConsultServiceImpl implements ConsultService {
                 .counselor(counselor)
                 .consultType(consultType)
                 .cost(cost)
+                .customerPhoneNumber(consultCreateRequest.getPhoneNumber())
                 .build();
         consultRepository.save(consult);
     }

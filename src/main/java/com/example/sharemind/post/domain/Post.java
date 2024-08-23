@@ -81,7 +81,7 @@ public class Post extends BaseEntity {
     private LocalDateTime finishedAt;
 
     @Builder
-    public Post(Customer customer, Long cost, Boolean isPublic) {
+    public Post(Customer customer, Long cost, Boolean isPublic, String customerPhoneNumber) {
         this.customer = customer;
         this.cost = cost;
         this.isPublic = isPublic;
@@ -89,6 +89,7 @@ public class Post extends BaseEntity {
         this.totalLike = 0L;
         this.totalComment = 0L;
         this.totalScrap = 0L;
+        this.customerPhoneNumber = customerPhoneNumber;
         setIsPaid(isPublic);
     }
 
