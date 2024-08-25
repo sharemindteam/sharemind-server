@@ -80,7 +80,7 @@ public class Post extends BaseEntity {
     private String method;
 
     @Column(name = "approved_at")
-    private String approvedAt;
+    private LocalDateTime approvedAt;
 
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
@@ -111,7 +111,7 @@ public class Post extends BaseEntity {
         this.payAppId = payAppId;
     }
 
-    public void updateMethodAndIsPaidAndApprovedAt(String method, String approvedAt) {
+    public void updateMethodAndIsPaidAndApprovedAt(String method, LocalDateTime approvedAt) {
         this.method = method;
         this.isPaid = true;
         this.approvedAt = approvedAt;

@@ -39,9 +39,6 @@ public class Payment extends BaseEntity {
     @Column
     private String method;
 
-    @Column
-    private String approved;
-
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
@@ -71,10 +68,10 @@ public class Payment extends BaseEntity {
         this.payAppId = payAppId;
     }
 
-    public void updateMethodAndIsPaidAndApprovedAt(String method, String approvedAt) {
+    public void updateMethodAndIsPaidAndApprovedAt(String method, LocalDateTime approvedAt) {
         this.method = method;
         this.isPaid = true;
-        this.approved = approvedAt;
+        this.approvedAt = approvedAt;
         updateCustomerStatusPaymentComplete();
     }
 
