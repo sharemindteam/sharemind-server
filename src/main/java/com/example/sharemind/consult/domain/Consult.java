@@ -67,13 +67,17 @@ public class Consult extends BaseEntity {
     private Payment payment;
 
     @Builder
-    public Consult(Customer customer, Counselor counselor, Long cost, ConsultType consultType) {
+    public Consult(Customer customer, Counselor counselor, Long cost, ConsultType consultType,
+            String customerPhoneNumber) {
         this.customer = customer;
         this.counselor = counselor;
         this.cost = cost;
         this.consultType = consultType;
         this.consultStatus = ConsultStatus.WAITING;
-        this.payment = Payment.builder().consult(this).build();
+        this.payment = Payment.builder()
+                .customerPhoneNumber(customerPhoneNumber)
+                .consult(this)
+                .build();
     }
 
     public void updateConsultStatusOnGoing() {
@@ -116,12 +120,28 @@ public class Consult extends BaseEntity {
         this.payment.updateIsPaidTrue();
     }
 
+    public void updateIsPaidAndLetter(Letter letter, String method, String approvedAt) {
+        validateConsultType(ConsultType.LETTER);
+        setLetter(letter);
+        updateConsultedAt();
+
+        this.payment.updateMethodAndIsPaidAndApprovedAt(method, approvedAt);
+    }
+
     public void updateIsPaidAndChat(Chat chat) {
         validateConsultType(ConsultType.CHAT);
         setChat(chat);
         updateConsultedAt();
 
         this.payment.updateIsPaidTrue();
+    }
+
+    public void updateIsPaidAndChat(Chat chat, String method, String approvedAt) {
+        validateConsultType(ConsultType.CHAT);
+        setChat(chat);
+        updateConsultedAt();
+
+        this.payment.updateMethodAndIsPaidAndApprovedAt(method, approvedAt);
     }
 
     public void setReview() {

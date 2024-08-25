@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface PostService {
 
-    void createPost(PostCreateRequest postCreateRequest, Long customerId);
+    Long createPost(PostCreateRequest postCreateRequest, Long customerId);
 
     List<Post> getAllPosts();
 

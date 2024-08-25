@@ -16,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -68,6 +69,19 @@ public class Post extends BaseEntity {
     @Column(name = "total_scrap", nullable = false)
     private Long totalScrap;
 
+    @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호는 하이픈(-)을 포함한 10~11자리이어야 합니다.")
+    @Column(name = "customer_phone_number")
+    private String customerPhoneNumber;
+
+    @Column(name = "pay_app_id")
+    private String payAppId;
+
+    @Column(name = "method")
+    private String method;
+
+    @Column(name = "approved_at")
+    private String approvedAt;
+
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
@@ -81,7 +95,7 @@ public class Post extends BaseEntity {
     private LocalDateTime finishedAt;
 
     @Builder
-    public Post(Customer customer, Long cost, Boolean isPublic) {
+    public Post(Customer customer, Long cost, Boolean isPublic, String customerPhoneNumber) {
         this.customer = customer;
         this.cost = cost;
         this.isPublic = isPublic;
@@ -89,7 +103,18 @@ public class Post extends BaseEntity {
         this.totalLike = 0L;
         this.totalComment = 0L;
         this.totalScrap = 0L;
+        this.customerPhoneNumber = customerPhoneNumber;
         setIsPaid(isPublic);
+    }
+
+    public void updatePayAppId(String payAppId) {
+        this.payAppId = payAppId;
+    }
+
+    public void updateMethodAndIsPaidAndApprovedAt(String method, String approvedAt) {
+        this.method = method;
+        this.isPaid = true;
+        this.approvedAt = approvedAt;
     }
 
     public void updateIsPaid() {
@@ -184,5 +209,9 @@ public class Post extends BaseEntity {
         if (this.isCompleted != null && this.isCompleted.equals(true)) {
             throw new PostException(PostErrorCode.POST_ALREADY_COMPLETED);
         }
+    }
+
+    public Boolean checkAlreadyPaid() {
+        return this.isPaid && (this.payAppId != null);
     }
 }

@@ -84,7 +84,11 @@ public class AdminServiceImpl implements AdminService {
 
                 consult.updateIsPaidAndLetter(letter);
             }
-            case CHAT -> chatService.createChat(consult);
+            case CHAT -> {
+                Chat chat = chatService.createChat(consult);
+
+                consult.updateIsPaidAndChat(chat);
+            }
         }
     }
 
