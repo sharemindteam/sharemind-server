@@ -12,6 +12,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
 
     Optional<Post> findByPostIdAndIsActivatedIsTrue(Long postId);
 
+    Optional<Post> findByPayAppIdAndIsActivatedIsTrue(String payAppId);
+
     List<Post> findAllByIsActivatedIsTrue();
 
     List<Post> findAllByIsPaidIsFalseAndIsActivatedIsTrue();

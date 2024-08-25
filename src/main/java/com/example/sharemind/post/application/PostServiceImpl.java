@@ -74,6 +74,12 @@ public class PostServiceImpl implements PostService {
                 () -> new PostException(PostErrorCode.POST_NOT_FOUND, postId.toString()));
     }
 
+    @Override
+    public Post getPostByPayAppId(String payAppId) {
+        return postRepository.findByPayAppIdAndIsActivatedIsTrue(payAppId).orElseThrow(
+                () -> new PostException(PostErrorCode.POST_NOT_FOUND, payAppId));
+    }
+
     @Transactional
     @Override
     public void updatePost(PostUpdateRequest postUpdateRequest, Long customerId) {

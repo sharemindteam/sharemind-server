@@ -19,6 +19,8 @@ public interface PostService {
 
     Post getPostByPostId(Long postId);
 
+    Post getPostByPayAppId(String payAppId);
+
     void updatePost(PostUpdateRequest postUpdateRequest, Long customerId);
 
     PostGetResponse getPost(Long postId, Long customerId);
