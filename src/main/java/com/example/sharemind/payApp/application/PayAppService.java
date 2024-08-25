@@ -1,6 +1,8 @@
 package com.example.sharemind.payApp.application;
 
 import com.example.sharemind.payApp.dto.request.ConfirmPayRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 public interface PayAppService {
 
@@ -17,4 +19,6 @@ public interface PayAppService {
     String confirmConsult(ConfirmPayRequest confirmPayRequest);
 
     String confirmPost(ConfirmPayRequest confirmPayRequest);
+
+    void test(HttpServletRequest request) throws IOException;
 }
