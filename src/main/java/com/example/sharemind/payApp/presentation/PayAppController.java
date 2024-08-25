@@ -20,7 +20,7 @@ public class PayAppController {
     }
 
     @PostMapping("/posts")
-    public String confirmPost(HttpServletRequest request) {
+    public String testConfirmPost(HttpServletRequest request) {
         return payAppService.confirmPost(request);
     }
 }

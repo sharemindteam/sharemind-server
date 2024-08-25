@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,7 +33,7 @@ public class ConsultController {
 
     @Operation(summary = "상담 신청", description = "consult 생성")
     @ApiResponses({
-            @ApiResponse(responseCode = "301", description = "결제 url로 이동"),
+            @ApiResponse(responseCode = "201", description = "신청 성공"),
             @ApiResponse(responseCode = "400",
                     description = "1. 프로필 심사가 완료되지 않은 상담사 아이디로 요청됨\n 2. 상담사가 제공하지 않는 상담 유형\n 3. 자기자신에게 상담 요청",
                     content = @Content(mediaType = "application/json",
@@ -47,17 +46,14 @@ public class ConsultController {
             )
     })
     @PostMapping
-    public ResponseEntity<Void> createConsult(
+    public ResponseEntity<String> createConsult(
             @Valid @RequestBody ConsultCreateRequest consultCreateRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long paymentId = consultService.createConsult(consultCreateRequest,
                 customUserDetails.getCustomer().getCustomerId());
         String payUrl = payAppService.payConsult(paymentId);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.LOCATION, payUrl);
-
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+        return ResponseEntity.status(HttpStatus.CREATED).body(payUrl);
     }
 
     @Operation(summary = "상담사 진행 중인 상담 조회", description = "상담사 진행 중인 최근 상담 3개 조회")
