@@ -6,11 +6,12 @@ import com.example.sharemind.admin.dto.response.CustomerGetByNicknameOrEmailResp
 import com.example.sharemind.admin.dto.response.InformationGetResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
-import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
+import com.example.sharemind.admin.dto.response.PostGetByUuidResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AdminService {
     List<ConsultGetUnpaidResponse> getUnpaidConsults();
@@ -41,9 +42,9 @@ public interface AdminService {
 
     void updateCounselorPending(Long counselorId);
 
-    PostGetByIdResponse getPostByPostId(Long postId);
+    PostGetByUuidResponse getPostByPostUuid(UUID postUuid);
 
-    void deletePostByPostId(Long postId);
+    void deletePostByPostUuid(UUID postUuid);
 
     InformationGetResponse getInformation();
 
