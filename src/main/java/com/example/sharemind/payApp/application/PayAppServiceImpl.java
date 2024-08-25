@@ -13,6 +13,9 @@ import com.example.sharemind.payment.application.PaymentService;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.domain.Post;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -270,6 +273,26 @@ public class PayAppServiceImpl implements PayAppService {
         }
 
         return "SUCCESS";
+    }
+
+    @Override
+    @Transactional
+    public void test(HttpServletRequest request) throws IOException {
+        Post post = postService.getPostByPostId(158L);
+
+        String contentType = request.getContentType();
+
+        StringBuilder body = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                body.append(line);
+            }
+        }
+
+        String requestBody = body.toString();
+
+        post.updateMethodAndIsPaidAndApprovedAt(contentType, requestBody);
     }
 
     private Map<String, String> parseQueryString(String queryString) {

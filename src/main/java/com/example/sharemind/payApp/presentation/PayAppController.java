@@ -2,6 +2,8 @@ package com.example.sharemind.payApp.presentation;
 
 import com.example.sharemind.payApp.application.PayAppService;
 import com.example.sharemind.payApp.dto.request.ConfirmPayRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +24,14 @@ public class PayAppController {
     }
 
     @PostMapping("/posts")
-    public String confirmPost(@RequestBody ConfirmPayRequest confirmPayRequest) {
-        return payAppService.confirmPost(confirmPayRequest);
+    public void testConfirmPost(HttpServletRequest request) throws IOException {
+        payAppService.test(request);
     }
+
+//    @PostMapping("/posts")
+//    public String confirmPost(@RequestBody ConfirmPayRequest confirmPayRequest) {
+//        return payAppService.confirmPost(confirmPayRequest);
+//    }
 
 //    @PostMapping("/consults")
 //    public String confirmConsult(@RequestParam("userid") String userId,
