@@ -253,7 +253,7 @@ public class PayAppServiceImpl implements PayAppService {
 
             return LocalDateTime.parse(formattedString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } catch (DateTimeParseException e) {
-            throw new PayAppException(PayAppErrorCode.DATETIME_PARSE_FAIL);
+            throw new PayAppException(PayAppErrorCode.DATETIME_PARSE_FAIL, dateTimeString);
         }
     }
 }
