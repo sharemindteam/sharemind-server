@@ -249,9 +249,9 @@ public class PayAppServiceImpl implements PayAppService {
 
     private LocalDateTime parseToLocalDateTime(String dateTimeString) {
         try {
-            String formattedString = dateTimeString.replace('+', 'T');
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-            return LocalDateTime.parse(formattedString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            return LocalDateTime.parse(dateTimeString, formatter);
         } catch (DateTimeParseException e) {
             throw new PayAppException(PayAppErrorCode.DATETIME_PARSE_FAIL, dateTimeString);
         }
