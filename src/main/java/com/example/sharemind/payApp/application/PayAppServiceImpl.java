@@ -27,6 +27,7 @@ import org.springframework.web.client.RestClient;
 @RequiredArgsConstructor
 public class PayAppServiceImpl implements PayAppService {
 
+    private static final String PAY_APP_URL = "https://api.payapp.kr/oapi/apiLoad.html";
     private static final String PAY_REQUEST_CMD = "payrequest";
     private static final String CHECK_RETRY_Y = "y";
     private static final String SECRET_POST = "공개상담 - 비공개";
@@ -36,11 +37,8 @@ public class PayAppServiceImpl implements PayAppService {
     private final ChatService chatService;
     private final LetterService letterService;
 
-    @Value("${payapp.url}")
-    private String payAppUrl;
-
     private final RestClient restClient = RestClient.builder()
-            .baseUrl(payAppUrl)
+            .baseUrl(PAY_APP_URL)
             .build();
 
     @Value("${payapp.user-id}")
