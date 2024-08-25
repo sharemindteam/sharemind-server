@@ -120,7 +120,7 @@ public class Consult extends BaseEntity {
         this.payment.updateIsPaidTrue();
     }
 
-    public void updateIsPaidAndLetter(Letter letter, String method, String approvedAt) {
+    public void updateIsPaidAndLetter(Letter letter, String method, LocalDateTime approvedAt) {
         validateConsultType(ConsultType.LETTER);
         setLetter(letter);
         updateConsultedAt();
@@ -136,7 +136,7 @@ public class Consult extends BaseEntity {
         this.payment.updateIsPaidTrue();
     }
 
-    public void updateIsPaidAndChat(Chat chat, String method, String approvedAt) {
+    public void updateIsPaidAndChat(Chat chat, String method, LocalDateTime approvedAt) {
         validateConsultType(ConsultType.CHAT);
         setChat(chat);
         updateConsultedAt();

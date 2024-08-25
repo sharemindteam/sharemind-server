@@ -73,14 +73,14 @@ public class Post extends BaseEntity {
     @Column(name = "customer_phone_number")
     private String customerPhoneNumber;
 
-    @Column(name = "pay_app_id")
+    @Column(name = "pay_app_id", unique = true)
     private String payAppId;
 
     @Column(name = "method")
     private String method;
 
     @Column(name = "approved_at")
-    private String approvedAt;
+    private LocalDateTime approvedAt;
 
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
@@ -111,7 +111,7 @@ public class Post extends BaseEntity {
         this.payAppId = payAppId;
     }
 
-    public void updateMethodAndIsPaidAndApprovedAt(String method, String approvedAt) {
+    public void updateMethodAndIsPaidAndApprovedAt(String method, LocalDateTime approvedAt) {
         this.method = method;
         this.isPaid = true;
         this.approvedAt = approvedAt;
