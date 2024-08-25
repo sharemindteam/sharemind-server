@@ -159,8 +159,10 @@ public class PayAppServiceImpl implements PayAppService {
     @Transactional
     public String confirmConsult(HttpServletRequest request) {
         String userId = request.getParameter("userid");
-        String key = URLDecoder.decode(request.getParameter("linkkey"), StandardCharsets.UTF_8);
-        String value = URLDecoder.decode(request.getParameter("linkval"), StandardCharsets.UTF_8);
+        String key = URLDecoder.decode(request.getParameter("linkkey"), StandardCharsets.UTF_8)
+                .replace(" ", "+");
+        String value = URLDecoder.decode(request.getParameter("linkval"), StandardCharsets.UTF_8)
+                .replace(" ", "+");
         String payAppId = request.getParameter("mul_no");
         Long cost = Long.parseLong(request.getParameter("price"));
         int state = Integer.parseInt(request.getParameter("pay_state"));
@@ -202,8 +204,10 @@ public class PayAppServiceImpl implements PayAppService {
     @Transactional
     public String confirmPost(HttpServletRequest request) {
         String userId = request.getParameter("userid");
-        String key = URLDecoder.decode(request.getParameter("linkkey"), StandardCharsets.UTF_8);
-        String value = URLDecoder.decode(request.getParameter("linkval"), StandardCharsets.UTF_8);
+        String key = URLDecoder.decode(request.getParameter("linkkey"), StandardCharsets.UTF_8)
+                .replace(" ", "+");
+        String value = URLDecoder.decode(request.getParameter("linkval"), StandardCharsets.UTF_8)
+                .replace(" ", "+");
         String payAppId = request.getParameter("mul_no");
         Long cost = Long.parseLong(request.getParameter("price"));
         int state = Integer.parseInt(request.getParameter("pay_state"));
