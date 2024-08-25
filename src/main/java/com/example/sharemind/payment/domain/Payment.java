@@ -33,7 +33,7 @@ public class Payment extends BaseEntity {
     @Column(name = "customer_phone_number")
     private String customerPhoneNumber;
 
-    @Column(name = "pay_app_id")
+    @Column(name = "pay_app_id", unique = true)
     private String payAppId;
 
     @Column
