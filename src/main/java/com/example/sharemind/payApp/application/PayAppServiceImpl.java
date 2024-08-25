@@ -6,6 +6,7 @@ import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.payApp.content.PayMethod;
+import com.example.sharemind.payApp.dto.request.ConfirmPayRequest;
 import com.example.sharemind.payApp.exception.PayAppErrorCode;
 import com.example.sharemind.payApp.exception.PayAppException;
 import com.example.sharemind.payment.application.PaymentService;
@@ -205,6 +206,67 @@ public class PayAppServiceImpl implements PayAppService {
             PayMethod payMethod = PayMethod.getPayMethod(method);
 
             post.updateMethodAndIsPaidAndApprovedAt(payMethod.getMethod(), approvedAt);
+        }
+
+        return "SUCCESS";
+    }
+
+    @Override
+    @Transactional
+    public String confirmConsult(ConfirmPayRequest confirmPayRequest) {
+        if (!payAppUserId.equals(confirmPayRequest.getUserId()) || !payAppKey.equals(
+                confirmPayRequest.getKey()) || !payAppValue.equals(confirmPayRequest.getValue())) {
+            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL);
+        }
+
+        Payment payment = paymentService.getPaymentByPaymentId(confirmPayRequest.getVal1());
+        if (!payment.getPayAppId().equals(confirmPayRequest.getPayAppId()) || !payment.getConsult()
+                .getCost().equals(confirmPayRequest.getCost())) {
+            throw new PayAppException(PayAppErrorCode.CONFIRM_PAYMENT_INFO_FAIL);
+        }
+
+        if (confirmPayRequest.getState() == 4 && !payment.getIsPaid()) {
+            PayMethod payMethod = PayMethod.getPayMethod(confirmPayRequest.getMethod());
+
+            Consult consult = payment.getConsult();
+            switch (consult.getConsultType()) {
+                case LETTER -> {
+                    Letter letter = letterService.createLetter();
+
+                    consult.updateIsPaidAndLetter(letter, payMethod.getMethod(),
+                            confirmPayRequest.getApprovedAt());
+                }
+                case CHAT -> {
+                    Chat chat = chatService.createChat(consult);
+
+                    consult.updateIsPaidAndChat(chat, payMethod.getMethod(),
+                            confirmPayRequest.getApprovedAt());
+                }
+            }
+        }
+
+        return "SUCCESS";
+    }
+
+    @Override
+    @Transactional
+    public String confirmPost(ConfirmPayRequest confirmPayRequest) {
+        if (!payAppUserId.equals(confirmPayRequest.getUserId()) || !payAppKey.equals(
+                confirmPayRequest.getKey()) || !payAppValue.equals(confirmPayRequest.getValue())) {
+            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL);
+        }
+
+        Post post = postService.getPostByPostId(confirmPayRequest.getVal1());
+        if (!post.getPayAppId().equals(confirmPayRequest.getPayAppId()) || !post.getCost()
+                .equals(confirmPayRequest.getCost())) {
+            throw new PayAppException(PayAppErrorCode.CONFIRM_PAYMENT_INFO_FAIL);
+        }
+
+        if (confirmPayRequest.getState() == 4 && !post.getIsPaid()) {
+            PayMethod payMethod = PayMethod.getPayMethod(confirmPayRequest.getMethod());
+
+            post.updateMethodAndIsPaidAndApprovedAt(payMethod.getMethod(),
+                    confirmPayRequest.getApprovedAt());
         }
 
         return "SUCCESS";
