@@ -169,7 +169,7 @@ public class PayAppServiceImpl implements PayAppService {
                 URLDecoder.decode(request.getParameter("pay_date"), StandardCharsets.UTF_8));
 
         if (!payAppUserId.equals(userId) || !payAppKey.equals(key) || !payAppValue.equals(value)) {
-            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL);
+            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL, userId + " " + key + " " + value);
         }
 
         Payment payment = paymentService.getPaymentByPayAppId(payAppId);
@@ -212,7 +212,7 @@ public class PayAppServiceImpl implements PayAppService {
                 URLDecoder.decode(request.getParameter("pay_date"), StandardCharsets.UTF_8));
 
         if (!payAppUserId.equals(userId) || !payAppKey.equals(key) || !payAppValue.equals(value)) {
-            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL);
+            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL, userId + " " + key + " " + value);
         }
 
         Post post = postService.getPostByPayAppId(payAppId);
