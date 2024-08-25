@@ -12,6 +12,8 @@ import java.util.List;
 public interface PaymentService {
     Payment getPaymentByPaymentId(Long paymentId);
 
+    Payment getPaymentByPayAppId(String payAppId);
+
     List<PaymentGetCustomerResponse> getPaymentsByCustomer(Long paymentId, String status, Long customerId);
 
     void updateRefundWaitingByCustomer(Long paymentId, Long customerId);
