@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,7 +38,6 @@ public class PostController {
     @Operation(summary = "일대다 상담 질문 신청", description = "일대다 상담 질문 신청")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "신청 성공"),
-            @ApiResponse(responseCode = "301", description = "결제 url로 이동"),
             @ApiResponse(responseCode = "400",
                     description = "요청 값 중 공백이 존재",
                     content = @Content(mediaType = "application/json",
@@ -51,7 +49,7 @@ public class PostController {
             )
     })
     @PostMapping
-    public ResponseEntity<Void> createPost(
+    public ResponseEntity<?> createPost(
             @Valid @RequestBody PostCreateRequest postCreateRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long postId = postService.createPost(postCreateRequest,
@@ -62,10 +60,7 @@ public class PostController {
         } else {
             String payUrl = payAppService.payPost(postId);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.LOCATION, payUrl);
-
-            return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+            return ResponseEntity.status(HttpStatus.CREATED).body(payUrl);
         }
     }
 
