@@ -312,4 +312,14 @@ public class PayAppServiceImpl implements PayAppService {
 
         return map;
     }
+
+    private LocalDateTime parseToLocalDateTime(String dateTimeString) {
+        try {
+            String formattedString = dateTimeString.replace('+', 'T');
+
+            return LocalDateTime.parse(formattedString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } catch (DateTimeParseException e) {
+            throw new PayAppException(PayAppErrorCode.DATETIME_PARSE_FAIL);
+        }
+    }
 }
