@@ -6,7 +6,6 @@ import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.letter.application.LetterService;
 import com.example.sharemind.letter.domain.Letter;
 import com.example.sharemind.payApp.content.PayMethod;
-import com.example.sharemind.payApp.dto.request.ConfirmPayRequest;
 import com.example.sharemind.payApp.exception.PayAppErrorCode;
 import com.example.sharemind.payApp.exception.PayAppException;
 import com.example.sharemind.payment.application.PaymentService;
@@ -14,10 +13,11 @@ import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.domain.Post;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -81,7 +81,6 @@ public class PayAppServiceImpl implements PayAppService {
                         .queryParam("price", consult.getCost())
                         .queryParam("recvphone", payment.getCustomerPhoneNumber())
                         .queryParam("feedbackurl", feedBackConsult)
-                        .queryParam("val1", payment.getPaymentId())
                         .queryParam("returnurl", returnUrl)
                         .queryParam("checkretry", CHECK_RETRY_Y)
                         .build())
@@ -127,7 +126,6 @@ public class PayAppServiceImpl implements PayAppService {
                         .queryParam("price", post.getCost())
                         .queryParam("recvphone", post.getCustomerPhoneNumber())
                         .queryParam("feedbackurl", feedBackPost)
-                        .queryParam("val1", post.getPostId())
                         .queryParam("returnurl", returnUrl)
                         .queryParam("checkretry", CHECK_RETRY_Y)
                         .build())
@@ -159,22 +157,30 @@ public class PayAppServiceImpl implements PayAppService {
 
     @Override
     @Transactional
-    public String confirmConsult(String userId, String key, String value, Long cost,
-            String approvedAt, Integer method, Integer state, Long val1, String payAppId) {
+    public String confirmConsult(HttpServletRequest request) {
+        String userId = request.getParameter("userid");
+        String key = URLDecoder.decode(request.getParameter("linkkey"), StandardCharsets.UTF_8);
+        String value = URLDecoder.decode(request.getParameter("linkval"), StandardCharsets.UTF_8);
+        String payAppId = request.getParameter("mul_no");
+        Long cost = Long.parseLong(request.getParameter("price"));
+        int state = Integer.parseInt(request.getParameter("pay_state"));
+        int method = Integer.parseInt(request.getParameter("pay_type"));
+        LocalDateTime approvedAt = parseToLocalDateTime(
+                URLDecoder.decode(request.getParameter("pay_date"), StandardCharsets.UTF_8));
+
         if (!payAppUserId.equals(userId) || !payAppKey.equals(key) || !payAppValue.equals(value)) {
             throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL);
         }
 
-        Payment payment = paymentService.getPaymentByPaymentId(val1);
-        if (!payment.getPayAppId().equals(payAppId) || !payment.getConsult().getCost()
-                .equals(cost)) {
+        Payment payment = paymentService.getPaymentByPayAppId(payAppId);
+        Consult consult = payment.getConsult();
+        if (!consult.getCost().equals(cost)) {
             throw new PayAppException(PayAppErrorCode.CONFIRM_PAYMENT_INFO_FAIL);
         }
 
         if (state == 4 && !payment.getIsPaid()) {
             PayMethod payMethod = PayMethod.getPayMethod(method);
 
-            Consult consult = payment.getConsult();
             switch (consult.getConsultType()) {
                 case LETTER -> {
                     Letter letter = letterService.createLetter();
@@ -194,14 +200,23 @@ public class PayAppServiceImpl implements PayAppService {
 
     @Override
     @Transactional
-    public String confirmPost(String userId, String key, String value, Long cost,
-            String approvedAt, Integer method, Integer state, Long val1, String payAppId) {
+    public String confirmPost(HttpServletRequest request) {
+        String userId = request.getParameter("userid");
+        String key = URLDecoder.decode(request.getParameter("linkkey"), StandardCharsets.UTF_8);
+        String value = URLDecoder.decode(request.getParameter("linkval"), StandardCharsets.UTF_8);
+        String payAppId = request.getParameter("mul_no");
+        Long cost = Long.parseLong(request.getParameter("price"));
+        int state = Integer.parseInt(request.getParameter("pay_state"));
+        int method = Integer.parseInt(request.getParameter("pay_type"));
+        LocalDateTime approvedAt = parseToLocalDateTime(
+                URLDecoder.decode(request.getParameter("pay_date"), StandardCharsets.UTF_8));
+
         if (!payAppUserId.equals(userId) || !payAppKey.equals(key) || !payAppValue.equals(value)) {
             throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL);
         }
 
-        Post post = postService.getPostByPostId(val1);
-        if (!post.getPayAppId().equals(payAppId) || !post.getCost().equals(cost)) {
+        Post post = postService.getPostByPayAppId(payAppId);
+        if (!post.getCost().equals(cost)) {
             throw new PayAppException(PayAppErrorCode.CONFIRM_PAYMENT_INFO_FAIL);
         }
 
@@ -212,87 +227,6 @@ public class PayAppServiceImpl implements PayAppService {
         }
 
         return "SUCCESS";
-    }
-
-    @Override
-    @Transactional
-    public String confirmConsult(ConfirmPayRequest confirmPayRequest) {
-        if (!payAppUserId.equals(confirmPayRequest.getUserId()) || !payAppKey.equals(
-                confirmPayRequest.getKey()) || !payAppValue.equals(confirmPayRequest.getValue())) {
-            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL);
-        }
-
-        Payment payment = paymentService.getPaymentByPaymentId(confirmPayRequest.getVal1());
-        if (!payment.getPayAppId().equals(confirmPayRequest.getPayAppId()) || !payment.getConsult()
-                .getCost().equals(confirmPayRequest.getCost())) {
-            throw new PayAppException(PayAppErrorCode.CONFIRM_PAYMENT_INFO_FAIL);
-        }
-
-        if (confirmPayRequest.getState() == 4 && !payment.getIsPaid()) {
-            PayMethod payMethod = PayMethod.getPayMethod(confirmPayRequest.getMethod());
-
-            Consult consult = payment.getConsult();
-            switch (consult.getConsultType()) {
-                case LETTER -> {
-                    Letter letter = letterService.createLetter();
-
-                    consult.updateIsPaidAndLetter(letter, payMethod.getMethod(),
-                            confirmPayRequest.getApprovedAt());
-                }
-                case CHAT -> {
-                    Chat chat = chatService.createChat(consult);
-
-                    consult.updateIsPaidAndChat(chat, payMethod.getMethod(),
-                            confirmPayRequest.getApprovedAt());
-                }
-            }
-        }
-
-        return "SUCCESS";
-    }
-
-    @Override
-    @Transactional
-    public String confirmPost(ConfirmPayRequest confirmPayRequest) {
-        if (!payAppUserId.equals(confirmPayRequest.getUserId()) || !payAppKey.equals(
-                confirmPayRequest.getKey()) || !payAppValue.equals(confirmPayRequest.getValue())) {
-            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL);
-        }
-
-        Post post = postService.getPostByPostId(confirmPayRequest.getVal1());
-        if (!post.getPayAppId().equals(confirmPayRequest.getPayAppId()) || !post.getCost()
-                .equals(confirmPayRequest.getCost())) {
-            throw new PayAppException(PayAppErrorCode.CONFIRM_PAYMENT_INFO_FAIL);
-        }
-
-        if (confirmPayRequest.getState() == 4 && !post.getIsPaid()) {
-            PayMethod payMethod = PayMethod.getPayMethod(confirmPayRequest.getMethod());
-
-            post.updateMethodAndIsPaidAndApprovedAt(payMethod.getMethod(),
-                    confirmPayRequest.getApprovedAt());
-        }
-
-        return "SUCCESS";
-    }
-
-    @Override
-    @Transactional
-    public void test(HttpServletRequest request) throws IOException {
-        Post post = postService.getPostByPostId(158L);
-
-        String contentType = request.getContentType();
-
-        StringBuilder body = new StringBuilder();
-        try (BufferedReader reader = request.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                body.append(line);
-            }
-        }
-
-        String requestBody = body.toString();
-
-        post.updateMethodAndIsPaidAndApprovedAt(contentType, requestBody);
     }
 
     private Map<String, String> parseQueryString(String queryString) {
