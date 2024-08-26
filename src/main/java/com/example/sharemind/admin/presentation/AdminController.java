@@ -11,6 +11,7 @@ import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
+import com.example.sharemind.sms.application.SmsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import reactor.core.publisher.Mono;
 
 @Tag(name = "Admin Controller", description = "관리자 페이지 컨트롤러")
 @RestController
@@ -32,6 +34,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final SmsService smsService;
 
     @Operation(summary = "미결제 상담(편지/채팅) 리스트 조회", description = "결제 여부(isPaid)가 false인 consult 리스트 조회")
     @ApiResponses({
@@ -312,5 +315,14 @@ public class AdminController {
     @GetMapping("/managements")
     public ResponseEntity<Boolean> getShutdown() {
         return ResponseEntity.ok(adminService.getShutdown());
+    }
+
+    @Operation(summary = "문자 전송", description = "사용자에게 문자 전송")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "발송 성공")
+    })
+    @PostMapping("/sms")
+    public ResponseEntity<String> sendSms() {
+        return ResponseEntity.ok(smsService.sendSms("01026371757").block());
     }
 }
