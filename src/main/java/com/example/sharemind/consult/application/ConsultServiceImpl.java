@@ -43,7 +43,7 @@ public class ConsultServiceImpl implements ConsultService {
 
     @Transactional
     @Override
-    public void createConsult(ConsultCreateRequest consultCreateRequest, Long customerId) {
+    public Long createConsult(ConsultCreateRequest consultCreateRequest, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
         Counselor counselor = counselorService.getCounselorByCounselorId(consultCreateRequest.getCounselorId());
         if (!counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_COMPLETE)) {
@@ -64,8 +64,11 @@ public class ConsultServiceImpl implements ConsultService {
                 .counselor(counselor)
                 .consultType(consultType)
                 .cost(cost)
+                .customerPhoneNumber(consultCreateRequest.getPhoneNumber())
                 .build();
         consultRepository.save(consult);
+
+        return consult.getPayment().getPaymentId();
     }
 
     @Override

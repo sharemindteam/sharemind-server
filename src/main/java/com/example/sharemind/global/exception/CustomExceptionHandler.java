@@ -11,6 +11,7 @@ import com.example.sharemind.customer.exception.CustomerException;
 import com.example.sharemind.email.exception.EmailException;
 import com.example.sharemind.letter.exception.LetterException;
 import com.example.sharemind.letterMessage.exception.LetterMessageException;
+import com.example.sharemind.payApp.exception.PayAppException;
 import com.example.sharemind.payment.exception.PaymentException;
 import com.example.sharemind.post.exception.PostException;
 import com.example.sharemind.postLike.exception.PostLikeException;
@@ -143,6 +144,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(PostScrapException.class)
     public ResponseEntity<CustomExceptionResponse> catchPostScrapException(PostScrapException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));
+    }
+
+    @ExceptionHandler(PayAppException.class)
+    public ResponseEntity<CustomExceptionResponse> catchPayAppException(PayAppException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(CustomExceptionResponse.of(e.getErrorCode().name(), e.getMessage()));

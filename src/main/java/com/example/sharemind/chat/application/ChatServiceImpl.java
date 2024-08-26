@@ -60,7 +60,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatNoticeService chatNoticeService;
 
     @Override
-    public void createChat(Consult consult) {
+    public Chat createChat(Consult consult) {
         Chat chat = Chat.newInstance();
         chatRepository.save(chat);
 
@@ -71,6 +71,8 @@ public class ChatServiceImpl implements ChatService {
         notifyNewChat(chat, consult);
 
         chatTaskScheduler.checkAutoRefund(chat);
+
+        return chat;
     }
 
     @Override
