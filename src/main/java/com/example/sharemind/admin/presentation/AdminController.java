@@ -12,6 +12,7 @@ import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.sms.application.SmsService;
+import com.example.sharemind.sms.dto.response.SmsGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -25,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import reactor.core.publisher.Mono;
 
 @Tag(name = "Admin Controller", description = "관리자 페이지 컨트롤러")
 @RestController
@@ -322,7 +322,7 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "발송 성공")
     })
     @PostMapping("/sms")
-    public ResponseEntity<String> sendSms() {
-        return ResponseEntity.ok(smsService.sendSms("01026371757").block());
+    public ResponseEntity<SmsGetResponse> sendSms(@RequestParam Long counselorId) {
+        return ResponseEntity.ok(smsService.sendSmsCounselor(counselorId));
     }
 }
