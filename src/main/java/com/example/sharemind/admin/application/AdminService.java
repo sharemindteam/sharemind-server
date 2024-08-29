@@ -10,13 +10,13 @@ import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 
+import com.example.sharemind.sms.dto.response.SmsGetResponse;
 import java.util.List;
 
 public interface AdminService {
     List<ConsultGetUnpaidResponse> getUnpaidConsults();
 
-    void updateConsultIsPaid(Long consultId);
-
+    SmsGetResponse updateConsultIsPaid(Long consultId);
     List<CounselorGetProfileResponse> getPendingCounselors();
 
     void updateProfileStatus(Long counselorId, Boolean isPassed);

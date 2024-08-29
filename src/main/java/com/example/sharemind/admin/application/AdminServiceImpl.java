@@ -40,6 +40,8 @@ import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
+import com.example.sharemind.sms.application.SmsService;
+import com.example.sharemind.sms.dto.response.SmsGetResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -52,6 +54,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
+
     private static final String SHUT_DOWN_KEY = "SHUT_DOWN";
 
     private final ConsultService consultService;
@@ -62,6 +65,7 @@ public class AdminServiceImpl implements AdminService {
     private final CustomerService customerService;
     private final PostService postService;
     private final EmailService emailService;
+    private final SmsService smsService;
     private final RedisTemplate<String, Boolean> redisTemplate;
 
     @Override
@@ -72,7 +76,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional
-    public void updateConsultIsPaid(Long consultId) {
+    public SmsGetResponse updateConsultIsPaid(Long consultId) {
         Consult consult = consultService.getConsultByConsultId(consultId);
         if (consult.getPayment().getIsPaid()) {
             throw new ConsultException(ConsultErrorCode.CONSULT_ALREADY_PAID, consultId.toString());
@@ -90,6 +94,7 @@ public class AdminServiceImpl implements AdminService {
                 consult.updateIsPaidAndChat(chat);
             }
         }
+        return smsService.sendSmsCounselor(consult.getCounselor().getCounselorId());
     }
 
     @Override
