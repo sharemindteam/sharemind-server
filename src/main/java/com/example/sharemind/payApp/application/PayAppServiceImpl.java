@@ -12,6 +12,7 @@ import com.example.sharemind.payment.application.PaymentService;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.domain.Post;
+import com.example.sharemind.sms.application.SmsService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +41,7 @@ public class PayAppServiceImpl implements PayAppService {
     private final PostService postService;
     private final ChatService chatService;
     private final LetterService letterService;
+    private final SmsService smsService;
 
     private final RestClient restClient = RestClient.builder()
             .baseUrl(PAY_APP_URL)
@@ -171,7 +173,8 @@ public class PayAppServiceImpl implements PayAppService {
                 URLDecoder.decode(request.getParameter("pay_date"), StandardCharsets.UTF_8));
 
         if (!payAppUserId.equals(userId) || !payAppKey.equals(key) || !payAppValue.equals(value)) {
-            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL, userId + " " + key + " " + value);
+            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL,
+                    userId + " " + key + " " + value);
         }
 
         Payment payment = paymentService.getPaymentByPayAppId(payAppId);
@@ -195,6 +198,7 @@ public class PayAppServiceImpl implements PayAppService {
                     consult.updateIsPaidAndChat(chat, payMethod.getMethod(), approvedAt);
                 }
             }
+            smsService.sendSmsCounselor(consult.getCounselor().getCounselorId());
         }
 
         return "SUCCESS";
@@ -216,7 +220,8 @@ public class PayAppServiceImpl implements PayAppService {
                 URLDecoder.decode(request.getParameter("pay_date"), StandardCharsets.UTF_8));
 
         if (!payAppUserId.equals(userId) || !payAppKey.equals(key) || !payAppValue.equals(value)) {
-            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL, userId + " " + key + " " + value);
+            throw new PayAppException(PayAppErrorCode.CONFIRM_BASIC_INFO_FAIL,
+                    userId + " " + key + " " + value);
         }
 
         Post post = postService.getPostByPayAppId(payAppId);
