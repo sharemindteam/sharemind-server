@@ -11,7 +11,7 @@ import com.example.sharemind.global.content.ConsultType;
 import java.util.List;
 
 public interface ConsultService {
-    void createConsult(ConsultCreateRequest consultCreateRequest, Long customerId);
+    Long createConsult(ConsultCreateRequest consultCreateRequest, Long customerId);
 
     Consult getConsultByConsultId(Long consultId);
 

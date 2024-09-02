@@ -11,13 +11,15 @@ import java.util.List;
 
 public interface PostService {
 
-    void createPost(PostCreateRequest postCreateRequest, Long customerId);
+    Long createPost(PostCreateRequest postCreateRequest, Long customerId);
 
     List<Post> getAllPosts();
 
     List<Post> getUnpaidPrivatePosts();
 
     Post getPostByPostId(Long postId);
+
+    Post getPostByPayAppId(String payAppId);
 
     void updatePost(PostUpdateRequest postUpdateRequest, Long customerId);
 

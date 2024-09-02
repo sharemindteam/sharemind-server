@@ -11,6 +11,7 @@ import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
+import com.example.sharemind.sms.dto.response.SmsGetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -44,7 +45,7 @@ public class AdminController {
 
     @Operation(summary = "상담(편지/채팅) 결제 여부 수정", description = "결제 여부(isPaid)가 false인 consult를 true로 수정")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "200", description = "수정 성공, resultCode로 sms api 발송 여부가 전달됩니다."),
             @ApiResponse(responseCode = "400", description = "이미 결제 완료된 상담",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CustomExceptionResponse.class))
@@ -58,9 +59,8 @@ public class AdminController {
             @Parameter(name = "consultId", description = "상담 아이디")
     })
     @PatchMapping("/unpaid-consults/{consultId}")
-    public ResponseEntity<Void> updateConsultIsPaid(@PathVariable Long consultId) {
-        adminService.updateConsultIsPaid(consultId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<SmsGetResponse> updateConsultIsPaid(@PathVariable Long consultId) {
+        return ResponseEntity.ok(adminService.updateConsultIsPaid(consultId));
     }
 
     @Operation(summary = "심사 대기 중인 상담사 프로필 조회", description = "심사 대기 중인 상담사 프로필 조회")

@@ -15,4 +15,8 @@ public class ConsultCreateRequest {
     @Schema(description = "신청할 상담 종류", example = "Letter")
     @NotBlank(message = "상담 유형은 공백일 수 없습니다.")
     private String consultTypeName;
+
+    @Schema(description = "전화번호(하이픈 필수)", example = "010-1234-5678")
+    @NotBlank(message = "전화번호는 공백일 수 없습니다.")
+    private String phoneNumber;
 }

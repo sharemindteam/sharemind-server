@@ -5,6 +5,7 @@ import com.example.sharemind.consult.dto.request.ConsultCreateRequest;
 import com.example.sharemind.consult.dto.response.ConsultGetOngoingResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
+import com.example.sharemind.payApp.application.PayAppService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,6 +29,7 @@ import static com.example.sharemind.global.constants.Constants.IS_CUSTOMER;
 public class ConsultController {
 
     private final ConsultService consultService;
+    private final PayAppService payAppService;
 
     @Operation(summary = "상담 신청", description = "consult 생성")
     @ApiResponses({
@@ -44,10 +46,14 @@ public class ConsultController {
             )
     })
     @PostMapping
-    public ResponseEntity<Void> createConsult(@Valid @RequestBody ConsultCreateRequest consultCreateRequest,
-                                                               @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        consultService.createConsult(consultCreateRequest, customUserDetails.getCustomer().getCustomerId());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<String> createConsult(
+            @Valid @RequestBody ConsultCreateRequest consultCreateRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long paymentId = consultService.createConsult(consultCreateRequest,
+                customUserDetails.getCustomer().getCustomerId());
+        String payUrl = payAppService.payConsult(paymentId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(payUrl);
     }
 
     @Operation(summary = "상담사 진행 중인 상담 조회", description = "상담사 진행 중인 최근 상담 3개 조회")
@@ -57,8 +63,9 @@ public class ConsultController {
     @GetMapping("/counselors")
     public ResponseEntity<ConsultGetOngoingResponse> getOngoingConsultsByCounselor(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(consultService.getOngoingConsults(customUserDetails.getCustomer().getCustomerId(),
-                IS_COUNSELOR));
+        return ResponseEntity.ok(
+                consultService.getOngoingConsults(customUserDetails.getCustomer().getCustomerId(),
+                        IS_COUNSELOR));
     }
 
     @Operation(summary = "구매자 진행 중인 상담 조회", description = "구매자 진행 중인 최근 상담 1개 조회")
@@ -68,7 +75,8 @@ public class ConsultController {
     @GetMapping("/customers")
     public ResponseEntity<ConsultGetOngoingResponse> getOngoingConsultsByCustomer(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(consultService.getOngoingConsults(customUserDetails.getCustomer().getCustomerId(),
-                IS_CUSTOMER));
+        return ResponseEntity.ok(
+                consultService.getOngoingConsults(customUserDetails.getCustomer().getCustomerId(),
+                        IS_CUSTOMER));
     }
 }

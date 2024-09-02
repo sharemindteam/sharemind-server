@@ -19,6 +19,8 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByPaymentIdAndIsActivatedIsTrue(Long paymentId);
 
+    Optional<Payment> findByPayAppIdAndIsActivatedIsTrue(String payAppId);
+
     List<Payment> findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(Counselor counselor,
                                                                                   PaymentCounselorStatus status);
 

@@ -51,10 +51,11 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void createPost(PostCreateRequest postCreateRequest, Long customerId) {
+    public Long createPost(PostCreateRequest postCreateRequest, Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
 
-        postRepository.save(postCreateRequest.toEntity(customer));
+        Post post = postRepository.save(postCreateRequest.toEntity(customer));
+        return post.getPostId();
     }
 
     @Override
@@ -71,6 +72,12 @@ public class PostServiceImpl implements PostService {
     public Post getPostByPostId(Long postId) {
         return postRepository.findByPostIdAndIsActivatedIsTrue(postId).orElseThrow(
                 () -> new PostException(PostErrorCode.POST_NOT_FOUND, postId.toString()));
+    }
+
+    @Override
+    public Post getPostByPayAppId(String payAppId) {
+        return postRepository.findByPayAppIdAndIsActivatedIsTrue(payAppId).orElseThrow(
+                () -> new PostException(PostErrorCode.POST_NOT_FOUND, payAppId));
     }
 
     @Transactional

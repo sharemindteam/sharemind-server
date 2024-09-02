@@ -9,6 +9,7 @@ import com.example.sharemind.payment.content.PaymentCustomerStatus;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
 import com.example.sharemind.payment.exception.PaymentException;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,14 @@ public class Payment extends BaseEntity {
     @Column(name = "payment_id")
     private Long paymentId;
 
-    @Column(nullable = false)
+    @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호는 하이픈(-)을 포함한 10~11자리이어야 합니다.")
+    @Column(name = "customer_phone_number")
+    private String customerPhoneNumber;
+
+    @Column(name = "pay_app_id", unique = true)
+    private String payAppId;
+
+    @Column
     private String method;
 
     @Column(name = "is_paid", nullable = false)
@@ -49,11 +57,22 @@ public class Payment extends BaseEntity {
     private Consult consult;
 
     @Builder
-    public Payment(Consult consult) {
+    public Payment(String customerPhoneNumber, Consult consult) {
+        this.customerPhoneNumber = customerPhoneNumber;
         this.consult = consult;
-        this.method = "외부 결제";
         this.isPaid = false;
         updateBothStatusNone();
+    }
+
+    public void updatePayAppId(String payAppId) {
+        this.payAppId = payAppId;
+    }
+
+    public void updateMethodAndIsPaidAndApprovedAt(String method, LocalDateTime approvedAt) {
+        this.method = method;
+        this.isPaid = true;
+        this.approvedAt = approvedAt;
+        updateCustomerStatusPaymentComplete();
     }
 
     public void updateIsPaidTrue() {
@@ -133,5 +152,9 @@ public class Payment extends BaseEntity {
         if (!this.consult.getCounselor().getCounselorId().equals(counselorId)) {
             throw new PaymentException(PaymentErrorCode.PAYMENT_UPDATE_DENIED);
         }
+    }
+
+    public Boolean checkAlreadyPaid() {
+        return this.isPaid && (this.payAppId != null);
     }
 }

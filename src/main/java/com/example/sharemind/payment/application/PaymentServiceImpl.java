@@ -33,6 +33,7 @@ import static com.example.sharemind.global.constants.Constants.FEE;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
+
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int PAYMENT_CUSTOMER_PAGE_SIZE = 4;
     private static final int PAYMENT_COUNSELOR_PAGE_SIZE = 3;
@@ -45,13 +46,22 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment getPaymentByPaymentId(Long paymentId) {
         return paymentRepository.findByPaymentIdAndIsActivatedIsTrue(paymentId)
-                .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND, paymentId.toString()));
+                .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND,
+                        paymentId.toString()));
     }
 
     @Override
-    public List<PaymentGetCustomerResponse> getPaymentsByCustomer(Long paymentId, String status, Long customerId) {
+    public Payment getPaymentByPayAppId(String payAppId) {
+        return paymentRepository.findByPayAppIdAndIsActivatedIsTrue(payAppId).orElseThrow(
+                () -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND, payAppId));
+    }
+
+    @Override
+    public List<PaymentGetCustomerResponse> getPaymentsByCustomer(Long paymentId, String status,
+            Long customerId) {
         Customer customer = customerService.getCustomerByCustomerId(customerId);
-        PaymentCustomerStatus customerStatus = PaymentCustomerStatus.getPaymentCustomerStatusByName(status);
+        PaymentCustomerStatus customerStatus = PaymentCustomerStatus.getPaymentCustomerStatusByName(
+                status);
 
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, PAYMENT_CUSTOMER_PAGE_SIZE);
         Page<PaymentGetCustomerResponse> page =
@@ -73,7 +83,8 @@ public class PaymentServiceImpl implements PaymentService {
         if ((payment.getCustomerStatus() == null) ||
                 (!payment.getCustomerStatus().equals(PaymentCustomerStatus.PAYMENT_COMPLETE)) ||
                 (!payment.getConsult().getConsultStatus().equals(ConsultStatus.WAITING))) {
-            throw new PaymentException(PaymentErrorCode.INVALID_REFUND_WAITING, paymentId.toString());
+            throw new PaymentException(PaymentErrorCode.INVALID_REFUND_WAITING,
+                    paymentId.toString());
         }
 
         payment.updateCustomerStatusRefundWaiting();
@@ -81,13 +92,16 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> getRefundWaitingPayments() {
-        return paymentRepository.findAllByCustomerStatusAndIsActivatedIsTrue(PaymentCustomerStatus.REFUND_WAITING);
+        return paymentRepository.findAllByCustomerStatusAndIsActivatedIsTrue(
+                PaymentCustomerStatus.REFUND_WAITING);
     }
 
     @Override
-    public List<PaymentGetCounselorResponse> getPaymentsByCounselor(Long paymentId, String status, String sort, Long customerId) {
+    public List<PaymentGetCounselorResponse> getPaymentsByCounselor(Long paymentId, String status,
+            String sort, Long customerId) {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
-        PaymentCounselorStatus counselorStatus = PaymentCounselorStatus.getPaymentCounselorStatusByName(status);
+        PaymentCounselorStatus counselorStatus = PaymentCounselorStatus.getPaymentCounselorStatusByName(
+                status);
         PaymentSortType sortType = PaymentSortType.getPaymentSortTypeByName(sort);
 
         Long total = null;
@@ -144,7 +158,8 @@ public class PaymentServiceImpl implements PaymentService {
         payment.checkUpdateAuthorityByCounselor(counselor.getCounselorId());
         if ((payment.getCounselorStatus() == null) ||
                 (!payment.getCounselorStatus().equals(PaymentCounselorStatus.SETTLEMENT_WAITING))) {
-            throw new PaymentException(PaymentErrorCode.INVALID_SETTLEMENT_ONGOING, paymentId.toString());
+            throw new PaymentException(PaymentErrorCode.INVALID_SETTLEMENT_ONGOING,
+                    paymentId.toString());
         }
 
         payment.updateCounselorStatusSettlementOngoing();
@@ -152,19 +167,23 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentGetCounselorHomeResponse getCounselorHomePayment(Long customerId) {
-        Settlement settlement = counselorService.getCounselorByCustomerId(customerId).getSettlement();
-        return PaymentGetCounselorHomeResponse.of(settlement.getWaitingMonth() + settlement.getOngoingMonth(),
+        Settlement settlement = counselorService.getCounselorByCustomerId(customerId)
+                .getSettlement();
+        return PaymentGetCounselorHomeResponse.of(
+                settlement.getWaitingMonth() + settlement.getOngoingMonth(),
                 settlement.getWaitingAll());
     }
 
     @Override
     public List<Payment> getSettlementOngoingPayments() {
-        return paymentRepository.findAllByCounselorStatusAndIsActivatedIsTrue(PaymentCounselorStatus.SETTLEMENT_ONGOING);
+        return paymentRepository.findAllByCounselorStatusAndIsActivatedIsTrue(
+                PaymentCounselorStatus.SETTLEMENT_ONGOING);
     }
 
     @Override
     public Boolean checkRefundWaitingExists(Customer customer) {
-        return paymentRepository.existsByConsultCustomerAndCustomerStatusAndIsActivatedIsTrue(customer,
+        return paymentRepository.existsByConsultCustomerAndCustomerStatusAndIsActivatedIsTrue(
+                customer,
                 PaymentCustomerStatus.REFUND_WAITING);
     }
 
@@ -177,8 +196,10 @@ public class PaymentServiceImpl implements PaymentService {
     @Scheduled(cron = "0 0 5 * * *", zone = "Asia/Seoul")
     @Transactional
     public void checkPaymentConsultFinishToSettlementWaiting() {
-        paymentRepository.findAllByCounselorStatusAndIsActivatedIsTrue(PaymentCounselorStatus.CONSULT_FINISH).stream()
-                .filter(payment -> payment.getUpdatedAt().plusDays(PAYMENT_FIXED_OFFSET).isBefore(LocalDateTime.now()))
+        paymentRepository.findAllByCounselorStatusAndIsActivatedIsTrue(
+                        PaymentCounselorStatus.CONSULT_FINISH).stream()
+                .filter(payment -> payment.getUpdatedAt().plusDays(PAYMENT_FIXED_OFFSET)
+                        .isBefore(LocalDateTime.now()))
                 .forEach(Payment::updateCounselorStatusSettlementWaiting);
 
         counselorService.getAllCounselors()
@@ -190,7 +211,7 @@ public class PaymentServiceImpl implements PaymentService {
         Settlement settlement = counselor.getSettlement();
         settlement.clearAll();
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
-                PaymentCounselorStatus.SETTLEMENT_WAITING)
+                        PaymentCounselorStatus.SETTLEMENT_WAITING)
                 .forEach(payment -> {
                     Long amount = payment.getConsult().getCost() - FEE;
                     settlement.updateWaitingAll(amount);
@@ -202,7 +223,7 @@ public class PaymentServiceImpl implements PaymentService {
                     }
                 });
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
-                PaymentCounselorStatus.SETTLEMENT_ONGOING)
+                        PaymentCounselorStatus.SETTLEMENT_ONGOING)
                 .forEach(payment -> {
                     Long amount = payment.getConsult().getCost() - FEE;
                     settlement.updateOngoingAll(amount);
@@ -214,7 +235,7 @@ public class PaymentServiceImpl implements PaymentService {
                     }
                 });
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
-                PaymentCounselorStatus.SETTLEMENT_COMPLETE)
+                        PaymentCounselorStatus.SETTLEMENT_COMPLETE)
                 .forEach(payment -> {
                     Long amount = payment.getConsult().getCost() - FEE;
                     settlement.updateCompleteAll(amount);
