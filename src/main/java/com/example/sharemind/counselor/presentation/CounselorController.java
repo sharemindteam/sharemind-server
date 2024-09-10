@@ -323,4 +323,10 @@ public class CounselorController {
                 counselorService.getCounselorByCustomerId(customUserDetails.getCustomer()
                         .getCustomerId()).getCounselorId());
     }
+
+    @GetMapping("/reason")
+    public ResponseEntity<String> getCounselorFailureReason(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(counselorService.getCounselorFailureReason(customUserDetails.getCustomer()
+                .getCustomerId()));
+    }
 }
