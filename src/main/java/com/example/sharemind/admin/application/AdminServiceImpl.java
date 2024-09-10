@@ -106,7 +106,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Transactional
     @Override
-    public void updateProfileStatus(Long counselorId, Boolean isPassed) {
+    public void updateProfileStatus(Long counselorId, Boolean isPassed, String reason) {
         Counselor counselor = counselorService.getCounselorByCounselorId(counselorId);
         if ((counselor.getProfileStatus() == null) ||
                 (!counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_PENDING))) {
@@ -124,6 +124,7 @@ public class AdminServiceImpl implements AdminService {
             emailService.sendEmail(email, EmailType.COUNSELOR_PROFILE_FAIL, "");
         }
         counselor.updateProfileStatusAndProfileUpdatedAt(profileStatus);
+        counselor.updateProfileReason(reason);
 
         if (counselor.getProfileStatus().equals(ProfileStatus.EVALUATION_COMPLETE)) {
             Customer customer = customerService.getCustomerByCounselor(counselor);

@@ -19,7 +19,7 @@ public interface AdminService {
     SmsGetResponse updateConsultIsPaid(Long consultId);
     List<CounselorGetProfileResponse> getPendingCounselors();
 
-    void updateProfileStatus(Long counselorId, Boolean isPassed);
+    void updateProfileStatus(Long counselorId, Boolean isPassed, String reason);
 
     List<PaymentGetRefundWaitingResponse> getRefundWaitingPayments();
 
