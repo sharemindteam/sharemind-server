@@ -71,4 +71,6 @@ public interface CounselorService {
             String sortType, int index);
 
     List<CounselorGetRandomListResponse> getAllRandomCounselors(String sortType, int index);
+
+    String getCounselorFailureReason(Long counselorId);
 }
