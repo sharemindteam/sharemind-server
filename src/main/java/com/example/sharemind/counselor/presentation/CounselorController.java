@@ -329,7 +329,7 @@ public class CounselorController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
-    @GetMapping("/reason")
+    @GetMapping("/profile-rejection")
     public ResponseEntity<String> getCounselorFailureReason(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return ResponseEntity.ok(counselorService.getCounselorFailureReason(customUserDetails.getCustomer()
                 .getCustomerId()));
