@@ -30,12 +30,12 @@ public class ChatTaskScheduler {
     private final ChatRepository chatRepository;
     private final ChatNoticeService chatNoticeService;
 
-    private static final int TEN_MINUTE = 60000; //1분
-    private static final int TWENTY_FIVE_MINUTE = 120000; //2분
-    private static final int THIRTY_MINUTE = 300000; //7분 //테스트용으로 남겨둡니다.
-//    private static final int TEN_MINUTE = 600000;
-//    private static final int TWENTY_FIVE_MINUTE = 1500000;
-//    private static final int THIRTY_MINUTE = 1800000;
+//    private static final int TEN_MINUTE = 60000; //1분
+//    private static final int TWENTY_FIVE_MINUTE = 120000; //2분
+//    private static final int THIRTY_MINUTE = 300000; //7분 //테스트용으로 남겨둡니다.
+    private static final int TEN_MINUTE = 600000;
+    private static final int TWENTY_FIVE_MINUTE = 1500000;
+    private static final int THIRTY_MINUTE = 1800000;
     private static final int ONE_DAY = 24 * 60 * 60 * 1000;
 
     public void checkSendRequest(Chat oldChat) {

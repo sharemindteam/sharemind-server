@@ -53,6 +53,9 @@ public class Counselor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProfileStatus profileStatus;
 
+    @Column(name = "failure_reason")
+    private String failureReason;
+
     @ElementCollection(targetClass = ConsultCost.class, fetch = FetchType.LAZY)
     @JoinTable(name = "consult_costs", joinColumns = @JoinColumn(name = "counselor_id"))
     @Column(name = "consult_costs")
@@ -172,6 +175,10 @@ public class Counselor extends BaseEntity {
         } else {
             this.level = COUNSELOR_BASIC_LEVEL;
         }
+    }
+
+    public void updateProfileReason(String reason) {
+        this.failureReason = reason;
     }
 
     public void updateTotalReviewAndRatingAverage(Integer rating) {

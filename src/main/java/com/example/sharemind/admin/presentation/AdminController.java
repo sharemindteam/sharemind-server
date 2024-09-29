@@ -73,8 +73,11 @@ public class AdminController {
     }
 
     @Operation(summary = "상담사 프로필 심사 상태 수정",
-            description = "상담사 프로필 심사 상태 수정(최초 심사 통과 시 COUNSELOR 권한 부여), " +
-                    "주소 형식: /api/v1/admins/pending-profiles/{counselorId}?isPassed=true")
+            description =
+                    "상담사 프로필 심사 상태 수정(최초 심사 통과 시 COUNSELOR 권한 부여), reason의 경우 리젝시에만 보내주면 되는 optional한 값입니다."
+                            +
+                            "주소 형식: /api/v1/admins/pending-profiles/{counselorId}?isPassed=true&reason='test'")
+
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "400", description = "심사 중이 아닌 상담사 프로필에 대한 요청",
@@ -88,12 +91,13 @@ public class AdminController {
     })
     @Parameters({
             @Parameter(name = "counselorId", description = "상담사 아이디"),
-            @Parameter(name = "isPassed", description = "심사 통과 여부")
+            @Parameter(name = "isPassed", description = "심사 통과 여부"),
+            @Parameter(name = "reason", description = "리젝 사유")
     })
     @PatchMapping("/pending-profiles/{counselorId}")
     public ResponseEntity<Void> updateProfileStatus(@PathVariable Long counselorId,
-            @RequestParam Boolean isPassed) {
-        adminService.updateProfileStatus(counselorId, isPassed);
+            @RequestParam Boolean isPassed, @RequestParam(required = false) String reason) {
+        adminService.updateProfileStatus(counselorId, isPassed, reason);
         return ResponseEntity.ok().build();
     }
 

@@ -394,6 +394,14 @@ public class CounselorServiceImpl implements CounselorService {
         return counselorRepository.findAllByNicknameOrEmail(keyword);
     }
 
+    @Override
+    public String getCounselorFailureReason(Long customerId) {
+        Counselor counselor = getCounselorByCustomerId(customerId);
+        if (counselor.getProfileStatus() == ProfileStatus.EVALUATION_FAIL)
+            return counselor.getFailureReason();
+        return "";
+    }
+
     @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul")
     public void updateRealtimeCounselors() {
         List<Counselor> counselors = counselorRepository.findAllByProfileStatusIsEvaluationCompleteAndIsActivatedIsTrue();

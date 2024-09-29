@@ -323,4 +323,15 @@ public class CounselorController {
                 counselorService.getCounselorByCustomerId(customUserDetails.getCustomer()
                         .getCustomerId()).getCounselorId());
     }
+
+    @Operation(summary = "프로필 리젝 사유 조회",
+            description = "프로필 리젝 사유 리턴하는 함수, 프로필 상태가 실패가 아니면 빈 문자열이 리턴됩니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/profile-rejection")
+    public ResponseEntity<String> getCounselorFailureReason(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(counselorService.getCounselorFailureReason(customUserDetails.getCustomer()
+                .getCustomerId()));
+    }
 }
