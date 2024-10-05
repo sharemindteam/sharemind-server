@@ -184,6 +184,13 @@ public class AdminServiceImpl implements AdminService {
                 .toList();
     }
 
+    @Override
+    public List<PostGetUnpaidPrivateResponse> getPaidPrivatePosts() {
+        return postService.getPaidPrivatePosts().stream()
+                .map(PostGetUnpaidPrivateResponse::of)
+                .toList();
+    }
+
     @Transactional
     @Override
     public void updatePostIsPaid(Long postId) {

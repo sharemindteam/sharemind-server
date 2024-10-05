@@ -33,6 +33,8 @@ public interface AdminService {
 
     List<PostGetUnpaidPrivateResponse> getUnpaidPrivatePosts();
 
+    List<PostGetUnpaidPrivateResponse> getPaidPrivatePosts();
+
     void updatePostIsPaid(Long postId);
 
     List<CustomerGetByNicknameOrEmailResponse> getCustomersByNicknameOrEmail(String keyword);

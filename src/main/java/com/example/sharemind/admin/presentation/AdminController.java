@@ -181,6 +181,15 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUnpaidPrivatePosts());
     }
 
+    @Operation(summary = "결제 일대다 상담 리스트 조회", description = "결제 여부(isPaid)가 true인 일대다 상담 리스트 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/paid-posts")
+    public ResponseEntity<List<PostGetUnpaidPrivateResponse>> getPaidPrivatePosts() {
+        return ResponseEntity.ok(adminService.getPaidPrivatePosts());
+    }
+
     @Operation(summary = "일대다 비공개 상담 결제 여부 수정", description = "결제 여부(isPaid)가 false인 일대다 상담을 true로 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
