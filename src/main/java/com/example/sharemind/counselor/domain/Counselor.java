@@ -40,7 +40,7 @@ public class Counselor extends BaseEntity {
     private String email;
 
     @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호는 하이픈(-)을 포함한 10~11자리이어야 합니다.")
-    @Column(name = "phone_number", unique = true)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "is_educated")
