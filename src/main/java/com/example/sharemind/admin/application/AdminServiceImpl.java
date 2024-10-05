@@ -75,6 +75,13 @@ public class AdminServiceImpl implements AdminService {
                 .toList();
     }
 
+    @Override
+    public List<ConsultGetUnpaidResponse> getPaidConsults() {
+        return consultService.getPaidConsults().stream()
+                .map(ConsultGetUnpaidResponse::of)
+                .toList();
+    }
+
     @Transactional
     public SmsGetResponse updateConsultIsPaid(Long consultId) {
         Consult consult = consultService.getConsultByConsultId(consultId);

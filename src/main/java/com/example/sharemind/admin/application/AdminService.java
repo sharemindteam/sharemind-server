@@ -16,6 +16,8 @@ import java.util.List;
 public interface AdminService {
     List<ConsultGetUnpaidResponse> getUnpaidConsults();
 
+    List<ConsultGetUnpaidResponse> getPaidConsults();
+
     SmsGetResponse updateConsultIsPaid(Long consultId);
     List<CounselorGetProfileResponse> getPendingCounselors();
 
