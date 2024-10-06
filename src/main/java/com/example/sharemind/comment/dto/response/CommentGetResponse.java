@@ -36,9 +36,13 @@ public class CommentGetResponse {
     @Schema(description = "채택 여부", example = "true")
     private final Boolean isChosen;
 
+    @Schema(description = "조회한 회원의 작성 여부")
+    private final Boolean isWritten;
+
     @Builder
-    public CommentGetResponse(Long commentId, Long counselorId, String nickName, String consultStyle, String content,
-                              Boolean isLiked, Long totalLike, String updatedAt, Boolean isChosen) {
+    public CommentGetResponse(Long commentId, Long counselorId, String nickName,
+            String consultStyle, String content, Boolean isLiked, Long totalLike, String updatedAt,
+            Boolean isChosen, Boolean isWritten) {
         this.commentId = commentId;
         this.counselorId = counselorId;
         this.nickName = nickName;
@@ -48,9 +52,10 @@ public class CommentGetResponse {
         this.totalLike = totalLike;
         this.updatedAt = updatedAt;
         this.isChosen = isChosen;
+        this.isWritten = isWritten;
     }
 
-    public static CommentGetResponse of(Comment comment, Boolean isLiked) {
+    public static CommentGetResponse of(Comment comment, Boolean isLiked, Boolean isWritten) {
         return CommentGetResponse.builder()
                 .commentId(comment.getCommentId())
                 .counselorId(comment.getCounselor().getCounselorId())
@@ -61,6 +66,7 @@ public class CommentGetResponse {
                 .totalLike(comment.getTotalLike())
                 .updatedAt(TimeUtil.getUpdatedAt(comment.getCreatedAt()))
                 .isChosen(comment.getIsChosen())
+                .isWritten(isWritten)
                 .build();
     }
 }
