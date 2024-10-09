@@ -129,8 +129,6 @@ public class CounselorServiceImpl implements CounselorService {
 
         checkDuplicateNickname(counselorUpdateProfileRequest.getNickname(),
                 counselor.getCounselorId());
-        checkDuplicatePhoneNumber(counselorUpdateProfileRequest.getPhoneNumber(),
-                counselor.getCounselorId());
         Set<ConsultCategory> consultCategories = new HashSet<>();
         for (String consultCategory : counselorUpdateProfileRequest.getConsultCategories()) {
             consultCategories.add(ConsultCategory.getConsultCategoryByName(consultCategory));
@@ -465,12 +463,6 @@ public class CounselorServiceImpl implements CounselorService {
     private void checkDuplicateNickname(String nickname, Long counselorId) {
         if (counselorRepository.existsByNicknameAndCounselorIdNot(nickname, counselorId)) {
             throw new CounselorException(CounselorErrorCode.DUPLICATE_NICKNAME);
-        }
-    }
-
-    private void checkDuplicatePhoneNumber(String phoneNumber, Long counselorId) {
-        if (counselorRepository.existsByPhoneNumberAndCounselorIdNot(phoneNumber, counselorId)) {
-            throw new CounselorException(CounselorErrorCode.DUPLICATE_PHONE_NUMBER);
         }
     }
 
