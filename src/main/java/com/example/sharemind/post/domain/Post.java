@@ -142,7 +142,7 @@ public class Post extends BaseEntity {
     public void increaseTotalComment() {
         this.totalComment++;
         if (totalComment.equals(MAX_COMMENTS)) {
-            this.updatePostStatus(PostStatus.COMPLETED);
+            this.updatePostStatus(PostStatus.TIME_OUT);
         }
     }
 
