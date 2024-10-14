@@ -19,7 +19,7 @@ import org.springframework.web.client.RestClient;
 public class SmsServiceImpl implements SmsService {
 
     private static final String BASE_URL = "https://apis.aligo.in";
-    private static final String COUNSELOR_MESSAGE = "[셰어마인드] 익명의 셰어님으로부터 {편지||채팅} 상담 요청이 접수되었습니다. 내 정보>마인더로 전환>상담 탭에서 확인 부탁드립니다.";
+    private static final String COUNSELOR_MESSAGE = "[셰어마인드] 익명의 셰어님으로부터 상담 요청이 접수되었습니다. 내 정보>마인더로 전환>상담 탭에서 확인 부탁드립니다.";
 
     private final CounselorService counselorService;
 
