@@ -12,6 +12,7 @@ import com.example.sharemind.payment.content.PaymentSortType;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.dto.response.PaymentGetCounselorHomeResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponse;
+import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponses;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
 import com.example.sharemind.payment.exception.PaymentException;
@@ -97,7 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<PaymentGetCounselorResponse> getPaymentsByCounselor(Long paymentId, String status,
+    public PaymentGetCounselorResponses getPaymentsByCounselor(Long paymentId, String status,
             String sort, Long customerId) {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
         PaymentCounselorStatus counselorStatus = PaymentCounselorStatus.getPaymentCounselorStatusByName(
@@ -147,7 +148,7 @@ public class PaymentServiceImpl implements PaymentService {
                                 paymentId, counselor, counselorStatus, sortTime, pageable))
                         .map(payment -> PaymentGetCounselorResponse.of(payment, finalTotal));
 
-        return page.getContent();
+        return PaymentGetCounselorResponses.of(total, page.getContent());
     }
 
     @Transactional
