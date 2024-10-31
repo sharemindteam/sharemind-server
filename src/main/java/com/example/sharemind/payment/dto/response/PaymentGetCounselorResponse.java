@@ -34,9 +34,13 @@ public class PaymentGetCounselorResponse {
     @Schema(description = "수수료")
     private final Long fee;
 
+    @Schema(description = "상담 일자", example = "2023.12.29", type = "string")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
+    private final LocalDateTime consultedAt;
+
     @Schema(description = "지급 일자", example = "2023.12.23", type = "string")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-    private final LocalDateTime approvedAt;
+    private final LocalDateTime settledAt;
 
     @Schema(description = "지급 계좌")
     private final String account;
@@ -48,8 +52,9 @@ public class PaymentGetCounselorResponse {
         Consult consult = payment.getConsult();
         Boolean isChat = consult.getChat() != null;
 
-        return new PaymentGetCounselorResponse(payment.getPaymentId(), consult.getCustomer().getNickname(), isChat,
-                consult.getCost() - FEE, consult.getCost(), FEE, payment.getApprovedAt(),
+        return new PaymentGetCounselorResponse(payment.getPaymentId(),
+                consult.getCustomer().getNickname(), isChat, consult.getCost() - FEE,
+                consult.getCost(), FEE, consult.getConsultedAt(), payment.getSettledAt(),
                 consult.getCounselor().getAccount(), total);
     }
 }

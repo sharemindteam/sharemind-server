@@ -53,6 +53,9 @@ public class Payment extends BaseEntity {
     @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
+    @Column(name = "settled_at")
+    private LocalDateTime settledAt;
+
     @OneToOne(mappedBy = "payment", optional = false)
     private Consult consult;
 
@@ -140,6 +143,7 @@ public class Payment extends BaseEntity {
         settlement.updateCompleteAll(amount);
 
         this.counselorStatus = PaymentCounselorStatus.SETTLEMENT_COMPLETE;
+        this.settledAt = LocalDateTime.now();
     }
 
     public void checkUpdateAuthorityByCustomer(Long customerId) {

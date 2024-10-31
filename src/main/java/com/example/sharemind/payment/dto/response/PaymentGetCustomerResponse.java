@@ -45,6 +45,6 @@ public class PaymentGetCustomerResponse {
 
         return new PaymentGetCustomerResponse(payment.getPaymentId(), consult.getCounselor().getNickname(),
                 consult.getConsultStatus().getDisplayName(), consult.getConsultType().getDisplayName(),
-                consult.getConsultedAt(), consult.getCost(), payment.getCreatedAt(), payment.getMethod());
+                consult.getConsultedAt(), consult.getCost(), payment.getApprovedAt(), payment.getMethod());
     }
 }
