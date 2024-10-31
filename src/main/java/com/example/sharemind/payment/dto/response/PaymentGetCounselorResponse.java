@@ -45,16 +45,13 @@ public class PaymentGetCounselorResponse {
     @Schema(description = "지급 계좌")
     private final String account;
 
-    @Schema(description = "금액 합계")
-    private final Long total;
-
-    public static PaymentGetCounselorResponse of(Payment payment, Long total) {
+    public static PaymentGetCounselorResponse of(Payment payment) {
         Consult consult = payment.getConsult();
         Boolean isChat = consult.getChat() != null;
 
         return new PaymentGetCounselorResponse(payment.getPaymentId(),
                 consult.getCustomer().getNickname(), isChat, consult.getCost() - FEE,
                 consult.getCost(), FEE, consult.getConsultedAt(), payment.getSettledAt(),
-                consult.getCounselor().getAccount(), total);
+                consult.getCounselor().getAccount());
     }
 }

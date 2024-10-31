@@ -139,14 +139,13 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, PAYMENT_COUNSELOR_PAGE_SIZE);
-        Long finalTotal = total;
         Page<PaymentGetCounselorResponse> page =
                 (paymentId == 0 ?
                         paymentRepository.findAllByCounselorAndCounselorStatusAndUpdatedAtIsBefore(
                                 counselor, counselorStatus, sortTime, pageable) :
                         paymentRepository.findAllByPaymentIdLessThanAndCounselorAndCounselorStatusAndUpdatedAtIsBefore(
                                 paymentId, counselor, counselorStatus, sortTime, pageable))
-                        .map(payment -> PaymentGetCounselorResponse.of(payment, finalTotal));
+                        .map(PaymentGetCounselorResponse::of);
 
         return PaymentGetCounselorResponses.of(total, page.getContent());
     }
