@@ -117,7 +117,7 @@ public class Payment extends BaseEntity {
 
     public void updateCounselorStatusSettlementOngoing() {
         Settlement settlement = this.consult.getCounselor().getSettlement();
-        long amount = this.consult.getCost() - FEE;
+        long amount = this.consult.getCost() - this.fee;
         if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
             settlement.updateWaitingWeek(-amount);
         }
@@ -134,7 +134,7 @@ public class Payment extends BaseEntity {
 
     public void updateCounselorStatusSettlementComplete() {
         Settlement settlement = this.consult.getCounselor().getSettlement();
-        long amount = this.consult.getCost() - FEE;
+        long amount = this.consult.getCost() - this.fee;
         if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
             settlement.updateOngoingWeek(-amount);
         }
