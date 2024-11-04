@@ -4,16 +4,12 @@ import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.payment.domain.Payment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.example.sharemind.global.constants.Constants.FEE;
-
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class PaymentGetCounselorResponse {
 
     @Schema(description = "payment 아이디")
@@ -45,13 +41,36 @@ public class PaymentGetCounselorResponse {
     @Schema(description = "지급 계좌")
     private final String account;
 
+    @Builder
+    public PaymentGetCounselorResponse(Long paymentId, String nickname, Boolean isChat, Long profit,
+            Long cost, Long fee, LocalDateTime consultedAt, LocalDateTime settledAt,
+            String account) {
+        this.paymentId = paymentId;
+        this.nickname = nickname;
+        this.isChat = isChat;
+        this.profit = profit;
+        this.cost = cost;
+        this.fee = fee;
+        this.consultedAt = consultedAt;
+        this.settledAt = settledAt;
+        this.account = account;
+    }
+
+
     public static PaymentGetCounselorResponse of(Payment payment) {
         Consult consult = payment.getConsult();
         Boolean isChat = consult.getChat() != null;
 
-        return new PaymentGetCounselorResponse(payment.getPaymentId(),
-                consult.getCustomer().getNickname(), isChat, consult.getCost() - FEE,
-                consult.getCost(), FEE, consult.getConsultedAt(), payment.getSettledAt(),
-                consult.getCounselor().getAccount());
+        return PaymentGetCounselorResponse.builder()
+                .paymentId(payment.getPaymentId())
+                .nickname(consult.getCustomer().getNickname())
+                .isChat(isChat)
+                .profit(consult.getCost() - payment.getFee())
+                .cost(consult.getCost())
+                .fee(payment.getFee())
+                .consultedAt(consult.getConsultedAt())
+                .settledAt(payment.getSettledAt())
+                .account(consult.getCounselor().getAccount())
+                .build();
     }
 }

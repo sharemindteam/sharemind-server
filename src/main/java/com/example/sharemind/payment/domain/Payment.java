@@ -39,6 +39,9 @@ public class Payment extends BaseEntity {
     @Column
     private String method;
 
+    @Column(nullable = false)
+    private Long fee;
+
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
 
@@ -63,6 +66,7 @@ public class Payment extends BaseEntity {
     public Payment(String customerPhoneNumber, Consult consult) {
         this.customerPhoneNumber = customerPhoneNumber;
         this.consult = consult;
+        this.fee = Math.round(consult.getCost() * FEE);
         this.isPaid = false;
         updateBothStatusNone();
     }
@@ -113,7 +117,7 @@ public class Payment extends BaseEntity {
 
     public void updateCounselorStatusSettlementOngoing() {
         Settlement settlement = this.consult.getCounselor().getSettlement();
-        long amount = this.consult.getCost() - FEE;
+        long amount = this.consult.getCost() - this.fee;
         if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
             settlement.updateWaitingWeek(-amount);
         }
@@ -130,7 +134,7 @@ public class Payment extends BaseEntity {
 
     public void updateCounselorStatusSettlementComplete() {
         Settlement settlement = this.consult.getCounselor().getSettlement();
-        long amount = this.consult.getCost() - FEE;
+        long amount = this.consult.getCost() - this.fee;
         if (this.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
             settlement.updateOngoingWeek(-amount);
         }

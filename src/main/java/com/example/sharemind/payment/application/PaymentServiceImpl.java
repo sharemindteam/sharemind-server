@@ -28,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.sharemind.global.constants.Constants.FEE;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -213,7 +211,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
                         PaymentCounselorStatus.SETTLEMENT_WAITING)
                 .forEach(payment -> {
-                    Long amount = payment.getConsult().getCost() - FEE;
+                    Long amount = payment.getConsult().getCost() - payment.getFee();
                     settlement.updateWaitingAll(amount);
                     if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateWaitingWeek(amount);
@@ -225,7 +223,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
                         PaymentCounselorStatus.SETTLEMENT_ONGOING)
                 .forEach(payment -> {
-                    Long amount = payment.getConsult().getCost() - FEE;
+                    Long amount = payment.getConsult().getCost() - payment.getFee();
                     settlement.updateOngoingAll(amount);
                     if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateOngoingWeek(amount);
@@ -237,7 +235,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
                         PaymentCounselorStatus.SETTLEMENT_COMPLETE)
                 .forEach(payment -> {
-                    Long amount = payment.getConsult().getCost() - FEE;
+                    Long amount = payment.getConsult().getCost() - payment.getFee();
                     settlement.updateCompleteAll(amount);
                     if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateCompleteWeek(amount);
