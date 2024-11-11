@@ -4,7 +4,7 @@ import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.domain.Customer;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.dto.response.PaymentGetCounselorHomeResponse;
-import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponse;
+import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponses;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public interface PaymentService {
 
     List<Payment> getRefundWaitingPayments();
 
-    List<PaymentGetCounselorResponse> getPaymentsByCounselor(Long paymentId, String status, String sort, Long customerId);
+    PaymentGetCounselorResponses getPaymentsByCounselor(Long paymentId, String status, String sort, Long customerId);
 
     void updateSettlementOngoingByCounselor(Long paymentId, Long customerId);
 

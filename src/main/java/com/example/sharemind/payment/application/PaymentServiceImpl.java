@@ -12,6 +12,7 @@ import com.example.sharemind.payment.content.PaymentSortType;
 import com.example.sharemind.payment.domain.Payment;
 import com.example.sharemind.payment.dto.response.PaymentGetCounselorHomeResponse;
 import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponse;
+import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponses;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import com.example.sharemind.payment.exception.PaymentErrorCode;
 import com.example.sharemind.payment.exception.PaymentException;
@@ -26,8 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.example.sharemind.global.constants.Constants.FEE;
 
 @Service
 @Transactional(readOnly = true)
@@ -97,7 +96,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<PaymentGetCounselorResponse> getPaymentsByCounselor(Long paymentId, String status,
+    public PaymentGetCounselorResponses getPaymentsByCounselor(Long paymentId, String status,
             String sort, Long customerId) {
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
         PaymentCounselorStatus counselorStatus = PaymentCounselorStatus.getPaymentCounselorStatusByName(
@@ -138,16 +137,15 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         Pageable pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, PAYMENT_COUNSELOR_PAGE_SIZE);
-        Long finalTotal = total;
         Page<PaymentGetCounselorResponse> page =
                 (paymentId == 0 ?
                         paymentRepository.findAllByCounselorAndCounselorStatusAndUpdatedAtIsBefore(
                                 counselor, counselorStatus, sortTime, pageable) :
                         paymentRepository.findAllByPaymentIdLessThanAndCounselorAndCounselorStatusAndUpdatedAtIsBefore(
                                 paymentId, counselor, counselorStatus, sortTime, pageable))
-                        .map(payment -> PaymentGetCounselorResponse.of(payment, finalTotal));
+                        .map(PaymentGetCounselorResponse::of);
 
-        return page.getContent();
+        return PaymentGetCounselorResponses.of(total, page.getContent());
     }
 
     @Transactional
@@ -213,7 +211,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
                         PaymentCounselorStatus.SETTLEMENT_WAITING)
                 .forEach(payment -> {
-                    Long amount = payment.getConsult().getCost() - FEE;
+                    Long amount = payment.getConsult().getCost() - payment.getFee();
                     settlement.updateWaitingAll(amount);
                     if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateWaitingWeek(amount);
@@ -225,7 +223,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
                         PaymentCounselorStatus.SETTLEMENT_ONGOING)
                 .forEach(payment -> {
-                    Long amount = payment.getConsult().getCost() - FEE;
+                    Long amount = payment.getConsult().getCost() - payment.getFee();
                     settlement.updateOngoingAll(amount);
                     if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateOngoingWeek(amount);
@@ -237,7 +235,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.findAllByConsultCounselorAndCounselorStatusAndIsActivatedIsTrue(counselor,
                         PaymentCounselorStatus.SETTLEMENT_COMPLETE)
                 .forEach(payment -> {
-                    Long amount = payment.getConsult().getCost() - FEE;
+                    Long amount = payment.getConsult().getCost() - payment.getFee();
                     settlement.updateCompleteAll(amount);
                     if (payment.getUpdatedAt().isAfter(LocalDateTime.now().minusWeeks(1))) {
                         settlement.updateCompleteWeek(amount);

@@ -86,7 +86,7 @@ public class Settlement {
     }
 
     public void updateCompleteAll(Long amount) {
-        this.completeAll = amount;
+        this.completeAll += amount;
     }
 
     public void clearAll() {

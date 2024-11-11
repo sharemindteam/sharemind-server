@@ -24,7 +24,9 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
+
     private static final Boolean COMMENT_IS_NOT_LIKED = false;
+    private static final Boolean COMMENT_IS_NOT_WRITTEN = false;
 
     private final PostService postService;
     private final CounselorService counselorService;
@@ -41,7 +43,8 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream()
                 .map(comment -> CommentGetResponse.of(comment,
                         commentLikeRepository.existsByCommentAndCustomerAndIsActivatedIsTrue(
-                                comment, customer)))
+                                comment, customer),
+                        comment.getCounselor().equals(customer.getCounselor())))
                 .toList();
     }
 
@@ -58,12 +61,13 @@ public class CommentServiceImpl implements CommentService {
             return comments.stream()
                     .map(comment -> CommentGetResponse.of(comment,
                             commentLikeRepository.existsByCommentAndCustomerAndIsActivatedIsTrue(
-                                    comment, customer)))
+                                    comment, customer), COMMENT_IS_NOT_WRITTEN))
                     .toList();
         }
 
         return comments.stream()
-                .map(comment -> CommentGetResponse.of(comment, COMMENT_IS_NOT_LIKED))
+                .map(comment -> CommentGetResponse.of(comment, COMMENT_IS_NOT_LIKED,
+                        COMMENT_IS_NOT_WRITTEN))
                 .toList();
     }
 
@@ -84,6 +88,7 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.save(commentCreateRequest.toEntity(post, counselor));
         post.increaseTotalComment();
+        counselor.increaseTotalConsult();
     }
 
     @Override
@@ -114,6 +119,7 @@ public class CommentServiceImpl implements CommentService {
         Post post = postService.getPostByPostId(postId);
         Counselor counselor = counselorService.getCounselorByCustomerId(customerId);
 
-        return commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor) != null;
+        return commentRepository.findByPostAndCounselorAndIsActivatedIsTrue(post, counselor)
+                != null;
     }
 }
