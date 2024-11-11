@@ -19,8 +19,8 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
     @Query("SELECT c FROM Consult c JOIN FETCH c.payment p WHERE p.isPaid = false AND c.isActivated = true")
     List<Consult> findAllByIsPaidIsFalseAndIsActivatedIsTrue();
 
-    @Query("SELECT c FROM Consult c JOIN FETCH c.payment p WHERE p.isPaid = true AND c.isActivated = true")
-    List<Consult> findAllByIsPaidIsTrueAndIsActivatedIsTrue();
+    @Query("SELECT c FROM Consult c JOIN FETCH c.payment p WHERE p.isPaid = true AND c.isActivated = true ORDER BY c.createdAt DESC")
+    List<Consult> findAllByIsPaidIsTrueAndIsActivatedIsTrueOrderByCreatedAtDesc();
 
     @Query("SELECT chat.chatId FROM Consult c JOIN c.chat chat " +
             "WHERE c.customer.customerId = :customerId AND c.isActivated = true AND c.consultStatus != 'FINISH'")

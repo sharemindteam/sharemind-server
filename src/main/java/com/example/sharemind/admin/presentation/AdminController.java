@@ -43,7 +43,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUnpaidConsults());
     }
 
-    @Operation(summary = "미결제 상담(편지/채팅) 리스트 조회", description = "결제 여부(isPaid)가 true인 consult 리스트 조회")
+    @Operation(summary = "결제 상담(편지/채팅) 리스트 조회", description = "결제 여부(isPaid)가 true인 consult 리스트 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })

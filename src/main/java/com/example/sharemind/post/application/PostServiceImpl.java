@@ -70,7 +70,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> getPaidPrivatePosts() {
-        return postRepository.findAllByIsPaidIsTrueAndIsActivatedIsTrue();
+        return postRepository.findAllByIsPaidIsTrueAndIsActivatedIsTrueOrderByCreatedAtDesc();
     }
 
     @Override

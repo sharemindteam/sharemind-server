@@ -18,7 +18,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
 
     List<Post> findAllByIsPaidIsFalseAndIsActivatedIsTrue();
 
-    List<Post> findAllByIsPaidIsTrueAndIsActivatedIsTrue();
+    List<Post> findAllByIsPaidIsTrueAndIsActivatedIsTrueOrderByCreatedAtDesc();
 
     @Query(value = "SELECT * FROM post " +
             "WHERE is_public = true AND post_status = 'WAITING' AND is_activated = true "
