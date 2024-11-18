@@ -69,6 +69,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<Post> getPaidPrivatePosts() {
+        return postRepository.findAllByIsPaidIsTrueAndIsActivatedIsTrueOrderByCreatedAtDesc();
+    }
+
+    @Override
     public Post getPostByPostId(Long postId) {
         return postRepository.findByPostIdAndIsActivatedIsTrue(postId).orElseThrow(
                 () -> new PostException(PostErrorCode.POST_NOT_FOUND, postId.toString()));
@@ -250,7 +255,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void checkPostStatus() {
         postRepository.findAllWaitingPublicPostsAfter24Hours()
-                        .forEach(BaseEntity::updateIsActivatedFalse);
+                .forEach(BaseEntity::updateIsActivatedFalse);
 
         postRepository.findAllCommentedProceedingPublicPostsAfter72Hours()
                 .forEach(post -> post.updatePostStatus(PostStatus.TIME_OUT));

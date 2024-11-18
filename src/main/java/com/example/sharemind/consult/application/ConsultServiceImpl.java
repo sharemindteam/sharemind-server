@@ -84,6 +84,11 @@ public class ConsultServiceImpl implements ConsultService {
     }
 
     @Override
+    public List<Consult> getPaidConsults() {
+        return consultRepository.findAllByIsPaidIsTrueAndIsActivatedIsTrueOrderByCreatedAtDesc();
+    }
+
+    @Override
     public List<Consult> getConsultsByCustomerIdAndConsultTypeAndIsPaid(Long customerId, ConsultType consultType) {
         return consultRepository.findByCustomerIdAndConsultTypeAndIsPaid(customerId, consultType);
     }

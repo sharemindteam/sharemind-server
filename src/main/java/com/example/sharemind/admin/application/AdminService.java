@@ -16,6 +16,8 @@ import java.util.List;
 public interface AdminService {
     List<ConsultGetUnpaidResponse> getUnpaidConsults();
 
+    List<ConsultGetUnpaidResponse> getPaidConsults();
+
     SmsGetResponse updateConsultIsPaid(Long consultId);
     List<CounselorGetProfileResponse> getPendingCounselors();
 
@@ -30,6 +32,8 @@ public interface AdminService {
     void updateSettlementComplete(Long paymentId);
 
     List<PostGetUnpaidPrivateResponse> getUnpaidPrivatePosts();
+
+    List<PostGetUnpaidPrivateResponse> getPaidPrivatePosts();
 
     void updatePostIsPaid(Long postId);
 

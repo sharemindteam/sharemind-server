@@ -17,6 +17,8 @@ public interface ConsultService {
 
     List<Consult> getUnpaidConsults();
 
+    List<Consult> getPaidConsults();
+
     List<Consult> getConsultsByCustomerIdAndConsultTypeAndIsPaid(Long customerId, ConsultType consultType);
 
     List<Consult> getConsultsByCounselorIdAndConsultTypeAndIsPaid(Long counselorId, ConsultType consultType);

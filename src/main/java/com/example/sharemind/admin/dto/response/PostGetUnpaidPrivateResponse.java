@@ -28,15 +28,19 @@ public class PostGetUnpaidPrivateResponse {
     @Schema(description = "상담 신청 일시")
     private final LocalDateTime createdAt;
 
+    @Schema(description = "상담 상태")
+    private final String postStatus;
+
     @Builder
     public PostGetUnpaidPrivateResponse(Long postId, String customerName, String customerEmail,
-            Long cost, Boolean isPublic, LocalDateTime createdAt) {
+            Long cost, Boolean isPublic, LocalDateTime createdAt, String postStatus) {
         this.postId = postId;
         this.customerName = customerName;
         this.customerEmail = customerEmail;
         this.cost = cost;
         this.isPublic = isPublic;
         this.createdAt = createdAt;
+        this.postStatus = postStatus;
     }
 
     public static PostGetUnpaidPrivateResponse of(Post post) {
@@ -49,6 +53,7 @@ public class PostGetUnpaidPrivateResponse {
                 .cost(post.getCost())
                 .isPublic(post.getIsPublic())
                 .createdAt(post.getCreatedAt())
+                .postStatus(post.getPostStatus().toString())
                 .build();
     }
 }
