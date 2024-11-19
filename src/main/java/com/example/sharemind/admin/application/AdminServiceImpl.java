@@ -75,6 +75,13 @@ public class AdminServiceImpl implements AdminService {
                 .toList();
     }
 
+    @Override
+    public List<ConsultGetUnpaidResponse> getPaidConsults() {
+        return consultService.getPaidConsults().stream()
+                .map(ConsultGetUnpaidResponse::of)
+                .toList();
+    }
+
     @Transactional
     public SmsGetResponse updateConsultIsPaid(Long consultId) {
         Consult consult = consultService.getConsultByConsultId(consultId);
@@ -173,6 +180,13 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<PostGetUnpaidPrivateResponse> getUnpaidPrivatePosts() {
         return postService.getUnpaidPrivatePosts().stream()
+                .map(PostGetUnpaidPrivateResponse::of)
+                .toList();
+    }
+
+    @Override
+    public List<PostGetUnpaidPrivateResponse> getPaidPrivatePosts() {
+        return postService.getPaidPrivatePosts().stream()
                 .map(PostGetUnpaidPrivateResponse::of)
                 .toList();
     }

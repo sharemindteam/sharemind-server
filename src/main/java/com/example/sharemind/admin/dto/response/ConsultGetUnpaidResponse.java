@@ -39,10 +39,13 @@ public class ConsultGetUnpaidResponse {
     @Schema(description = "상담 신청 일시")
     private final LocalDateTime createdAt;
 
+    @Schema(description = "상담 상태")
+    private final String consultStatus;
+
     @Builder
     public ConsultGetUnpaidResponse(Long consultId, String customerName, String customerEmail,
             String counselorName, String counselorEmail, String counselorPhoneNumber,
-            String consultType, Long cost, LocalDateTime createdAt) {
+            String consultType, Long cost, LocalDateTime createdAt, String consultStatus) {
         this.consultId = consultId;
         this.customerName = customerName;
         this.customerEmail = customerEmail;
@@ -52,6 +55,7 @@ public class ConsultGetUnpaidResponse {
         this.consultType = consultType;
         this.cost = cost;
         this.createdAt = createdAt;
+        this.consultStatus = consultStatus;
     }
 
 
@@ -69,6 +73,7 @@ public class ConsultGetUnpaidResponse {
                 .consultType(consult.getConsultType().getDisplayName())
                 .cost(consult.getCost())
                 .createdAt(consult.getCreatedAt())
+                .consultStatus(consult.getConsultStatus().toString())
                 .build();
     }
 }

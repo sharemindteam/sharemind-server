@@ -4,16 +4,12 @@ import com.example.sharemind.consult.domain.Consult;
 import com.example.sharemind.payment.domain.Payment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.example.sharemind.global.constants.Constants.FEE;
-
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class PaymentGetCounselorResponse {
 
     @Schema(description = "payment 아이디")
@@ -34,22 +30,47 @@ public class PaymentGetCounselorResponse {
     @Schema(description = "수수료")
     private final Long fee;
 
+    @Schema(description = "상담 일자", example = "2023.12.29", type = "string")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
+    private final LocalDateTime consultedAt;
+
     @Schema(description = "지급 일자", example = "2023.12.23", type = "string")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-    private final LocalDateTime approvedAt;
+    private final LocalDateTime settledAt;
 
     @Schema(description = "지급 계좌")
     private final String account;
 
-    @Schema(description = "금액 합계")
-    private final Long total;
+    @Builder
+    public PaymentGetCounselorResponse(Long paymentId, String nickname, Boolean isChat, Long profit,
+            Long cost, Long fee, LocalDateTime consultedAt, LocalDateTime settledAt,
+            String account) {
+        this.paymentId = paymentId;
+        this.nickname = nickname;
+        this.isChat = isChat;
+        this.profit = profit;
+        this.cost = cost;
+        this.fee = fee;
+        this.consultedAt = consultedAt;
+        this.settledAt = settledAt;
+        this.account = account;
+    }
 
-    public static PaymentGetCounselorResponse of(Payment payment, Long total) {
+
+    public static PaymentGetCounselorResponse of(Payment payment) {
         Consult consult = payment.getConsult();
         Boolean isChat = consult.getChat() != null;
 
-        return new PaymentGetCounselorResponse(payment.getPaymentId(), consult.getCustomer().getNickname(), isChat,
-                consult.getCost() - FEE, consult.getCost(), FEE, payment.getApprovedAt(),
-                consult.getCounselor().getAccount(), total);
+        return PaymentGetCounselorResponse.builder()
+                .paymentId(payment.getPaymentId())
+                .nickname(consult.getCustomer().getNickname())
+                .isChat(isChat)
+                .profit(consult.getCost() - payment.getFee())
+                .cost(consult.getCost())
+                .fee(payment.getFee())
+                .consultedAt(consult.getConsultedAt())
+                .settledAt(payment.getSettledAt())
+                .account(consult.getCounselor().getAccount())
+                .build();
     }
 }

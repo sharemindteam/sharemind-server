@@ -17,6 +17,8 @@ public interface PostService {
 
     List<Post> getUnpaidPrivatePosts();
 
+    List<Post> getPaidPrivatePosts();
+
     Post getPostByPostId(Long postId);
 
     Post getPostByPayAppId(String payAppId);

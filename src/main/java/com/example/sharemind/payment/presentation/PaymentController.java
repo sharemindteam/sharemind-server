@@ -4,7 +4,7 @@ import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.global.jwt.CustomUserDetails;
 import com.example.sharemind.payment.application.PaymentService;
 import com.example.sharemind.payment.dto.response.PaymentGetCounselorHomeResponse;
-import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponse;
+import com.example.sharemind.payment.dto.response.PaymentGetCounselorResponses;
 import com.example.sharemind.payment.dto.response.PaymentGetCustomerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -100,7 +100,7 @@ public class PaymentController {
                     2. 2번째 요청부터 paymentId는 직전 요청의 조회 결과 3개 중 마지막 paymentId""")
     })
     @GetMapping("/counselors")
-    public ResponseEntity<List<PaymentGetCounselorResponse>> getPaymentsByCounselor(@RequestParam String status,
+    public ResponseEntity<PaymentGetCounselorResponses> getPaymentsByCounselor(@RequestParam String status,
                                                                                     @RequestParam String sort,
                                                                                     @RequestParam Long paymentId,
                                                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {

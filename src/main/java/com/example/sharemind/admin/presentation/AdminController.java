@@ -43,6 +43,15 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUnpaidConsults());
     }
 
+    @Operation(summary = "결제 상담(편지/채팅) 리스트 조회", description = "결제 여부(isPaid)가 true인 consult 리스트 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/paid-consults")
+    public ResponseEntity<List<ConsultGetUnpaidResponse>> getPaidConsults() {
+        return ResponseEntity.ok(adminService.getPaidConsults());
+    }
+
     @Operation(summary = "상담(편지/채팅) 결제 여부 수정", description = "결제 여부(isPaid)가 false인 consult를 true로 수정")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공, resultCode로 sms api 발송 여부가 전달됩니다."),
@@ -170,6 +179,15 @@ public class AdminController {
     @GetMapping("/unpaid-posts")
     public ResponseEntity<List<PostGetUnpaidPrivateResponse>> getUnpaidPrivatePosts() {
         return ResponseEntity.ok(adminService.getUnpaidPrivatePosts());
+    }
+
+    @Operation(summary = "결제 일대다 상담 리스트 조회", description = "결제 여부(isPaid)가 true인 일대다 상담 리스트 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/paid-posts")
+    public ResponseEntity<List<PostGetUnpaidPrivateResponse>> getPaidPrivatePosts() {
+        return ResponseEntity.ok(adminService.getPaidPrivatePosts());
     }
 
     @Operation(summary = "일대다 비공개 상담 결제 여부 수정", description = "결제 여부(isPaid)가 false인 일대다 상담을 true로 수정")
