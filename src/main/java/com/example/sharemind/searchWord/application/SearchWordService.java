@@ -2,6 +2,7 @@ package com.example.sharemind.searchWord.application;
 
 import com.example.sharemind.counselor.dto.response.CounselorGetListResponse;
 import com.example.sharemind.post.dto.response.PostGetPublicListResponse;
+import com.example.sharemind.searchWord.domain.SearchWord;
 import com.example.sharemind.searchWord.dto.request.SearchWordDeleteRequest;
 import com.example.sharemind.searchWord.dto.request.SearchWordCounselorFindRequest;
 
@@ -27,4 +28,6 @@ public interface SearchWordService {
 
     List<PostGetPublicListResponse> storeSearchWordAndGetPosts(Long customerId, String sortType,
                                                          SearchWordPostFindRequest searchWordPostFindRequest);
+
+    List<SearchWord> getSearchWordsOrderByCount();
 }

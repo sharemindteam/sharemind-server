@@ -8,6 +8,7 @@ import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
+import com.example.sharemind.admin.dto.response.SearchWordGetResponse;
 import com.example.sharemind.chat.application.ChatService;
 import com.example.sharemind.chat.content.ChatStatus;
 import com.example.sharemind.chat.domain.Chat;
@@ -40,6 +41,8 @@ import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
 import com.example.sharemind.post.exception.PostErrorCode;
 import com.example.sharemind.post.exception.PostException;
+import com.example.sharemind.searchWord.application.SearchWordService;
+import com.example.sharemind.searchWord.domain.SearchWord;
 import com.example.sharemind.sms.application.SmsService;
 import com.example.sharemind.sms.dto.response.SmsGetResponse;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +69,7 @@ public class AdminServiceImpl implements AdminService {
     private final PostService postService;
     private final EmailService emailService;
     private final SmsService smsService;
+    private final SearchWordService searchWordService;
     private final RedisTemplate<String, Boolean> redisTemplate;
 
     @Override
@@ -335,5 +339,11 @@ public class AdminServiceImpl implements AdminService {
     public Boolean getShutdown() {
         ValueOperations<String, Boolean> valueOperations = redisTemplate.opsForValue();
         return valueOperations.get(SHUT_DOWN_KEY);
+    }
+
+    @Override
+    public List<SearchWordGetResponse> getSearchWords() {
+        List<SearchWord> searchWords = searchWordService.getSearchWordsOrderByCount();
+        return searchWords.stream().map(SearchWordGetResponse::of).toList();
     }
 }

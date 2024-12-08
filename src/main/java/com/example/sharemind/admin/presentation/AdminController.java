@@ -9,6 +9,7 @@ import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
+import com.example.sharemind.admin.dto.response.SearchWordGetResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 import com.example.sharemind.global.exception.CustomExceptionResponse;
 import com.example.sharemind.sms.dto.response.SmsGetResponse;
@@ -334,5 +335,14 @@ public class AdminController {
     @GetMapping("/managements")
     public ResponseEntity<Boolean> getShutdown() {
         return ResponseEntity.ok(adminService.getShutdown());
+    }
+
+    @Operation(summary = "검색어 내림차순 조회", description = "검색어 내림차순 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/search-words")
+    public ResponseEntity<List<SearchWordGetResponse>> getSearchWords() {
+        return ResponseEntity.ok(adminService.getSearchWords());
     }
 }
