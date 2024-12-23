@@ -117,6 +117,11 @@ public class SearchWordServiceImpl implements SearchWordService {
                 .toList();
     }
 
+    @Override
+    public List<SearchWord> getSearchWordsOrderByCount() {
+        return searchWordRepository.findAllByOrderByCountDesc();
+    }
+
     @Transactional
     @Override
     public void storeSearchWordInDB(String word) {

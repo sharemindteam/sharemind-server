@@ -8,6 +8,7 @@ import com.example.sharemind.admin.dto.response.PaymentGetRefundWaitingResponse;
 import com.example.sharemind.admin.dto.response.PaymentGetSettlementOngoingResponse;
 import com.example.sharemind.admin.dto.response.PostGetByIdResponse;
 import com.example.sharemind.admin.dto.response.PostGetUnpaidPrivateResponse;
+import com.example.sharemind.admin.dto.response.SearchWordGetResponse;
 import com.example.sharemind.counselor.dto.response.CounselorGetProfileResponse;
 
 import com.example.sharemind.sms.dto.response.SmsGetResponse;
@@ -54,4 +55,6 @@ public interface AdminService {
     Boolean updateShutdown(Boolean shutdown);
 
     Boolean getShutdown();
+
+    List<SearchWordGetResponse> getSearchWords();
 }
