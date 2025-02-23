@@ -42,7 +42,7 @@ public class CounselorGetWishListResponse extends CounselorGetBaseResponse {
         super(counselor);
         this.wishlistId = wishList.getWishlistId();
         this.counselorId = counselor.getCounselorId();
-        this.level = counselor.getLevel();
+        this.level = counselor.getLevel().getGrade();
         this.totalReview = counselor.getTotalReview();
         this.ratingAverage = counselor.getRatingAverage();
         this.updatedAt = wishList.getUpdatedAt();

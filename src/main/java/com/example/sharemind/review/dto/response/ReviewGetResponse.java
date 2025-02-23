@@ -55,8 +55,9 @@ public class ReviewGetResponse {
         if (isCustomer) {
             Counselor counselor = consult.getCounselor();
             return new ReviewGetResponse(review.getReviewId(), counselor.getNickname(),
-                    counselor.getConsultStyle().getDisplayName(), counselor.getLevel(), counselor.getRatingAverage(),
-                    counselor.getTotalReview(), consult.getConsultType().getDisplayName(), consult.getConsultedAt(),
+                    counselor.getConsultStyle().getDisplayName(), counselor.getLevel().getGrade(),
+                    counselor.getRatingAverage(), counselor.getTotalReview(),
+                    consult.getConsultType().getDisplayName(), consult.getConsultedAt(),
                     consult.getCost(), review.getRating(), review.getComment());
         } else {
             return new ReviewGetResponse(review.getReviewId(), consult.getCustomer().getNickname(), null,

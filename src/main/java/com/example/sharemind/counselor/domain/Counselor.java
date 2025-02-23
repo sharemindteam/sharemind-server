@@ -3,6 +3,7 @@ package com.example.sharemind.counselor.domain;
 import com.example.sharemind.counselor.content.ProfileStatus;
 import com.example.sharemind.counselor.exception.CounselorErrorCode;
 import com.example.sharemind.counselor.exception.CounselorException;
+import com.example.sharemind.customer.domain.Level;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.counselor.content.ConsultStyle;
@@ -24,7 +25,6 @@ import lombok.*;
 public class Counselor extends BaseEntity {
 
     private static final Integer RETRY_EDUCATION_OFFSET = 1;
-    private static final Integer COUNSELOR_BASIC_LEVEL = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,10 +90,6 @@ public class Counselor extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
-    @PositiveOrZero(message = "상담사 레벨은 0 이상입니다.")
-    @Column(nullable = false)
-    private Integer level;
-
     private String account;
 
     private String bank;
@@ -119,17 +115,24 @@ public class Counselor extends BaseEntity {
     @JoinColumn(name = "settlement_id", unique = true)
     private Settlement settlement;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "level_id", unique = true)
+    private Level level;
+
     @Builder
     public Counselor(String nickname, String email) {
         this.nickname = nickname;
         this.email = email;
-        this.level = 0;
         this.totalReview = 0L;
         this.ratingAverage = 0.0;
         this.profileStatus = ProfileStatus.NO_PROFILE;
         this.profileUpdatedAt = LocalDateTime.now();
         this.totalConsult = 0L;
         this.settlement = Settlement.builder().build();
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
     }
 
     public Long getConsultCost(ConsultType consultType) {
@@ -172,8 +175,6 @@ public class Counselor extends BaseEntity {
 
         if (isEducated.equals(false)) {
             this.retryEducation = LocalDateTime.now().plusDays(RETRY_EDUCATION_OFFSET);
-        } else {
-            this.level = COUNSELOR_BASIC_LEVEL;
         }
     }
 

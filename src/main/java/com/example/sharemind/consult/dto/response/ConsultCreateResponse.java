@@ -48,7 +48,7 @@ public class ConsultCreateResponse {
                 .collect(Collectors.toSet());
 
         return new ConsultCreateResponse(consult.getConsultId(),
-                counselor.getNickname(), counselor.getLevel(), counselor.getRatingAverage(),
+                counselor.getNickname(), counselor.getLevel().getGrade(), counselor.getRatingAverage(),
                 counselor.getTotalReview(), consultCategories, counselor.getConsultStyle().getDisplayName(),
                 consult.getConsultType().getDisplayName(), consult.getCost());
     }

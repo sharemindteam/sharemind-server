@@ -66,7 +66,8 @@ public class Payment extends BaseEntity {
     public Payment(String customerPhoneNumber, Consult consult) {
         this.customerPhoneNumber = customerPhoneNumber;
         this.consult = consult;
-        this.fee = Math.round(consult.getCost() * BASE_FEE);
+        this.fee = Math.round(consult.getCost() * (BASE_FEE - consult.getCounselor().getLevel()
+                .getExtraDiscount()));
         this.isPaid = false;
         updateBothStatusNone();
     }

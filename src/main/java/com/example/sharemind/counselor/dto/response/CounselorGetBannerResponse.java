@@ -40,6 +40,6 @@ public class CounselorGetBannerResponse {
         return new CounselorGetBannerResponse(counselor.getCounselorId(), counselor.getNickname(),
                 CounselorUtil.convertConsultCategories(counselor), counselor.getConsultStyle().getDisplayName(),
                 counselor.getIntroduction(),
-                counselor.getLevel(), counselor.getTotalReview(), counselor.getRatingAverage());
+                counselor.getLevel().getGrade(), counselor.getTotalReview(), counselor.getRatingAverage());
     }
 }

@@ -72,6 +72,7 @@ public class Customer extends BaseEntity {
 
     public void setCounselor(Counselor counselor) {
         this.counselor = counselor;
+        this.counselor.setLevel(this.level);
     }
 
     public void setQuit(Quit quit) {
