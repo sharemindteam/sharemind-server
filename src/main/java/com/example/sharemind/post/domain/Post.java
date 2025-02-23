@@ -88,6 +88,9 @@ public class Post extends BaseEntity {
     @Column(name = "is_completed")
     private Boolean isCompleted;
 
+    @Column(name = "is_Popular")
+    private Boolean isPopular;
+
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
@@ -104,7 +107,12 @@ public class Post extends BaseEntity {
         this.totalComment = 0L;
         this.totalScrap = 0L;
         this.customerPhoneNumber = customerPhoneNumber;
+        this.isPopular = false;
         setIsPaid(isPublic);
+    }
+
+    public void updateIsPopular() {
+        this.isPopular = true;
     }
 
     public void updatePayAppId(String payAppId) {
@@ -126,6 +134,10 @@ public class Post extends BaseEntity {
 
         if (this.postStatus == PostStatus.PROCEEDING) {
             this.publishedAt = LocalDateTime.now();
+
+            if (this.isPublic) {
+                this.customer.getLevel().increasePostCreate();
+            }
         } else if (this.postStatus == PostStatus.COMPLETED || this.postStatus == PostStatus.TIME_OUT) {
             this.finishedAt = LocalDateTime.now().withNano(0);
         }

@@ -36,8 +36,9 @@ public class CounselorGetInfoResponse {
         if (counselor.getConsultStyle() != null) {
             consultStyle = counselor.getConsultStyle().getDisplayName();
         }
-        
-        return new CounselorGetInfoResponse(counselor.getNickname(), counselor.getLevel(), consultStyle, counselor.getIsEducated(),
+
+        return new CounselorGetInfoResponse(counselor.getNickname(),
+                counselor.getLevel().getGrade(), consultStyle, counselor.getIsEducated(),
                 counselor.getProfileStatus().name());
     }
 }

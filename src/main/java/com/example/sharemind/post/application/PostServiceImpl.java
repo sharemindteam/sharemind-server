@@ -6,6 +6,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.customer.domain.Level;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.content.PostListSortType;
@@ -253,12 +254,29 @@ public class PostServiceImpl implements PostService {
 
     @Scheduled(cron = "0 0 0/1 * * *", zone = "Asia/Seoul")
     @Transactional
-    public void checkPostStatus() {
+    public void checkPostStatusAndPopularity() {
         postRepository.findAllWaitingPublicPostsAfter24Hours()
                 .forEach(BaseEntity::updateIsActivatedFalse);
 
         postRepository.findAllCommentedProceedingPublicPostsAfter72Hours()
                 .forEach(post -> post.updatePostStatus(PostStatus.TIME_OUT));
+
+        postRepository.findNewPopularityPosts()
+                .forEach(post -> {
+                    post.updateIsPopular();
+
+                    Level customerLevel = post.getCustomer().getLevel();
+                    customerLevel.increasePostPopularityCreate();
+
+                    commentRepository.findByPostAndIsActivatedIsTrue(post).forEach(comment -> {
+                        Level counselorLevel = comment.getCounselor().getLevel();
+                        counselorLevel.increasePostPopularityAnswer();
+
+                        if (comment.getIsChosen()) {
+                            counselorLevel.increasePostPopularityChosen();
+                        }
+                    });
+                });
     }
 
     private Boolean checkCounselorReadAuthority(Long postId, Long customerId) {

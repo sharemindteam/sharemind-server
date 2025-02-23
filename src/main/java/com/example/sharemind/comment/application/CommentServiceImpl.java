@@ -11,6 +11,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.customer.domain.Level;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
@@ -89,6 +90,11 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(commentCreateRequest.toEntity(post, counselor));
         post.increaseTotalComment();
         counselor.increaseTotalConsult();
+
+        if (post.getIsPublic()) {
+            Level counselorlevel = counselor.getLevel();
+            counselorlevel.increasePostAnswer();
+        }
     }
 
     @Override
@@ -110,6 +116,16 @@ public class CommentServiceImpl implements CommentService {
         comment.checkCommentIsForPost(post);
 
         comment.updateIsChosen();
+        if (post.getIsPublic()) {
+            Level customerLevel = customer.getLevel();
+            customerLevel.increasePostChoose();
+
+            Level counselorLevel = comment.getCounselor().getLevel();
+            counselorLevel.increasePostChosen();
+            if (post.getIsPopular()) {
+                counselorLevel.increasePostPopularityChosen();
+            }
+        }
 
         post.updatePostStatus(PostStatus.COMPLETED);
     }

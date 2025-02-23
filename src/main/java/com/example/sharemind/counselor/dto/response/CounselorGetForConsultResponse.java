@@ -49,8 +49,9 @@ public class CounselorGetForConsultResponse {
                 .map(ConsultCategory::getDisplayName)
                 .toList();
 
-        return new CounselorGetForConsultResponse(counselor.getCounselorId(), counselor.getNickname(),
-                counselor.getLevel(), counselor.getRatingAverage(), counselor.getTotalReview(), consultCategories,
+        return new CounselorGetForConsultResponse(counselor.getCounselorId(),
+                counselor.getNickname(), counselor.getLevel().getGrade(),
+                counselor.getRatingAverage(), counselor.getTotalReview(), consultCategories,
                 counselor.getConsultStyle().getDisplayName(), consultType.getDisplayName(),
                 counselor.getConsultCost(consultType), counselor.getTotalConsult());
     }

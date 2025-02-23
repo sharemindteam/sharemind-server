@@ -14,6 +14,8 @@ public interface PostCustomRepository {
     List<Post> findAllByIsPublicAndIsActivatedIsTrue(Long postId, LocalDateTime finishedAt,
             int size);
 
+    List<Post> findNewPopularityPosts();
+
     List<Post> findPopularityPosts(Long postId, LocalDateTime finishedAt, int size);
 
     List<Post> getPostByWordWithSortType(SearchWordPostFindRequest searchWordPostFindRequest,

@@ -80,7 +80,7 @@ public class CounselorGetMinderProfileResponse {
         return CounselorGetMinderProfileResponse.builder()
                 .counselorId(counselor.getCounselorId())
                 .nickname(counselor.getNickname())
-                .level(counselor.getLevel())
+                .level(counselor.getLevel().getGrade())
                 .totalReview(counselor.getTotalReview())
                 .ratingAverage(counselor.getRatingAverage())
                 .consultCategories(CounselorUtil.convertConsultCategories(counselor))

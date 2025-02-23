@@ -19,7 +19,7 @@ public class Constants {
     public static final Boolean IS_CHAT = true;
     public static final Boolean IS_LETTER = false;
 
-    public static final Double FEE = 0.2;
+    public static final Double BASE_FEE = 0.25;
 
     public static final Long MAX_COMMENTS = 5L;
 }

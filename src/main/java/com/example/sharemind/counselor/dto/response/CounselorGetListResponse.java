@@ -32,7 +32,7 @@ public class CounselorGetListResponse extends CounselorGetBaseResponse {
     protected CounselorGetListResponse(Counselor counselor, Boolean isWishList, Boolean isRealtime) {
         super(counselor);
         this.counselorId = counselor.getCounselorId();
-        this.level = counselor.getLevel();
+        this.level = counselor.getLevel().getGrade();
         this.totalReview = counselor.getTotalReview();
         this.ratingAverage = counselor.getRatingAverage();
         this.isWishList = isWishList;

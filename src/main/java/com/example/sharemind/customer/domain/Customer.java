@@ -45,12 +45,17 @@ public class Customer extends BaseEntity {
     @JoinColumn(name = "quit_id", unique = true)
     private Quit quit;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "level_id", unique = true)
+    private Level level;
+
     @Builder
     public Customer(String email, String password) {
         this.nickname = "셰어" + new Random().nextInt(999999);
         this.email = email;
         this.password = password;
         this.isBanned = false;
+        this.level = Level.builder().build();
 
         this.roles = new ArrayList<>() {{
             add(Role.ROLE_CUSTOMER);
@@ -67,6 +72,7 @@ public class Customer extends BaseEntity {
 
     public void setCounselor(Counselor counselor) {
         this.counselor = counselor;
+        this.counselor.setLevel(this.level);
     }
 
     public void setQuit(Quit quit) {
