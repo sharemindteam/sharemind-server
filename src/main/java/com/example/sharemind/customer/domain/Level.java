@@ -39,8 +39,8 @@ public class Level extends BaseEntity {
     @Column(name = "post_popularity_chosen", nullable = false)
     private Long postPopularityChosen;
 
-    @Column(name = "level", nullable = false)
-    private Long level;
+    @Column(name = "grade", nullable = false)
+    private Integer grade;
 
     @Column(name = "extra_discount", nullable = false)
     private Double extraDiscount;
@@ -54,78 +54,78 @@ public class Level extends BaseEntity {
         this.postPopularityCreate = 0L;
         this.postPopularityAnswer = 0L;
         this.postPopularityChosen = 0L;
-        this.level = 1L;
+        this.grade = 1;
         this.extraDiscount = 0.0;
     }
 
     public void increasePostCreate() {
         this.postCreate++;
-        updateLevelAndExtraDiscount();
+        updateGradeAndExtraDiscount();
     }
 
     public void increasePostAnswer() {
         this.postAnswer++;
-        updateLevelAndExtraDiscount();
+        updateGradeAndExtraDiscount();
     }
 
     public void increasePostChoose() {
         this.postChoose++;
-        updateLevelAndExtraDiscount();
+        updateGradeAndExtraDiscount();
     }
 
     public void increasePostChosen() {
         this.postChosen += 3;
-        updateLevelAndExtraDiscount();
+        updateGradeAndExtraDiscount();
     }
 
     public void increasePostPopularityCreate() {
         this.postPopularityCreate += 3;
-        updateLevelAndExtraDiscount();
+        updateGradeAndExtraDiscount();
     }
 
     public void increasePostPopularityAnswer() {
         this.postPopularityAnswer += 2;
-        updateLevelAndExtraDiscount();
+        updateGradeAndExtraDiscount();
     }
 
     public void increasePostPopularityChosen() {
         this.postPopularityChosen += 3;
-        updateLevelAndExtraDiscount();
+        updateGradeAndExtraDiscount();
     }
 
-    private void updateLevelAndExtraDiscount() {
+    private void updateGradeAndExtraDiscount() {
         long total = this.postCreate + this.postAnswer + this.postChoose + this.postChosen
                 + this.postPopularityCreate + this.postPopularityAnswer + this.postPopularityChosen;
 
         if (total == 0) {
-            this.level = 1L;
+            this.grade = 1;
             this.extraDiscount = 0.0;
         } else if (total <= 7) {
-            this.level = 2L;
+            this.grade = 2;
             this.extraDiscount = 0.01;
         } else if (total <= 15) {
-            this.level = 3L;
+            this.grade = 3;
             this.extraDiscount = 0.02;
         } else if (total <= 25) {
-            this.level = 4L;
+            this.grade = 4;
             this.extraDiscount = 0.03;
         } else if (total <= 100) {
-            this.level = 5L;
+            this.grade = 5;
             this.extraDiscount = 0.05;
         } else if (total <= 500) {
-            this.level = 6L;
+            this.grade = 6;
             this.extraDiscount = 0.06;
         } else if (total <= 1500) {
-            this.level = 7L;
+            this.grade = 7;
             this.extraDiscount = 0.07;
         } else if (total <= 4000) {
-            this.level = 8L;
+            this.grade = 8;
             this.extraDiscount = 0.08;
         } else if (total <= 10000) {
-            this.level = 9L;
+            this.grade = 9;
             this.extraDiscount = 0.09;
         } else {
-            this.level = 10L;
+            this.grade = 10;
             this.extraDiscount = 0.1;
         }
     }
