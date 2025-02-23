@@ -78,6 +78,21 @@ public class Experience extends BaseEntity {
         updateLevelAndExtraDiscount();
     }
 
+    public void increasePostPopularityCreate() {
+        this.postPopularityCreate += 3;
+        updateLevelAndExtraDiscount();
+    }
+
+    public void increasePostPopularityAnswer() {
+        this.postPopularityAnswer += 2;
+        updateLevelAndExtraDiscount();
+    }
+
+    public void increasePostPopularityChosen() {
+        this.postPopularityChosen += 3;
+        updateLevelAndExtraDiscount();
+    }
+
     private void updateLevelAndExtraDiscount() {
         long total = this.postCreate + this.postAnswer + this.postChoose + this.postChosen
                 + this.postPopularityCreate + this.postPopularityAnswer + this.postPopularityChosen;

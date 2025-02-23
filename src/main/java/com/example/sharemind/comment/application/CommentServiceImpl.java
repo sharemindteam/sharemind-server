@@ -122,6 +122,9 @@ public class CommentServiceImpl implements CommentService {
 
             Experience counselorExperience = customerService.getCustomerByCounselor(comment.getCounselor()).getExperience();
             counselorExperience.increasePostChosen();
+            if (post.getIsPopular()) {
+                counselorExperience.increasePostPopularityChosen();
+            }
         }
 
         post.updatePostStatus(PostStatus.COMPLETED);

@@ -48,6 +48,19 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     @Override
+    public List<Post> findNewPopularityPosts() {
+        return jpaQueryFactory
+                .selectFrom(post)
+                .where(
+                        post.isPublic.isTrue(),
+                        post.isPopular.isFalse(),
+                        post.postStatus.in(PostStatus.TIME_OUT, PostStatus.COMPLETED),
+                        post.totalLike.goe(10),
+                        post.isActivated.isTrue()
+                ).fetch();
+    }
+
+    @Override
     public List<Post> findPopularityPosts(Long postId, LocalDateTime finishedAt, int size) {
         return jpaQueryFactory
                 .selectFrom(post)
