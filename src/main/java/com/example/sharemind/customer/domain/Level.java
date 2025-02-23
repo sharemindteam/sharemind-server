@@ -11,12 +11,12 @@ import lombok.Getter;
 
 @Getter
 @Entity
-public class Experience extends BaseEntity {
+public class Level extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "experience_id")
-    private Long experienceId;
+    @Column(name = "level_id")
+    private Long levelId;
 
     @Column(name = "post_create", nullable = false)
     private Long postCreate;
@@ -46,7 +46,7 @@ public class Experience extends BaseEntity {
     private Double extraDiscount;
 
     @Builder
-    public Experience() {
+    public Level() {
         this.postCreate = 0L;
         this.postAnswer = 0L;
         this.postChoose = 0L;

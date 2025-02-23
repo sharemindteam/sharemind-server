@@ -6,7 +6,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
-import com.example.sharemind.customer.domain.Experience;
+import com.example.sharemind.customer.domain.Level;
 import com.example.sharemind.global.common.BaseEntity;
 import com.example.sharemind.global.content.ConsultCategory;
 import com.example.sharemind.post.content.PostListSortType;
@@ -265,16 +265,16 @@ public class PostServiceImpl implements PostService {
                 .forEach(post -> {
                     post.updateIsPopular();
 
-                    Experience customerExperience = post.getCustomer().getExperience();
-                    customerExperience.increasePostPopularityCreate();
+                    Level customerLevel = post.getCustomer().getLevel();
+                    customerLevel.increasePostPopularityCreate();
 
                     commentRepository.findByPostAndIsActivatedIsTrue(post).forEach(comment -> {
-                        Experience counselorExperience = customerService.getCustomerByCounselor(
-                                comment.getCounselor()).getExperience();
-                        counselorExperience.increasePostPopularityAnswer();
+                        Level counselorLevel = customerService.getCustomerByCounselor(
+                                comment.getCounselor()).getLevel();
+                        counselorLevel.increasePostPopularityAnswer();
 
                         if (comment.getIsChosen()) {
-                            counselorExperience.increasePostPopularityChosen();
+                            counselorLevel.increasePostPopularityChosen();
                         }
                     });
                 });

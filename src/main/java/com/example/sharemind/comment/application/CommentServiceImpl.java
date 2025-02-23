@@ -11,7 +11,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
-import com.example.sharemind.customer.domain.Experience;
+import com.example.sharemind.customer.domain.Level;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
@@ -92,7 +92,7 @@ public class CommentServiceImpl implements CommentService {
         counselor.increaseTotalConsult();
 
         if (post.getIsPublic()) {
-            Experience counselorExperience = customerService.getCustomerByCounselor(counselor).getExperience();
+            Level counselorExperience = customerService.getCustomerByCounselor(counselor).getLevel();
             counselorExperience.increasePostAnswer();
         }
     }
@@ -117,13 +117,13 @@ public class CommentServiceImpl implements CommentService {
 
         comment.updateIsChosen();
         if (post.getIsPublic()) {
-            Experience customerExperience = customer.getExperience();
-            customerExperience.increasePostChoose();
+            Level customerLevel = customer.getLevel();
+            customerLevel.increasePostChoose();
 
-            Experience counselorExperience = customerService.getCustomerByCounselor(comment.getCounselor()).getExperience();
-            counselorExperience.increasePostChosen();
+            Level counselorLevel = customerService.getCustomerByCounselor(comment.getCounselor()).getLevel();
+            counselorLevel.increasePostChosen();
             if (post.getIsPopular()) {
-                counselorExperience.increasePostPopularityChosen();
+                counselorLevel.increasePostPopularityChosen();
             }
         }
 

@@ -136,7 +136,7 @@ public class Post extends BaseEntity {
             this.publishedAt = LocalDateTime.now();
 
             if (this.isPublic) {
-                this.customer.getExperience().increasePostCreate();
+                this.customer.getLevel().increasePostCreate();
             }
         } else if (this.postStatus == PostStatus.COMPLETED || this.postStatus == PostStatus.TIME_OUT) {
             this.finishedAt = LocalDateTime.now().withNano(0);

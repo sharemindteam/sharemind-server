@@ -45,9 +45,9 @@ public class Customer extends BaseEntity {
     @JoinColumn(name = "quit_id", unique = true)
     private Quit quit;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "experience_id", unique = true)
-    private Experience experience;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "level_id", unique = true)
+    private Level level;
 
     @Builder
     public Customer(String email, String password) {
@@ -55,7 +55,7 @@ public class Customer extends BaseEntity {
         this.email = email;
         this.password = password;
         this.isBanned = false;
-        this.experience = Experience.builder().build();
+        this.level = Level.builder().build();
 
         this.roles = new ArrayList<>() {{
             add(Role.ROLE_CUSTOMER);
