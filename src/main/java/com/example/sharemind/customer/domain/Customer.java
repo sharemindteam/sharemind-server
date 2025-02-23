@@ -45,12 +45,17 @@ public class Customer extends BaseEntity {
     @JoinColumn(name = "quit_id", unique = true)
     private Quit quit;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "experience_id", unique = true)
+    private Experience experience;
+
     @Builder
     public Customer(String email, String password) {
         this.nickname = "셰어" + new Random().nextInt(999999);
         this.email = email;
         this.password = password;
         this.isBanned = false;
+        this.experience = Experience.builder().build();
 
         this.roles = new ArrayList<>() {{
             add(Role.ROLE_CUSTOMER);
