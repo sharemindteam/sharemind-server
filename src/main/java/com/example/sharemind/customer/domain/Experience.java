@@ -57,4 +57,46 @@ public class Experience extends BaseEntity {
         this.level = 1L;
         this.extraDiscount = 0.0;
     }
+
+    public void increasePostCreate() {
+        this.postCreate++;
+        updateLevelAndExtraFee();
+    }
+
+    private void updateLevelAndExtraFee() {
+        long total = this.postCreate + this.postAnswer + this.postChoose + this.postChosen
+                + this.postPopularityCreate + this.postPopularityAnswer + this.postPopularityChosen;
+
+        if (total == 0) {
+            this.level = 1L;
+            this.extraDiscount = 0.0;
+        } else if (total <= 7) {
+            this.level = 2L;
+            this.extraDiscount = 0.01;
+        } else if (total <= 15) {
+            this.level = 3L;
+            this.extraDiscount = 0.02;
+        } else if (total <= 25) {
+            this.level = 4L;
+            this.extraDiscount = 0.03;
+        } else if (total <= 100) {
+            this.level = 5L;
+            this.extraDiscount = 0.05;
+        } else if (total <= 500) {
+            this.level = 6L;
+            this.extraDiscount = 0.06;
+        } else if (total <= 1500) {
+            this.level = 7L;
+            this.extraDiscount = 0.07;
+        } else if (total <= 4000) {
+            this.level = 8L;
+            this.extraDiscount = 0.08;
+        } else if (total <= 10000) {
+            this.level = 9L;
+            this.extraDiscount = 0.09;
+        } else {
+            this.level = 10L;
+            this.extraDiscount = 0.1;
+        }
+    }
 }
