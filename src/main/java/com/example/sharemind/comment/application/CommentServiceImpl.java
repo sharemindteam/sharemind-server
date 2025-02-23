@@ -11,6 +11,7 @@ import com.example.sharemind.counselor.application.CounselorService;
 import com.example.sharemind.counselor.domain.Counselor;
 import com.example.sharemind.customer.application.CustomerService;
 import com.example.sharemind.customer.domain.Customer;
+import com.example.sharemind.customer.domain.Experience;
 import com.example.sharemind.post.application.PostService;
 import com.example.sharemind.post.content.PostStatus;
 import com.example.sharemind.post.domain.Post;
@@ -91,7 +92,8 @@ public class CommentServiceImpl implements CommentService {
         counselor.increaseTotalConsult();
 
         if (post.getIsPublic()) {
-            customerService.getCustomerByCounselor(counselor).getExperience().increasePostAnswer();
+            Experience counselorExperience = customerService.getCustomerByCounselor(counselor).getExperience();
+            counselorExperience.increasePostAnswer();
         }
     }
 
@@ -115,7 +117,11 @@ public class CommentServiceImpl implements CommentService {
 
         comment.updateIsChosen();
         if (post.getIsPublic()) {
-            customer.getExperience().increasePostChoose();
+            Experience customerExperience = customer.getExperience();
+            customerExperience.increasePostChoose();
+
+            Experience counselorExperience = customerService.getCustomerByCounselor(comment.getCounselor()).getExperience();
+            counselorExperience.increasePostChosen();
         }
 
         post.updatePostStatus(PostStatus.COMPLETED);
