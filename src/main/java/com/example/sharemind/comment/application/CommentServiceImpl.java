@@ -114,6 +114,9 @@ public class CommentServiceImpl implements CommentService {
         comment.checkCommentIsForPost(post);
 
         comment.updateIsChosen();
+        if (post.getIsPublic()) {
+            customer.getExperience().increasePostChoose();
+        }
 
         post.updatePostStatus(PostStatus.COMPLETED);
     }
