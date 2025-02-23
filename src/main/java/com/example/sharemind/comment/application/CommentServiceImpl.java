@@ -92,8 +92,8 @@ public class CommentServiceImpl implements CommentService {
         counselor.increaseTotalConsult();
 
         if (post.getIsPublic()) {
-            Level counselorExperience = customerService.getCustomerByCounselor(counselor).getLevel();
-            counselorExperience.increasePostAnswer();
+            Level counselorlevel = counselor.getLevel();
+            counselorlevel.increasePostAnswer();
         }
     }
 
@@ -120,7 +120,7 @@ public class CommentServiceImpl implements CommentService {
             Level customerLevel = customer.getLevel();
             customerLevel.increasePostChoose();
 
-            Level counselorLevel = customerService.getCustomerByCounselor(comment.getCounselor()).getLevel();
+            Level counselorLevel = comment.getCounselor().getLevel();
             counselorLevel.increasePostChosen();
             if (post.getIsPopular()) {
                 counselorLevel.increasePostPopularityChosen();

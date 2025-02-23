@@ -269,8 +269,7 @@ public class PostServiceImpl implements PostService {
                     customerLevel.increasePostPopularityCreate();
 
                     commentRepository.findByPostAndIsActivatedIsTrue(post).forEach(comment -> {
-                        Level counselorLevel = customerService.getCustomerByCounselor(
-                                comment.getCounselor()).getLevel();
+                        Level counselorLevel = comment.getCounselor().getLevel();
                         counselorLevel.increasePostPopularityAnswer();
 
                         if (comment.getIsChosen()) {
