@@ -89,6 +89,10 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(commentCreateRequest.toEntity(post, counselor));
         post.increaseTotalComment();
         counselor.increaseTotalConsult();
+
+        if (post.getIsPublic()) {
+            customerService.getCustomerByCounselor(counselor).getExperience().increasePostAnswer();
+        }
     }
 
     @Override
