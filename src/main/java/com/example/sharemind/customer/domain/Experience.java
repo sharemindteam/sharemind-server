@@ -37,10 +37,13 @@ public class Experience extends BaseEntity {
     private Long postPopularityAnswer;
 
     @Column(name = "post_popularity_chosen", nullable = false)
-    private Long postPopularity_chosen;
+    private Long postPopularityChosen;
 
     @Column(name = "level", nullable = false)
     private Long level;
+
+    @Column(name = "extra_discount", nullable = false)
+    private Double extraDiscount;
 
     @Builder
     public Experience() {
@@ -50,7 +53,8 @@ public class Experience extends BaseEntity {
         this.postChosen = 0L;
         this.postPopularityCreate = 0L;
         this.postPopularityAnswer = 0L;
-        this.postPopularity_chosen = 0L;
-        this.level = 0L;
+        this.postPopularityChosen = 0L;
+        this.level = 1L;
+        this.extraDiscount = 0.0;
     }
 }
